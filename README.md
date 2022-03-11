@@ -9,7 +9,7 @@ The key innovations of our method are:
 - Since our method maps single cells from scRNA-sequencing data, in which larger numbers of genes are sequenced per each cell compared to available spatial transcriptomics technology, our method imporves the gene coverage of a recontructed tissue significantly.
 
 ### Installation
-To install Cytospace please clone this repository, and install [Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) if not already available.
+To install Cytospace please clone this repository, and install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
 
 To create an environment with the required dependencies:
 
