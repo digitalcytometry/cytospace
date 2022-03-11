@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+from setuptools import setup
+
+setup(
+    name='cytospace',
+    version='0.0.1',
+    packages=['cytospace',
+              'cytospace.common',
+              'cytospace.cell_type_fraction',
+              'cytospace.linear_assignment_solvers',
+              'cytospace.post_processing'],
+    package_dir={'cytospace': 'cytospace'},
+    entry_points={'console_scripts':
+                      ['cytospace=cytospace.cytospace:run_cytospace']
+                  }
+)
