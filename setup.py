@@ -7,8 +7,7 @@ setup(
     version='0.0.1',
     packages=['cytospace',
               'cytospace.common',
-              'cytospace.cell_type_fraction',
-              'cytospace.linear_assignment_solvers',
+		      'cytospace.linear_assignment_solvers',
               'cytospace.post_processing'],
     package_dir={'cytospace': 'cytospace'},
     entry_points={'console_scripts':

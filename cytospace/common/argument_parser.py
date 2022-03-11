@@ -25,10 +25,7 @@ def argument_parser():
                           help="Path to transcriptomics data (coordinates)", type=str,
                           default=None, required=True)
     required.add_argument("-ctfep", "--cell-type-fraction-estimation-path", type=str,
-                          help="Path input data based on 'cell-type-fraction-estimation-method'. "
-                               "If 'correlation', then this should point to a signature matrix, "
-                               "if 'metagene' this should point to marker genes, and if from "
-                               "seurat then a cell type fraction file",
+                          help="Path to cell type fraction file",
                           default=None, required=True)
 
     # I/O options
@@ -44,13 +41,10 @@ def argument_parser():
     parser.add_argument("-m", "--method", type=str, default="shortest_augmenting_path",
                         help="Method for computing the linear assignment sum",
                         choices=["shortest_augmenting_path", "linear_assignment"])
-    parser.add_argument("-ctfem", "--cell-type-fraction-estimation-method", type=str,
-                        default="seurat", choices=["correlation", "metagene", "seurat"],
-                        help="The method for cell type fraction estimation")
     parser.add_argument("-sm", "--solver-method", default="lapjv",
                         help="Which solver to use for the linear assignment problem when setting "
                              "'method'='shortest_augmenting_path'.",
-                        choices=["lap", "lapjv", "lapsolver"])
+                        choices=["lap", "lapjv"])
     parser.add_argument("-mcn", "--mean-cell-numbers", type=int, default=5,
                         help="Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy spatial transcriptomics data, set to 20")
     parser.add_argument("-se", "--seed", help="Set seed for random generators", type=int,

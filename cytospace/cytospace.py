@@ -5,8 +5,6 @@ import numpy as np
 
 from cytospace.common import read_file, normalize_data, check_paths, argument_parser
 from cytospace.post_processing import plot_output, save_results
-from cytospace.cell_type_fraction import (estimate_cell_type_fractions_correlation_based,
-                                          estimate_cell_type_fractions_metagene_based)
 from cytospace.linear_assignment_solvers import (calculate_cost, match_solution, import_solver,
                                                  call_solver)
 
@@ -64,21 +62,8 @@ def estimate_cell_number_RNA_reads(st_data, mean_cell_numbers):
     return cell_number_to_node_assignment
 
 
-def estimating_cell_type_fraction(cell_type_fraction_estimation_method, number_of_cells, st_data,
-                                  cell_type_fraction_data, seed):
-    if cell_type_fraction_estimation_method == "correlation":
-        cell_type_fractions = estimate_cell_type_fractions_correlation_based(st_data,
-                                                                             cell_type_fraction_data)
-    elif cell_type_fraction_estimation_method == "metagene":
-        cell_type_fractions = estimate_cell_type_fractions_metagene_based(st_data,
-                                                                          cell_type_fraction_data,
-                                                                          seed)
-    elif cell_type_fraction_estimation_method == "seurat":
-        cell_type_fractions = cell_type_fraction_data.values[0]
-    else:
-        raise ValueError("The cell_type_fraction_estimation_method has to be either "
-                         "'correlation', 'metagene', 'seurat'")
-
+def get_cell_type_fraction(number_of_cells, cell_type_fraction_data):
+    cell_type_fractions = cell_type_fraction_data.values[0]
     cell_type_numbers = number_of_cells * cell_type_fractions
     cell_type_numbers_int = cell_type_numbers.astype(int)
     number_of_cells_estimated = np.sum(cell_type_numbers_int)
@@ -135,8 +120,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    cell_type_fraction_estimation_path, output_folder="cytospace_results",
                    method="shortest_augmenting_path", rotation_flag=False, plot_off=False,
                    mean_cell_numbers=5, num_row=3, num_column=4, rotation_degrees=270,
-                   output_prefix="", seed=1, delimiter=",", solver_method="lapjv",
-                   cell_type_fraction_estimation_method="seurat"):
+                   output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
     # For timing execution
     start_time = time.perf_counter()
 
@@ -161,11 +145,9 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     print('Estimating number of cells in each spot ...')
     cell_number_to_node_assignment = estimate_cell_number_RNA_reads(st_data, mean_cell_numbers)
 
-    print('Estimating cell type fractions ...')
+    print('Get cell type fractions ...')
     number_of_cells = np.sum(cell_number_to_node_assignment)
-    cell_type_numbers_int = estimating_cell_type_fraction(cell_type_fraction_estimation_method,
-                                                          number_of_cells, st_data,
-                                                          cell_type_factions_data, seed)
+    cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
 
     assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes =\
         solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
