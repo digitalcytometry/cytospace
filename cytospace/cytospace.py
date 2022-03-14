@@ -101,8 +101,8 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
 
         print('Solving linear assignment problem ...')
         np.random.seed(seed)
-        cost_scaled = 10**6 * distance_repeat + 100 * np.random.rand(distance_repeat.shape[0],
-                                                                     distance_repeat.shape[1]) + 1
+        cost_scaled = 10**6 * distance_repeat + 10 * np.random.rand(distance_repeat.shape[0],
+                                                                    distance_repeat.shape[1]) + 1
         cost_scaled = np.transpose(cost_scaled)
         cost_scaled_int = cost_scaled.astype(int)
         cost_scaled_int_list = cost_scaled_int.tolist()
