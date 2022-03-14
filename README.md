@@ -13,7 +13,7 @@ To install Cytospace please clone this repository, and install <a href="https://
 
 To create an environment with the required dependencies:
 
-    conda env create -f cytospace.yml
+    conda env create -f environment.yml
 
 Now you can install CytoSPACE by executing:
 
