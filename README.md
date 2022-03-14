@@ -9,16 +9,27 @@ The key innovations of our method are:
 - Since our method maps single cells from scRNA-sequencing data, in which larger numbers of genes are sequenced per each cell compared to available spatial transcriptomics technology, our method imporves the gene coverage of a recontructed tissue significantly.
 
 ### Installation
-To install Cytospace please clone this repository, and install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
+1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
 
-To create an environment with the required dependencies:
+2. Clone this repository (`git clone`)
 
-    conda env create -f environment.yml
+3. Navigate to `cytospace` directory:
+```bash
+cd cytospace
+```
+4. Create a conda environment with the required dependencies:
+```bash
+conda env create -f environment.yml
+```
+5. Activate the `cytospace` environment you just created:
+```bash
+conda activate cytospace
+``` 
 
-Now you can install CytoSPACE by executing:
-
-    pip install .
-
+6. Install CytoSPACE by executing:
+```bash
+pip install .
+``` 
 
 ### File format
 CytoSPACE requires 5 files as input. All files should be provided in tab-delimited tabular input format (.txt) with no double quotations. Further formatting details for each input file are specified below:
