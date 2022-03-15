@@ -38,20 +38,24 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
 - The matrix must be genes (rows) by cells (columns).
 - The first row must contain the single cell IDs and the first column must contain the gene names.
 - The gene expression data should be represented as non-normalized counts. 
+<img src="https://github.com/digitalcytometry/cytospace/blob/main/images/scRNAfile.png" width="800"> 
 
 2. __A cell type label file:__
 - Cell type labels corresponding to the single cell IDs in the scRNA-seq gene expression matrix. 
 - The table should contain two columns, where column 1 contains the single cell IDs corresponding to the columns of the scRNA-seq matrix and column 2 contains the corresponding cell type labels.
 - The columns must have a header. 
+<img src="https://github.com/digitalcytometry/cytospace/blob/main/images/celllabelfile.png" width="300"> 
 
 3. __A spatial transcriptomics (ST) gene expression file:__
 - The matrix must be genes (rows) by ST spots (columns).
 - The first row must contain the ST spot IDs and the first column must contain the gene names.
 - The gene expression data should be represented as non-normalized counts. 
+<img src="https://github.com/digitalcytometry/cytospace/blob/main/images/STdatafile.png" width="800"> 
 
 4. __A spatial transcriptomics coordinates file:__
 - A table consisting of 3 columns, where the first column contains the ST spot IDs corresponding to the columns of the ST gene expression matrix, and column 2 and 3 contain the X and Y coordinates of the spatial transcriptomics data, respectively. 
 - The columns must have a header. 
+<img src="https://github.com/digitalcytometry/cytospace/blob/main/images/STcoordfile.png" width="800"> 
 
 5. __A file with cell type fraction estimates, obtained from the `R` script `get_cellfracs_seuratv3.R`.__ 
 - A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names. 
