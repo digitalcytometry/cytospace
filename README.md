@@ -32,7 +32,7 @@ pip install .
 ``` 
 
 ### File format
-CytoSPACE requires 5 files as input. All files should be provided in tab-delimited tabular input format (.txt) with no double quotations. Further formatting details for each input file are specified below:
+CytoSPACE requires 5 files as input. All files should be provided in tab or comma-delimited tabular input format (saved as .txt or .csv, respectively) with no double quotations. Further formatting details for each input file are specified below:
 
 1. __A scRNA-seq gene expression file:__
 - The matrix must be genes (rows) by cells (columns).
