@@ -114,16 +114,16 @@ for mean_cell_numbers in [5, 10, 20]:
 
 ## Example datasets for running CytoSPACE
 For users to test CytoSPACE, we have included files for two example runs:
-1. A melanoma scRNA-seq atlas by Tirosh et al (Science 2016), and a melanoma specimen profiled by the legacy ST platform (Thrane et al). This example is very quick to run, and a good test case to make sure that CytoSPACE is running as expected.
-2. A HER2+ breast cancer scRNA-seq atlas by Wu et al (Nature Genetics, 2021) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (10x Genomics, available <a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">here</a>)
+1. A melanoma scRNA-seq atlas by Tirosh et al (<a href="https://www.science.org/doi/10.1126/science.aad0501?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed" target="_blank">Science, 2016</a>), and a melanoma specimen profiled by the legacy ST platform (Thrane et al, <a href="https://aacrjournals.org/cancerres/article/78/20/5970/631815/Spatially-Resolved-Transcriptomics-Enables" target="_blank">Cancer Research, 2018</a>). This example is very quick to run, and a good test case to make sure that CytoSPACE is running as expected.
+2. A HER2+ breast cancer scRNA-seq atlas by Wu et al (<a href="https://www.nature.com/articles/s41588-021-00911-1" target="_blank">Nature Genetics, 2021</a>) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (<a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">10x Genomics</a>)
 
-### Git Large File Storage
-The example files are too large to be stored on github. These are therefore tracked through <a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">Git Large File Storage</a>. To get the files, you must therefore first execute the command `git lfs install`. You only have to do this once. Once located in the `cytospace` repository, you can now run `git lfs pull` to get the full files. 
-
-If you already have <a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">Git Large File Storage</a> installed prior to cloning the repository, the large files will be downloaded automatically when running step 2 of the installation instructions (`git clone`).
+### Download example datasets
+The example datasets can be downloaded using the following links:
+1. <a href="https://drive.google.com/drive/folders/12SxJdLnMp9RYJuWIh59D8Zs1fCKbnt6Y?usp=sharing" target="_blank">Melanoma</a>
+2. <a href="https://drive.google.com/drive/folders/1equJDDCXuhpDC21D7jJCcDeSbpHEF-Bt?usp=sharing" target="_blank">Breast cancer</a>
 
 ### Commands for running example analyses:
-Once the example files are downloaded following the instructions above, here are the commands for running these two examples when located in their respective directories (`examples/melanoma/` and `examples/brca/`):
+Once the example files are downloaded following the instructions above, here are the commands for running these two examples:
  ```bash
 cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt
 ```
