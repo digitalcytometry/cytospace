@@ -79,7 +79,8 @@ Rscript /path/to/get_cellfracs_seuratv3.R melanoma_scRNA_GEP.txt melanoma_scRNA_
 2. We use `Seurat v3` for estimating cell fractions, and is installed as part of the CytoSPACE environment. If you want to run other analyses using more recent versions of Seurat after running CytoSPACE, for example Seurvat v4, make sure to first __deactivate the CytoSPACE environment__ once you are done running CytoSPACE. This is done using the command `deactivate cytospace`.
 
 ## Running CytoSPACE
-CytoSPACE can be called from the command line from any folder using `cytospace`. 
+CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
+
 A typical CytoSPACE run with default settings would look like this: 
  ```bash
  cytospace --scRNA-path /path/to/scRNA_geneexpression
@@ -131,6 +132,10 @@ cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp mel
 ```bash
 cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_slide1_GEP.txt -cp brca_STdata_slide1_coordinates.txt -ctfep brca_cell_fraction_estimates.txt
 ```
+## CytoSPACE output files
+The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned.
+
+The CytoSPACE results are visualized in heatmaps saved as `plot_cell_type_locations.pdf` showing the distribution of single cells across ST spots for each cell type. 
 
 ## Authors
 CytoSPACE was developed by
