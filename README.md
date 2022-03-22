@@ -146,6 +146,6 @@ later version.
 CytoSPACE is Copyright (2022-) by the authors.
 
 ### Reference
-If you are using the library for scientific work please reference it by:
+If you are using CytoSPACE for scientific work, please cite it by:
 
     TODO
