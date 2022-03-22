@@ -100,11 +100,11 @@ Or with more condensed parameter names:
 To see a list of variables and default values for running CytoSPACE, you can call `cytospace` from the command line along with the `-h` or 
 `--help` flag, i.e., `cytospace -h`.
 
- ### Other ways CytoSPACE can be run:
- (1) You can call the `cytospace.py` script directly with python:
+### Other ways CytoSPACE can be run:
+1. You can call the `cytospace.py` script directly with python:
  `python cytospace/cytospace.py`
  
- (2) You can import methods or functions from `CytoSPACE` in python and modify/create your own 
+2. You can import methods or functions from `CytoSPACE` in python and modify/create your own 
     pipeline. For example:
 ```python
 from cytospace import cytospace
@@ -124,7 +124,7 @@ The example datasets can be downloaded using the following links:
 2. <a href="https://drive.google.com/drive/folders/1equJDDCXuhpDC21D7jJCcDeSbpHEF-Bt?usp=sharing" target="_blank">Breast cancer</a>
 
 ### Commands for running example analyses:
-Once the example files are downloaded following the instructions above, here are the commands for running these two examples:
+Once the example files are downloaded following the instructions above, the following commands can be run from the folders where the example datasets are located:
  ```bash
 cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt
 ```
@@ -145,12 +145,12 @@ CytoSPACE was developed by
 * Chloé B. Steen (cbsteen)
 * Aaron M. Newman (aaronmnewman)
 
-### Licence
+## Licence
 CytoSPACE is licensed under the GNU GPL, version 3 or (at your option) any
 later version.
 CytoSPACE is Copyright (2022-) by the authors.
 
-### Reference
+## Citation
 If you are using CytoSPACE for scientific work, please cite it by:
 
     TODO
