@@ -88,7 +88,7 @@ A typical CytoSPACE run with default settings would look like this:
     --coordinates-path /path/to/ST_coordinates
     --cell-type-fraction-estimation-path path/to/cellfracestimates
 ```
-Or with more condensed paramater names: 
+Or with more condensed parameter names: 
  ```bash
  cytospace -sp /path/to/scRNA_geneexpression
     -ctp /path/to/scRNA_celllabels
