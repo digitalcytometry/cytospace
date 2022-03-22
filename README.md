@@ -119,12 +119,12 @@ For users to test CytoSPACE, we have included files for two example runs:
 2. A HER2+ breast cancer scRNA-seq atlas by Wu et al (<a href="https://www.nature.com/articles/s41588-021-00911-1" target="_blank">Nature Genetics, 2021</a>) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (<a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">10x Genomics</a>)
 
 ### Download example datasets
-The example datasets can be downloaded using the following links:
-1. <a href="https://drive.google.com/drive/folders/12SxJdLnMp9RYJuWIh59D8Zs1fCKbnt6Y?usp=sharing" target="_blank">Melanoma</a>
-2. <a href="https://drive.google.com/drive/folders/1equJDDCXuhpDC21D7jJCcDeSbpHEF-Bt?usp=sharing" target="_blank">Breast cancer</a>
+Zip files containing the example datasets can be downloaded from the following links:
+1. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma</a>
+2. <a href="https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing" target="_blank">Breast cancer</a>
 
 ### Commands for running example analyses:
-Once the example files are downloaded following the instructions above, the following commands can be run from the folders where the example datasets are located:
+Once the example files are downloaded, the commands below can be run from the folders where the example datasets are located:
  ```bash
 cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt
 ```
