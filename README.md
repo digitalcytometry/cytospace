@@ -89,11 +89,18 @@ A typical CytoSPACE run with default settings would look like this:
     --cell-type-fraction-estimation-path path/to/cellfracestimates
 ```
 
-For example, running CytoSPACE on a melanoma specimen profiled by the legacy ST platform (Thrane et al):
+For users to test CytoSPACE, we have included files for two example runs:
+1. A melanoma scRNA-seq atlas by Tirosh et al (Science 2016), and a melanoma specimen profiled by the legacy ST platform (Thrane et al). This example is very quick to run, and a good test case to make sure that CytoSPACE is running as expected.
+2. A HER2+ breast cancer scRNA-seq atlas by Wu et al (Nature Genetics, 2021) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (10x Genomics, available <a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">here</a>)
+
+Here are the commands for running these two examples when located in their respective directories (`examples/melanoma/` and `examples/brca/`):
  ```bash
 cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt
 ```
 
+```bash
+cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_slide1_GEP.txt -cp brca_STdata_slide1_coordinates.txt -ctfep brca_cell_fraction_estimates.txt
+```
 
  To see a list of variables and default values for running CytoSPACE, you can call `cytospace` from the command line along with the `-h` or 
 `--help` flag, i.e., `cytospace -h`.
