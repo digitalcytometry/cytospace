@@ -64,8 +64,6 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
 ### Preprocessing
 To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type per spot needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. In the manuscript, we used Spatial Seurat, and provide here a script to obtain the cell type fractions using this approach.
 
-__Importantly__, we use `Seurat v3` for this purpose. 
-
 Run the script `get_cellfracs_seuratv3.R` from command line with the following inputs:
 1. Path to scRNA counts file (same scRNA-seq gene expression matrix input file format as specified in __File format__ section point 1)
 2. Path to cell type labels file (same cell type label input file format as specified above in __File format__ section point  2)
@@ -76,6 +74,9 @@ For example:
 ```bash
 Rscript /path/to/get_cellfracs_seuratv3.R melanoma_scRNA_GEP.txt melanoma_scRNA_celllabels.txt melanoma_STdata_slide1_GEP.txt melanoma_cell_fraction_estimates.txt
 ```
+__Important, please note:__
+1. While `cytospace` can be run from any path and folder, the path to `get_cellfracs_seuratv3.R` must be specified in the command. 
+2. We use `Seurat v3` for estimating cell fractions, and is installed as part of the CytoSPACE environment. If you want to run other analyses using more recent versions of Seurat after running CytoSPACE, for example Seurvat v4, make sure to first __deactivate the CytoSPACE environment__ once you are done running CytoSPACE. This is done using the command `deactivate cytospace`.
 
 ### Running CytoSPACE
 CytoSPACE can be called from the command line from any folder using `cytospace`. 
