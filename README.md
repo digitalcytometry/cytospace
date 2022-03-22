@@ -8,7 +8,7 @@ The key innovations of our method are:
 
 - Since our method maps single cells from scRNA-sequencing data, in which larger numbers of genes are sequenced per each cell compared to available spatial transcriptomics technology, our method imporves the gene coverage of a recontructed tissue significantly.
 
-### Installation
+## Installation instructions
 1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
 
 2. Clone this repository (`git clone`)
@@ -31,7 +31,7 @@ conda activate cytospace
 pip install .
 ``` 
 
-### File format
+## File format
 CytoSPACE requires 5 files as input. All files should be provided in tab or comma-delimited tabular input format (saved as .txt or .csv, respectively) with no double quotations. Further formatting details for each input file are specified below:
 
 1. __A scRNA-seq gene expression file:__
@@ -61,7 +61,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 - A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names. 
 - For further details on running `get_cellfracs_seuratv3.R`, see section "__Preprocessing__" below.
 
-### Preprocessing
+## Preprocessing
 To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type per spot needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. In the manuscript, we used Spatial Seurat, and provide here a script to obtain the cell type fractions using this approach.
 
 Run the script `get_cellfracs_seuratv3.R` from command line with the following inputs:
@@ -74,11 +74,11 @@ For example:
 ```bash
 Rscript /path/to/get_cellfracs_seuratv3.R melanoma_scRNA_GEP.txt melanoma_scRNA_celllabels.txt melanoma_STdata_slide1_GEP.txt melanoma_cell_fraction_estimates.txt
 ```
-__Important, please note:__
+### Important, please note:
 1. While `cytospace` can be run from any path and folder, the path to `get_cellfracs_seuratv3.R` must be specified in the command. 
 2. We use `Seurat v3` for estimating cell fractions, and is installed as part of the CytoSPACE environment. If you want to run other analyses using more recent versions of Seurat after running CytoSPACE, for example Seurvat v4, make sure to first __deactivate the CytoSPACE environment__ once you are done running CytoSPACE. This is done using the command `deactivate cytospace`.
 
-### Running CytoSPACE
+## Running CytoSPACE
 CytoSPACE can be called from the command line from any folder using `cytospace`. 
 A typical CytoSPACE run with default settings would look like this: 
  ```bash
@@ -88,21 +88,15 @@ A typical CytoSPACE run with default settings would look like this:
     --coordinates-path /path/to/ST_coordinates
     --cell-type-fraction-estimation-path path/to/cellfracestimates
 ```
-
-For users to test CytoSPACE, we have included files for two example runs:
-1. A melanoma scRNA-seq atlas by Tirosh et al (Science 2016), and a melanoma specimen profiled by the legacy ST platform (Thrane et al). This example is very quick to run, and a good test case to make sure that CytoSPACE is running as expected.
-2. A HER2+ breast cancer scRNA-seq atlas by Wu et al (Nature Genetics, 2021) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (10x Genomics, available <a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">here</a>)
-
-Here are the commands for running these two examples when located in their respective directories (`examples/melanoma/` and `examples/brca/`):
+Or with more condensed paramater names: 
  ```bash
-cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt
+ cytospace -sp /path/to/scRNA_geneexpression
+    -ctp /path/to/scRNA_celllabels
+    -stp /path/to/ST_geneexpression
+    -cp /path/to/ST_coordinates
+    -ctfep path/to/cellfracestimates
 ```
-
-```bash
-cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_slide1_GEP.txt -cp brca_STdata_slide1_coordinates.txt -ctfep brca_cell_fraction_estimates.txt
-```
-
- To see a list of variables and default values for running CytoSPACE, you can call `cytospace` from the command line along with the `-h` or 
+To see a list of variables and default values for running CytoSPACE, you can call `cytospace` from the command line along with the `-h` or 
 `--help` flag, i.e., `cytospace -h`.
 
  ### Other ways CytoSPACE can be run:
@@ -118,7 +112,27 @@ for mean_cell_numbers in [5, 10, 20]:
     cytospace(..., mean_cell_numbers=mean_cell_numbers)
 ```
 
-### Authors
+## Example datasets for running CytoSPACE
+For users to test CytoSPACE, we have included files for two example runs:
+1. A melanoma scRNA-seq atlas by Tirosh et al (Science 2016), and a melanoma specimen profiled by the legacy ST platform (Thrane et al). This example is very quick to run, and a good test case to make sure that CytoSPACE is running as expected.
+2. A HER2+ breast cancer scRNA-seq atlas by Wu et al (Nature Genetics, 2021) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (10x Genomics, available <a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">here</a>)
+
+### Git Large File Storage
+The example files are too large to be stored on github. These are therefore tracked through <a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">Git Large File Storage</a>. To get the files, you must therefore first execute the command `git lfs install`. You only have to do this once. Once located in the `cytospace` repository, you can now run `git lfs pull` to get the full files. 
+
+If you already have <a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">Git Large File Storage</a> installed prior to cloning the repository, the large files will be downloaded automatically when running step 2 of the installation instructions (`git clone`).
+
+### Commands for running example analyses:
+Once the example files are downloaded following the instructions above, here are the commands for running these two examples when located in their respective directories (`examples/melanoma/` and `examples/brca/`):
+ ```bash
+cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt
+```
+
+```bash
+cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_slide1_GEP.txt -cp brca_STdata_slide1_coordinates.txt -ctfep brca_cell_fraction_estimates.txt
+```
+
+## Authors
 CytoSPACE was developed by
 
 * Milad R. Vahid (miladrv)
