@@ -4,9 +4,7 @@ import argparse
 def argument_parser():
     parser = argparse.ArgumentParser(description="CytoSPACE is a computational strategy for "
                                                  "assigning single-cell transcriptomes to in situ "
-                                                 "spatial transcriptomics data, in case that "
-                                                 "spatial transcriptomics (ST) measurements may "
-                                                 "contain contributions from multiple cells. Our "
+                                                 "spatial transcriptomics (ST) data. Our "
                                                  "method solves single cell/spot assignment by "
                                                  "minimizing a correlation-based cost function "
                                                  "through a linear programming-based optimization "
