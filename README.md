@@ -1,6 +1,6 @@
 # CytoSPACE: Optimal mapping of scRNA-seq data to spatial transcriptomics data
 
-**CytoSPACE** is a novel computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics data, in case that spatial transcriptomics (ST) measurements may contain contributions from multiple cells. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
+**CytoSPACE** is a novel computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
 
 The key innovations of our method are:
 
