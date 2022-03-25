@@ -8,7 +8,7 @@ The key innovations of our method are:
 
 - In contrast to conventional methods, CytoSPACE dissects spatial organizations of cells in a given tissue at single cell level.
 
-- Since our method maps single cells from scRNA-sequencing data, in which larger numbers of genes are sequenced per each cell compared to available spatial transcriptomics technology, our method imporves the gene coverage of a recontructed tissue significantly.
+- Since our method maps single cells from scRNA-sequencing data, in which larger numbers of genes are sequenced per each cell compared to available spatial transcriptomics technology, our method improves the gene coverage of a recontructed tissue significantly.
 
 ## Installation instructions
 1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
