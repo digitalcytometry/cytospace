@@ -38,7 +38,7 @@ def argument_parser():
     # Solver / method options
     parser.add_argument("-m", "--method", type=str, default="shortest_augmenting_path",
                         help="Method for computing the linear assignment sum",
-                        choices=["shortest_augmenting_path", "linear_assignment"])
+                        choices=["shortest_augmenting_path", "cost_scaling_push_relabel"])
     parser.add_argument("-sm", "--solver-method", default="lapjv",
                         help="Which solver to use for the linear assignment problem when setting "
                              "'method'='shortest_augmenting_path'.",
@@ -54,8 +54,10 @@ def argument_parser():
                         default=3)
     parser.add_argument("-nc", "--num-column", help="Number of rows in pdf figure", type=int,
                         default=4)
-    parser.add_argument("-r", "--rotation-flag", help="", action="store_true")
+    parser.add_argument("-r", "--rotation-flag", help="Rotate plot", action="store_false")
     parser.add_argument("-rd", "--rotation-degrees", help="Rotation on plot", type=int,
+                        default=270)
+    parser.add_argument("-ss", "--spot-size", help="Set size of ST spots", type=int,
                         default=270)
 
     arguments = parser.parse_args()
