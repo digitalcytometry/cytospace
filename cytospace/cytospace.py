@@ -119,7 +119,7 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
 
 def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    cell_type_fraction_estimation_path, output_folder="cytospace_results",
-                   method="shortest_augmenting_path", rotation_flag=True, plot_off=False, spot_size=200,
+                   method="shortest_augmenting_path", rotation_flag=True, plot_off=False, spot_size=170,
                    mean_cell_numbers=5, num_row=5, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
     

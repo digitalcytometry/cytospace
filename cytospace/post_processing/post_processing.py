@@ -38,14 +38,16 @@ def plot_output(cell_type_path, num_row, num_column, rotation_degrees, rotation_
             x = coordinates[:, 0]
             y = coordinates[:, 1]
             ps = plt.scatter(x, y, s=spot_size, c=node_assignment, marker='h')
-            plt.xlim(np.min(x), np.max(x))
-            plt.ylim(np.min(y), np.max(y))
-            plt.title(cell_type_labels_unique[j + number_of_cells_per_page*s], fontsize=60)
+            len_x = (np.max(x) - np.min(x))/20
+            len_y = (np.max(y) - np.min(y))/20
+            plt.xlim(np.min(x) - len_x, np.max(x) + len_x)
+            plt.ylim(np.min(y) - len_y, np.max(y) + len_y)
+            plt.title(cell_type_labels_unique[j + number_of_cells_per_page*s], fontsize=80)
             plt.rc('font', **{'family': 'sans-serif', 'sans-serif': ['Arial']})
             plt.tight_layout()
 
-            cb = plt.colorbar(ps, shrink=0.71)
-            cb.ax.tick_params(labelsize=25)
+            cb = plt.colorbar(ps, shrink=0.85)
+            cb.ax.tick_params(labelsize=40)
             ax.axis("off")
 
             index = s + 1    
