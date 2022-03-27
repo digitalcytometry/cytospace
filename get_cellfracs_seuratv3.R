@@ -6,77 +6,73 @@
 # sample given scRNA set with cell type annotations as
 # well as fractional abundance predictions per spot
 #
-# NOTE: this MUST be run with Seurat v3 -- do not use v4!
-
-# conda activate seurat3
-
+# NOTE: We recommend that this be run with Seurat v3
+#
 # Input to provide from command line
-
+#
 # 1. Path to scRNA counts file (standard CytoSPACE input file format)
 # 2. Path to cell type labels file (standard CytoSPACE input file format)
 # 3. Path to ST data (standard CytoSPACE input file format)
 # 4. Name of output file
-
+#
 # Run the script from command line with the specified inputs, i.e:
 # Rscript get_cellfracs_seuratv3.R path_to_scrna_geneexpressionmatrix path_to_celltype_labels path_to_ST_geneexpressionmatrix name_of_output_file
 
 ##########################################################
 library(data.table)
 library(dplyr)
-#require(devtools)
-#install_version("Seurat",version="3.1.4",repos="http://cran.us.r-project.org")
 library(Seurat)
-library(ggplot2)
-library(cowplot)
 
 # Read inputs from command line
 args = commandArgs(T)
 
 fin_scrna = args[1]
 fin_labels = args[2]
-referencefile = args[3]
+fin_st = args[3]
 fn_out = args[4]
 
 #####################################################
 print("Reading in data")
-expressions_noisy <- fread(fin_scrna, header = T, data.table = F)
-rownames(expressions_noisy) = expressions_noisy[,1]
-expressions_noisy = expressions_noisy[,-1]
+scrna <- fread(fin_scrna, header = T, data.table = F)
+rownames(scrna) = scrna[,1]
+scrna = scrna[,-1]
 
 annot <- read.delim(fin_labels)
-annot = annot[match(colnames(expressions_noisy), annot$Cell.IDs),]
-cell_index_vec = annot$CellType
-names(cell_index_vec) = annot$Cell.IDs
+cell_ids <- annot[,1]
+cell_types <- annot[,2]
+annot = annot[match(colnames(scrna), cell_ids),]
+cell_index_vec = cell_types
+names(cell_index_vec) = cell_ids
 
-reference <- fread(referencefile, header = T, data.table = F)
-rownames(reference) = reference[,1]
-reference = reference[,-1]
+st <- fread(fin_st, header = T, data.table = F)
+rownames(st) = st[,1]
+st = st[,-1]
 print("Done")
-reference[is.na(reference)] <- 0
-reference_col_sum <- as.matrix(colMeans(reference))
-reference <- reference[,reference_col_sum > 0]
+st[is.na(st)] <- 0
+st_col_sum <- as.matrix(colMeans(st))
+st <- st[,st_col_sum > 0]
 print("Creating Seurat object from ST data")
-Seurat_reference <- CreateSeuratObject(counts = reference)
+st <- CreateSeuratObject(counts = st)
 print("Done")
 
 print("Performing SCTransform on ST data")
-Seurat_reference <- SCTransform(Seurat_reference, assay = "RNA", verbose = FALSE, ncells=NULL) %>% RunPCA(verbose = FALSE)
+st <- SCTransform(st, assay = "RNA", verbose = FALSE, ncells=NULL) %>% RunPCA(verbose = FALSE)
 print("Done")
 
-expressions_noisy[is.na(expressions_noisy)] <- 0
-expressions_row_sum <- as.matrix(rowMeans(expressions_noisy))
-expressions_noisy <- expressions_noisy[expressions_row_sum > 0,] 
+scrna[is.na(scrna)] <- 0
+scrna_row_sum <- as.matrix(rowMeans(scrna))
+scrna <- scrna[scrna_row_sum > 0,] 
 
-head(expressions_noisy)[,1:10]
+head(scrna)[,1:10]
 
 print("Creating Seurat object from scRNA-seq data")
-Seurat_expressions_noisy <- CreateSeuratObject(counts = expressions_noisy)
+scrna <- CreateSeuratObject(counts = scrna)
 print("Done")
 print("Performing SCTransform on scRNA-seq data")
-Seurat_expressions_noisy <- SCTransform(Seurat_expressions_noisy, assay = "RNA", verbose = FALSE, ncells=NULL) %>% RunPCA()
+scrna <- SCTransform(scrna, assay = "RNA", verbose = FALSE, ncells=NULL) %>% RunPCA()
 print("Done")
 print("Finding transfer anchors")
-anchors <- FindTransferAnchors(reference = Seurat_expressions_noisy, query = Seurat_reference, normalization.method = "SCT")
+anchors <- FindTransferAnchors(reference = scrna, query = st, normalization.method = "SCT")
 print("Transfering data")
 predictions.assay <- TransferData(anchorset = anchors, refdata = as.character(t(cell_index_vec)))
 print("Done")
