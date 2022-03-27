@@ -51,14 +51,14 @@ def argument_parser():
     # Plotting
     parser.add_argument("-p", "--plot-off", help="Turn create plots on/off", action="store_true")
     parser.add_argument("-nr", "--num-row", help="Number of rows in pdf figure", type=int,
-                        default=5)
+                        default=4)
     parser.add_argument("-nc", "--num-column", help="Number of coulmns in pdf figure", type=int,
                         default=4)
     parser.add_argument("-r", "--rotation-flag", help="Rotate plot", action="store_false")
     parser.add_argument("-rd", "--rotation-degrees", help="Rotation on plot", type=int,
                         default=270)
     parser.add_argument("-ss", "--spot-size", help="Set size of ST spots", type=int,
-                        default=170)
+                        default=155)
 
     arguments = parser.parse_args()
 

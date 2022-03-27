@@ -11,8 +11,8 @@ def plot_output(cell_type_path, num_row, num_column, rotation_degrees, rotation_
                 output_path, output_prefix, assigned_nodes, new_cell_index, coordinates):
     number_of_cells_per_page = num_row * num_column
     cell_type_labels = read_file(cell_type_path)
-    cell_type_labels_unique = cell_type_labels.columns
-    clusters = cell_type_labels_unique.shape[0]
+    cell_type_labels_unique = ['All cells'] + list(cell_type_labels.columns)
+    clusters = len(cell_type_labels_unique)
     noSpots = coordinates.shape[0]
     rotation_radians = np.radians(rotation_degrees)
     rotation_axis = np.array([0, 0, 1])
@@ -24,30 +24,39 @@ def plot_output(cell_type_path, num_row, num_column, rotation_degrees, rotation_
         rotated_coordinates[k, :] = rotated_vec[0:2]
 
     coordinates = rotated_coordinates if rotation_flag else coordinates.values
+    new_cell_index = list(new_cell_index)
+    new_cell_index.insert(0, 0)
     for s in range(int(clusters/number_of_cells_per_page) + 1):
         plt.figure(figsize=(52, 52))
         for counter, j in enumerate(range(min(number_of_cells_per_page, clusters))):
             ax = plt.subplot(num_row, num_column, counter + 1)
 
             # Calculate number of assigned cells to each spot
-            assignment_cell_type = assigned_nodes[int(new_cell_index[j + number_of_cells_per_page*s]):int(new_cell_index[j + number_of_cells_per_page*s + 1] - 1)]
+            if s == 0 and counter == 0:
+                assignment_cell_type = assigned_nodes
+            else:
+                assignment_cell_type = assigned_nodes[int(new_cell_index[j + number_of_cells_per_page*s]):int(new_cell_index[j + number_of_cells_per_page*s + 1] - 1)]                
             node_assignment = np.zeros(noSpots)
             for i in range(noSpots):
                 node_assignment[i] = np.sum(assignment_cell_type == i)
-
             x = coordinates[:, 0]
             y = coordinates[:, 1]
-            ps = plt.scatter(x, y, s=spot_size, c=node_assignment, marker='h')
-            len_x = (np.max(x) - np.min(x))/20
-            len_y = (np.max(y) - np.min(y))/20
-            plt.xlim(np.min(x) - len_x, np.max(x) + len_x)
-            plt.ylim(np.min(y) - len_y, np.max(y) + len_y)
+            if max(node_assignment) == 0:
+               ps = plt.scatter(x, y, s=155, c=node_assignment, vmin=0, vmax=5, marker='h')
+            else:
+               ps = plt.scatter(x, y, s=155, c=node_assignment, marker='h')    
+            len_x = (np.max(x) - np.min(x))
+            len_y = (np.max(y) - np.min(y))
+            x_limit = (127 - len_x)/2
+            y_limit = (77 - len_y)/2
+            plt.xlim(np.min(x) - x_limit, np.max(x) + x_limit)
+            plt.ylim(np.min(y) - y_limit, np.max(y) + y_limit)         
             plt.title(cell_type_labels_unique[j + number_of_cells_per_page*s], fontsize=80)
             plt.rc('font', **{'family': 'sans-serif', 'sans-serif': ['Arial']})
             plt.tight_layout()
 
             cb = plt.colorbar(ps, shrink=0.85)
-            cb.ax.tick_params(labelsize=40)
+            cb.ax.tick_params(labelsize=60)
             ax.axis("off")
 
             index = s + 1    
