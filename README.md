@@ -66,7 +66,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 - For further details on running `get_cellfracs_seuratv3.R`, see section "__Preprocessing__" below.
 
 ## Preprocessing
-To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type per spot needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. In the manuscript, we used Spatial Seurat, and provide here a script to obtain the cell type fractions using this approach.
+To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
 
 Run the script `get_cellfracs_seuratv3.R` from command line with the following inputs:
 1. Path to scRNA counts file (same scRNA-seq gene expression matrix input file format as specified in __File format__ section point 1)
