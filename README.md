@@ -1,6 +1,6 @@
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/CytoSPACE_logo.jpeg" width="300"> 
 
-# CytoSPACE: Optimal mapping of scRNA-seq data to spatial transcriptomics data
+# CytoSPACE: Robust alignment of single-cell and spatial transcriptomes
 
 **CytoSPACE** is a novel computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
 
@@ -127,7 +127,7 @@ Zip files containing the example datasets can be downloaded from the following l
 1. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma</a> 
 2. <a href="https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing" target="_blank">Breast cancer</a>
 
-Or, to download from the command line:
+To download from the command line using `gdown`:
 1. Melanoma
    ```bash
    gdown --fuzzy https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing
