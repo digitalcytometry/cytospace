@@ -123,13 +123,15 @@ For users to test CytoSPACE, we have included files for two example runs:
 ### Download example datasets
 Zip files containing the example datasets can be downloaded from the following links:
 1. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma</a> 
-   From the command line:
+   
+   Or to download the sample melanoma dataset from the command line:
    ```bash
    gdown --fuzzy https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing
    unzip CytoSPACE_example_melanoma.zip
    ```
-3. <a href="https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing" target="_blank">Breast cancer</a>
-   From the command line:
+2. <a href="https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing" target="_blank">Breast cancer</a>
+   
+   Or to download the sample breast cancer dataset from the command line:
    ```bash
    gdown --fuzzy https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing
    unzip CytoSPACE_example_breast_cancer.zip
