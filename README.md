@@ -135,7 +135,7 @@ optional arguments:
   -op OUTPUT_PREFIX, --output-prefix OUTPUT_PREFIX
                         Prefix of results stored in the 'output_folder', default ''
   -d DELIMITER, --delimiter DELIMITER
-                        Set delimiter of the input files, default ',' (set to '\t' for tab-delimited files
+                        Set delimiter of the input files, default ',' (set to '\t' for tab-delimited files)
   -m {shortest_augmenting_path,cost_scaling_push_relabel}, --method {shortest_augmenting_path,cost_scaling_push_relabel}
                         Method for computing the linear assignment sum, default 'shortest_augmenting_path'
   -sm {lap,lapjv}, --solver-method {lap,lapjv}
