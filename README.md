@@ -78,7 +78,7 @@ If you are starting with outputs from Cell Ranger (scRNA-seq from 10x) or Space 
 ADD DETAILS
 ```
 
-Similarly, if you are starting with Seurat objects, you can use the `R` function `???` to produce files formatted for CytoSPACE input.
+Similarly, if you are starting with Seurat objects derived from any source, you can use the `R` function `???` to produce files formatted for CytoSPACE input.
 
 ```bash
 ADD DETAILS
