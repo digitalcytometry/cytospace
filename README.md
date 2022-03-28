@@ -23,7 +23,7 @@ cd cytospace
 ```
 4. Create a conda environment with the required dependencies:
 ```bash
-conda env create -f environment.yml
+conda env create -f environment_withoutlapjv.yml
 ```
 5. Activate the `cytospace` environment you just created:
 ```bash
@@ -34,6 +34,12 @@ conda activate cytospace
 ```bash
 pip install .
 ``` 
+
+7. (Optional) Install package `lapjv` by executing:
+```bash
+pip install lapjv
+```
+We highly recommend you install this package, which provides a fast implementation of the core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
 
 ## File format
 CytoSPACE requires 5 files as input. All files should be provided in tab or comma-delimited tabular input format (saved as .txt or .csv, respectively) with no double quotations. Further formatting details for each input file are specified below:
