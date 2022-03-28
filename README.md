@@ -232,10 +232,22 @@ cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp mel
 ```bash
 cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_slide1_GEP.txt -cp brca_STdata_slide1_coordinates.txt -ctfep brca_cell_fraction_estimates.txt
 ```
-## CytoSPACE output files
-The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned.
+## CytoSPACE output files for example breast cancer data
+The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned. In this case,
+
 
 The CytoSPACE results are visualized in heatmaps saved as `plot_cell_type_locations.pdf` showing the distribution of single cells across ST spots for each cell type. 
+```
+include image here
+```
+The number of cells per spot by cell type as well as in total are provided in `cell_type_assignments_by_spot.csv`.
+```
+include image here
+```
+Fractional abundances of each cell type are returned in `fractional_abundances_by_spot.csv`
+```
+include image here
+```
 
 ## Authors
 CytoSPACE was developed by
