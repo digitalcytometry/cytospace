@@ -71,6 +71,19 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 - A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names. 
 - For further details on running `get_cellfracs_seuratv3.R`, see section "__Preprocessing__" below.
 
+## File preparation
+If you are starting with outputs from Cell Ranger (scRNA-seq from 10x) or Space Ranger (ST from 10x), you can use the `R` script `???` to produce files formatted for CytoSPACE input.
+
+```bash
+ADD DETAILS
+```
+
+Similarly, if you are starting with Seurat objects, you can use the `R` function `???` to produce files formatted for CytoSPACE input.
+
+```bash
+ADD DETAILS
+```
+
 ## Preprocessing
 To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
 
@@ -144,7 +157,6 @@ To download from the command line using `gdown`:
    gdown --fuzzy https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing
    unzip CytoSPACE_example_breast_cancer.zip
    ```
-   
    
 ### Commands for running example analyses:
 Once the example files are downloaded, the commands below can be run from the folders where the example datasets are located:
