@@ -175,7 +175,7 @@ Required arguments:
 You can see this list of variables and default values for running CytoSPACE from the commmand line as well at any time by calling `cytospace` along with the `-h` or 
 `--help` flag, i.e., `cytospace -h`.
 
-### Choosing a solver
+### Solver options
 CytoSPACE provides three solver options:
 1. `lapjv` By default, CytoSPACE calls the `lapjv` solver from package `lapjv`. This solver is a fast implementation of the Jonker-Volgenant shortest augmenting path assignment algorithm and returns a globally optimal solution given the objective function as defined in our paper [cite]. As noted above, however, this package is not supported on all systems as it achieves its speedup through use of AVX2 instructions. This solver will be selected by default and can be specified explicitly by passing arguments `--method shortest_augmenting_path --solver-method lapjv` to `cytospace`.
 2. `lap` A second solver option is the `lapjv` solver from package `lap`. This solver also implements the Jonker-Volgenant shortest augmenting path assignment algorithm to return the same globally optimal solution given the objective function defined in the paper. Furthermore, it is broadly supported and works on all standard operating systems. However, it takes 3-4 times as long to run as the `lapjv` solver from the `lapjv` package, so we only recommend it for systems that do not support the previous option. This solver can be selected by passing arguments `--method shortest_augmenting_path --solver-method lap` to `cytospace`.
