@@ -240,11 +240,11 @@ The CytoSPACE results are visualized in heatmaps saved as `plot_cell_type_locati
 ```
 include image here
 ```
-The number of cells per spot by cell type as well as in total are provided in `cell_type_assignments_by_spot.csv`.
+The number of cells per spot by cell type as well as in total are provided in the file `cell_type_assignments_by_spot.csv`.
 ```
 include image here
 ```
-Fractional abundances of each cell type are returned in `fractional_abundances_by_spot.csv`
+Fractional abundances of each cell type are returned in the file `fractional_abundances_by_spot.csv`
 ```
 include image here
 ```
