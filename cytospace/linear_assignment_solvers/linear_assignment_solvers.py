@@ -18,11 +18,11 @@ def import_solver(solver_method):
             solver = solve_dense
         else:
             raise NotImplementedError(f"The method {solver_method} is not an supported method, "
-                                      "chose between lap, lapjv, and lapsolver.")
+                                      "choose between lap, lapjv, and lapsolver.")
     except ModuleNotFoundError:
         raise ModuleNotFoundError(f"The solver_method option you have chosen {solver_method} "
                                   "depends on the python package with the same name. Please "
-                                  f"install it by running ´pip install {solver_method}´ or confer "
+                                  f"install it by running ´pip install {solver_method}´ or check "
                                   "with the package home page for further instructions.")
 
     return solver
