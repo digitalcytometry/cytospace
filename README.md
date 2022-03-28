@@ -39,7 +39,7 @@ pip install .
 ```bash
 pip install lapjv
 ```
-We highly recommend you install this package, which provides a fast implementation of the core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
+We highly recommend you install this package, which provides a fast implementation of the core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
 
 ## File format
 CytoSPACE requires 5 files as input. All files should be provided in tab or comma-delimited tabular input format (saved as .txt or .csv, respectively) with no double quotations. Further formatting details for each input file are specified below:
