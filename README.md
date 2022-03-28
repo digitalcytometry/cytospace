@@ -47,6 +47,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 1. __A scRNA-seq gene expression file:__
 - The matrix must be genes (rows) by cells (columns).
 - The first row must contain the single cell IDs and the first column must contain the gene names.
+- The first column (gene names) must have a header.
 - The gene expression data should be represented as non-normalized counts. 
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/scRNAfile.png" width="800"> 
 
@@ -59,6 +60,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 3. __A spatial transcriptomics (ST) gene expression file:__
 - The matrix must be genes (rows) by ST spots (columns).
 - The first row must contain the ST spot IDs and the first column must contain the gene names.
+- The first column (gene names) must have a header.
 - The gene expression data should be represented as non-normalized counts. 
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/STdatafile.png" width="800"> 
 
