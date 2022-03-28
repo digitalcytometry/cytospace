@@ -35,7 +35,7 @@ conda activate cytospace
 pip install .
 ``` 
 
-7. (Optional) Install package `lapjv` by executing:
+7. (Recommended) Install package `lapjv` by executing:
 ```bash
 pip install lapjv
 ```
