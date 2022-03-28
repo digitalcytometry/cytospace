@@ -186,6 +186,13 @@ for mean_cell_numbers in [5, 10, 20]:
     cytospace(..., mean_cell_numbers=mean_cell_numbers)
 ```
 
+## CytoSPACE outputs
+CytoSPACE will produce four output files be default.
+1. ```FILE NAME``` Heatmaps of cell type assignments within the ST sample. Along with a plot showing the total number of cells mapped to each spot, these will show the number of cells per cell type mapped to each spot.
+2. ```FILE NAME``` This file will provide the assigned locations of each single cell mapped to ST spots. As some cells may be mapped to multiple locations depending on the size of the input scRNA-seq set, new cell IDs (`UniqueCID`) are assigned to each cell and given in the first column. The second column includes original cell IDs (`OriginalCID`); the third includes assigned spot IDs (`SpotID`); the fourth and fifth columns respectively include  `row` and `column` indices of the corresponding spots; and then optionally, the sixth and seventh columns include `coord_x` and `coord_y` of the corresponding spots if these details were provided in the initial Coordinates file.
+3. ```FILE NAME``` This file gives the raw number of cells of each cell type per spot by `SpotID` as well as the total number of cells assigned to that spot.
+4. ```FILE NAME``` This file gives the fractional abundance of cell types assigned to each spot by `SpotID`.
+
 ## Example datasets for running CytoSPACE
 For users to test CytoSPACE, we have included files for two example runs:
 1. A melanoma scRNA-seq atlas by Tirosh et al (<a href="https://www.science.org/doi/10.1126/science.aad0501?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed" target="_blank">Science, 2016</a>), and a melanoma specimen profiled by the legacy ST platform (Thrane et al, <a href="https://aacrjournals.org/cancerres/article/78/20/5970/631815/Spatially-Resolved-Transcriptomics-Enables" target="_blank">Cancer Research, 2018</a>). This example is very quick to run, and a good test case to make sure that CytoSPACE is running as expected.
