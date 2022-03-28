@@ -128,10 +128,6 @@ usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDI
                  [-m {shortest_augmenting_path,cost_scaling_push_relabel}] [-sm {lap,lapjv}] [-mcn MEAN_CELL_NUMBERS]
                  [-se SEED] [-p] [-nr NUM_ROW] [-nc NUM_COLUMN] [-r] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE]
 
-CytoSPACE is a computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST)
-data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear
-programming-based optimization routine.
-
 optional arguments:
   -h, --help            show this help message and exit
   -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
