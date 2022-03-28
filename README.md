@@ -39,7 +39,7 @@ pip install .
 ```bash
 pip install lapjv
 ```
-We highly recommend you install this package, which provides a fast implementation of the core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
+We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
 
 ## File format
 CytoSPACE requires 5 files as input. All files should be provided in tab or comma-delimited tabular input format (saved as .txt or .csv, respectively) with no double quotations. Further formatting details for each input file are specified below:
@@ -120,7 +120,61 @@ Or with more condensed parameter names:
     -cp /path/to/ST_coordinates
     -ctfep path/to/cellfracestimates
 ```
-To see a list of variables and default values for running CytoSPACE, you can call `cytospace` from the command line along with the `-h` or 
+
+Full usage details with additional options:
+```bash
+usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDINATES_PATH -ctfep
+                 CELL_TYPE_FRACTION_ESTIMATION_PATH [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-d DELIMITER]
+                 [-m {shortest_augmenting_path,cost_scaling_push_relabel}] [-sm {lap,lapjv}] [-mcn MEAN_CELL_NUMBERS]
+                 [-se SEED] [-p] [-nr NUM_ROW] [-nc NUM_COLUMN] [-r] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE]
+
+CytoSPACE is a computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST)
+data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear
+programming-based optimization routine.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
+                        Relative path to the output folder, default 'cytospace_results'
+  -op OUTPUT_PREFIX, --output-prefix OUTPUT_PREFIX
+                        Prefix of results stored in the 'output_folder', default ''
+  -d DELIMITER, --delimiter DELIMITER
+                        Set delimiter of the input files, default ',' (set to '\t' for tab-delimited files
+  -m {shortest_augmenting_path,cost_scaling_push_relabel}, --method {shortest_augmenting_path,cost_scaling_push_relabel}
+                        Method for computing the linear assignment sum, default 'shortest_augmenting_path'
+  -sm {lap,lapjv}, --solver-method {lap,lapjv}
+                        Which solver to use for the linear assignment problem when setting
+                        'method'='shortest_augmenting_path', default 'lapjv'
+  -mcn MEAN_CELL_NUMBERS, --mean-cell-numbers MEAN_CELL_NUMBERS
+                        Mean number of cells per spot, default 5 (appropriate for most Visium -- if analyzing legacy spatial
+                        transcriptomics data, other options e.g. 20 may be more appropriate)
+  -se SEED, --seed SEED
+                        Set seed for random generators, default 1
+  -p, --plot-off        Turn create plots on/off, default False (set to True if you do not want plots)
+  -nr NUM_ROW, --num-row NUM_ROW
+                        Number of rows in pdf figure, default 4
+  -nc NUM_COLUMN, --num-column NUM_COLUMN
+                        Number of coulmns in pdf figure, default 4
+  -r, --rotation-flag   Rotate plot, default True (appropriate for Visium data with row and column indices provided)
+  -rd ROTATION_DEGREES, --rotation-degrees ROTATION_DEGREES
+                        Rotation on plot, default 270 (appropriate for Visium data with row and column indices provided)
+  -ss SPOT_SIZE, --spot-size SPOT_SIZE
+                        Set size of ST spots, default 155 (appropriate for standard Visium data)
+
+Required arguments:
+  -sp SCRNA_PATH, --scRNA-path SCRNA_PATH
+                        Path to scRNA-Seq data, which should be a 
+  -ctp CELL_TYPE_PATH, --cell-type-path CELL_TYPE_PATH
+                        Path to cell type labels
+  -stp ST_PATH, --st-path ST_PATH
+                        Path to spatial transcriptomics data (expressions)
+  -cp COORDINATES_PATH, --coordinates-path COORDINATES_PATH
+                        Path to transcriptomics data (coordinates)
+  -ctfep CELL_TYPE_FRACTION_ESTIMATION_PATH, --cell-type-fraction-estimation-path CELL_TYPE_FRACTION_ESTIMATION_PATH
+                        Path to cell type fraction file
+```
+
+You can see this list of variables and default values for running CytoSPACE from the commmand line as well at any time by calling `cytospace` along with the `-h` or 
 `--help` flag, i.e., `cytospace -h`.
 
 ### Other ways CytoSPACE can be run:
