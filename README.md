@@ -124,7 +124,7 @@ Or with more condensed parameter names:
 ```
 
 Full usage details with additional options:
-```bash
+```
 usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDINATES_PATH -ctfep
                  CELL_TYPE_FRACTION_ESTIMATION_PATH [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-d DELIMITER]
                  [-m {shortest_augmenting_path,cost_scaling_push_relabel}] [-sm {lap,lapjv}] [-mcn MEAN_CELL_NUMBERS]
