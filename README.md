@@ -278,4 +278,4 @@ CytoSPACE is Copyright (2022-) by the authors.
 ## Citation
 If you use CytoSPACE, please cite:
 
-    TODO
+    Coming soon
