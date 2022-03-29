@@ -6,7 +6,7 @@
     Robust and rapid alignment of single-cell and spatial transcriptomes
 </p> </h1>
 
-**CytoSPACE** is a novel computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
+**CytoSPACE** is a novel computational tool for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
 
 <p align="center">
   <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/CytoSPACE_overview.png" width="900"> 
