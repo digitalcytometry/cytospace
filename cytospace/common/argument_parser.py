@@ -54,7 +54,9 @@ def argument_parser():
     parser.add_argument("-rd", "--rotation-degrees", help="Rotation on plot", type=int,
                         default=270)
     parser.add_argument("-ss", "--spot-size", help="Set size of ST spots", type=int,
-                        default=155)
+                        default=175)
+    parser.add_argument("-pm", "--plot-marker", help="Shape of ST spots", type=str,
+                        default='h')
 
     arguments = parser.parse_args()
 
