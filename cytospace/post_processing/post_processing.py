@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -67,33 +68,51 @@ def plot_output(cell_type_path, num_row, num_column, rotation_degrees, rotation_
 
 
 def save_results(output_path, output_prefix, cell_ids_selected, assigned_locations,
-                 new_cell_index, index, assigned_nodes):
-    # Store python objects of the final result for plotting or further processing
-    for result, name in [(assigned_nodes, "assigned_nodes"), (index, "index"),
-                         (new_cell_index, "new_cell_index"),
-                         (assigned_locations, "assigned_locations")]:
-        with open(output_path / f"{output_prefix}{name}.pckl", "wb") as f:
-            pickle.dump(result, f)
+                 new_cell_index, index, assigned_nodes, st_path, coords_path, cell_type_path):
 
-    # Save assigned locations of the up/down sampled cells
+    file_delim = "," if coords_path.endswith(".csv") else "\t"
+    df_coords = pd.read_csv(coords_path, delimiter=file_delim)
+    st_names = list(df_coords.iloc[:,0])
+    df_coords.index = st_names
+
+    coords_columns = list(df_coords.columns)
+    if len(coords_columns) > 3:
+        additional_columns = coords_columns[3:]
+
     cell_ids_selected_list = cell_ids_selected.tolist()
-    index_df = pd.DataFrame(index)
-    with open(output_path / f"{output_prefix}assigned_nodes.csv", 'w', newline='') as f:
-        writer = csv.writer(f, delimiter=',')
-        writer.writerow(('Cell IDs', 'Node'))
-        for row in range(cell_ids_selected.shape[0]):
-            writer.writerow([cell_ids_selected_list[row], index_df.iloc[row,0] + 1])
 
-    with open(output_path / f"{output_prefix}assigned_locations.csv", 'w', newline='') as f:
-        writer = csv.writer(f, delimiter=',')
-        writer.writerow(('Cell IDs', 'X', 'Y'))
-        for row in range(cell_ids_selected.shape[0]):
-            writer.writerow([cell_ids_selected_list[row],
-                             assigned_locations.iloc[row, 0],
-                             assigned_locations.iloc[row, 1]])
+    assigned_node_names = [st_names[l] for l in index]
 
-    with open(output_path / f"{output_prefix}new_cell_type.csv", 'w', newline='') as f:
-        writer = csv.writer(f, delimiter=',')
-        writer.writerow('n')
-        for row in range(new_cell_index.shape[0]):
-            writer.writerow([new_cell_index[row]])
+    file_delim = "," if cell_type_path.endswith(".csv") else "\t"
+    df_labels = pd.read_csv(cell_type_path, delimiter=file_delim)
+    df_labels.index = list(df_labels.iloc[:,0])
+
+    numzeros = int(math.log10(len(cell_ids_selected_list)))+1
+    unique_cids = ['UCID'+str(i).zfill(numzeros) for i in range(len(cell_ids_selected_list))]
+
+    df_locations = pd.DataFrame.from_dict({'UniqueCID': unique_cids,'OriginalCID': cell_ids_selected_list,
+                                'CellType': list(df_labels.loc[cell_ids_selected_list,:][df_labels.columns[1]]),
+                                'SpotID': assigned_node_names,
+                                'row': list(assigned_locations.iloc[:, 0]),
+                                'col': list(assigned_locations.iloc[:, 1])})
+    fout = str(output_path)+'/'+str(output_prefix)+'assigned_locations.csv'
+    df_locations.to_csv(fout,index=False)
+  
+    
+    metadata = df_locations.copy()
+    df = pd.DataFrame(columns=metadata['CellType'].unique(),index=metadata['SpotID'].unique())
+    for idx in df.index:
+        df.loc[idx] = metadata[metadata['SpotID']==idx]['CellType'].value_counts() 
+    df = df.fillna(0)
+    df['Total cells'] = df.sum(axis=1)
+    df = df.astype(int)
+    df.index.name='SpotID'
+    fout = str(output_path)+'/'+str(output_prefix)+'cell_type_assignments_by_spot.csv'
+    df.to_csv(fout)
+
+
+    total_cells = np.array(df['Total cells'],dtype=float)
+    df = df.iloc[:,:-1].copy()
+    df_fracs = df.div(total_cells,axis=0)
+    fout = str(output_path)+'/'+str(output_prefix)+'fractional_abundances_by_spot.csv'
+    df_fracs.to_csv(fout)
