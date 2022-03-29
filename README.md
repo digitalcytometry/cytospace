@@ -63,6 +63,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 
 2. __A cell type label file:__
 - Cell type labels corresponding to the single cell IDs in the scRNA-seq gene expression matrix. 
+- Cell type label strings should be alphanumeric.
 - The table should contain two columns, where column 1 contains the single cell IDs corresponding to the columns of the scRNA-seq matrix and column 2 contains the corresponding cell type labels.
 - The columns must have a header. 
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/celllabelfile.png" width="250"> 
@@ -79,9 +80,10 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 - The columns must have a header. 
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/STcoordfile.png" width="250"> 
 
-5. __A file with cell type fraction estimates, obtained from the `R` script `get_cellfracs_seuratv3.R`.__ 
-- A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names. 
-- For further details on running `get_cellfracs_seuratv3.R`, see section "__Preprocessing__" below.
+5. __A file with cell type fraction estimates:__
+- A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names.
+- The cell type fractions should sum to one.  
+- Cell type fractions can be generated via any method for fractional abundance estimation. We provide one such implementation using Spatial Seurat in `get_cellfracs_seuratv3.R`. For further details, see section "__Preprocessing__" below.
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width="800"> 
 
                                                                                                                  
