@@ -73,14 +73,14 @@ def get_cell_type_fraction(number_of_cells, cell_type_fraction_data):
 
 
 def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
-                                    cell_type_numbers_int, method, coordinates,
+                                    cell_type_numbers_int, coordinates,
                                     cell_number_to_node_assignment, solver_method, solver, seed):
     print("Building cost matrix ...")
-    if method == 'shortest_augmenting_path':
+    if solver_method == 'lapjv' or solver_method == 'lapjv_compat':
         t0 = time.perf_counter()
         distance_repeat, location_repeat, cell_ids_selected, new_cell_index =\
             calculate_cost(scRNA_data, st_data, cell_type_data, cell_type_numbers_int,
-                           cell_number_to_node_assignment, seed)
+                           cell_number_to_node_assignment, seed, solver_method)
         print(f"Time to build cost matrix: {round(time.perf_counter() - t0, 2)} seconds")
 
         print('Solving linear assignment problem ...')
@@ -94,10 +94,10 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
         index = np.transpose(assigned_nodes).tolist()
         assigned_locations = coordinates.iloc[index]
 
-    elif method == 'cost_scaling_push_relabel':
+    elif solver_method == 'lap_CSPR':
         distance_repeat, location_repeat, cell_ids_selected, new_cell_index =\
             calculate_cost(scRNA_data, st_data, cell_type_data, cell_type_numbers_int,
-                           cell_number_to_node_assignment, seed, linear=True)
+                           cell_number_to_node_assignment, seed, solver_method)
 
         print('Solving linear assignment problem ...')
         np.random.seed(seed)
@@ -111,7 +111,7 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
         index = assigned_nodes.tolist()
         assigned_locations = coordinates.iloc[index]
     else:
-        raise ValueError("Method has to be either 'shortest_augmenting_path' or 'cost_scaling_push_relabel'")
+        raise ValueError("Invalid solver_method provided")
 
     return assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes
 
@@ -119,15 +119,17 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
 
 def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    cell_type_fraction_estimation_path, output_folder="cytospace_results",
-                   method="shortest_augmenting_path", rotation_flag=True, plot_off=False, spot_size=155,
+                   rotation_flag=True, plot_off=False, spot_size=155,
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
     
     # For timing execution
     start_time = time.perf_counter()
 
-    # Import LAP-solver based on the solver method
-    solver = import_solver(solver_method)
+    if solver_method == "lapjv" or solver_method == "lapjv_compat":
+        solver = import_solver(solver_method)
+    else:
+        solver = 'None'
 
     # Read data
     print("Read and validate data ...")
@@ -153,7 +155,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
 
     assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes =\
         solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
-                                        cell_type_numbers_int, method, coordinates_data,
+                                        cell_type_numbers_int, coordinates_data,
                                         cell_number_to_node_assignment, solver_method, solver, seed)
 
     print('Saving results ...')
