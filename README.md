@@ -210,7 +210,7 @@ The CytoSPACE results are visualized in heatmaps saved as `plot_cell_type_locati
 For comparison, consider the pathologist annotations of this ST sample as provided by 10x:
 
 <p align="center">
-  <img width="400" src="https://github.com/digitalcytometry/cytospace/blob/main/images/Visium_FFPE_Human_Breast_Cancer_Pathologist_Annotations.png">
+  <img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/Visium_FFPE_Human_Breast_Cancer_Pathologist_Annotations.png">
 </p>
 The number of cells per spot by cell type as well as in total are provided in the file `cell_type_assignments_by_spot.csv`.
 ```
