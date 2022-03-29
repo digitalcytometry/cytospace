@@ -271,12 +271,17 @@ You can see this list of variables and default values for running CytoSPACE from
 3. `lapjv_compat`   A third solver option implements the `lapjv` solver from package `lap`. Like the first option `lapjv`, this solver also implements the Jonker-Volgenant shortest augmenting path assignment algorithm to return the same globally optimal solution given the objective function defined in the paper. Furthermore, it is broadly supported and should work on all standard operating systems. However, it takes 3-4 times as long to run as the first solver option, the `lapjv` solver from the `lapjv` package, so we only recommend it for systems that do not support the first option. This solver can be selected by passing arguments `--solver-method lapjv_compat` or `-sm lapjv_compat` to `cytospace`.
 
 ## Updating local installations
-To update your local installation of CytoSPACE, navigate to your `cytospace` directory and execute the following commands:
+To update your local installation of CytoSPACE following updates of this GitHub repository, navigate to your `cytospace` directory and execute the following commands:
 ```bash
 git pull
 conda env update --name cytospace --file environment_withoutlapjv.yml
 pip install .
 ```
+If you have made local updates to your version of the CytoSPACE source code, you should execute 
+```bash
+pip install .
+``` 
+once more before running. 
 
 ## Authors
 CytoSPACE was developed by
