@@ -82,7 +82,8 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 5. __A file with cell type fraction estimates, obtained from the `R` script `get_cellfracs_seuratv3.R`.__ 
 - A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names. 
 - For further details on running `get_cellfracs_seuratv3.R`, see section "__Preprocessing__" below.
-<img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width=800">
+<img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width="800"> 
+
                                                                                                                  
 ## File preparation
 If you are starting with outputs from Cell Ranger (scRNA-seq from 10x) or Space Ranger (ST from 10x), you can use the `R` script `???` to produce files formatted for CytoSPACE input.
