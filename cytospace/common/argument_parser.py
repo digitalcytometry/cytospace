@@ -51,6 +51,7 @@ def argument_parser():
     parser.add_argument("-nc", "--num-column", help="Number of coulmns in pdf figure", type=int,
                         default=4)
     parser.add_argument("-r", "--rotation-flag", help="Rotate plot", action="store_false")
+    parser.add_argument("-pv", "--plot-visium", help="Plot based on standard 10x Visium slide dimensions", action="store_false")
     parser.add_argument("-rd", "--rotation-degrees", help="Rotation on plot", type=int,
                         default=270)
     parser.add_argument("-ss", "--spot-size", help="Set size of ST spots", type=int,
