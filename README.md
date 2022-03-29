@@ -226,41 +226,39 @@ include image here
 ```
 usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDINATES_PATH -ctfep
                  CELL_TYPE_FRACTION_ESTIMATION_PATH [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-d DELIMITER]
-                 [-m {shortest_augmenting_path,cost_scaling_push_relabel}] [-sm {lap,lapjv}] [-mcn MEAN_CELL_NUMBERS]
-                 [-se SEED] [-p] [-nr NUM_ROW] [-nc NUM_COLUMN] [-r] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE]
+                 [-sm {lapjv,lapjv_compat,lap_CSPR}] [-mcn MEAN_CELL_NUMBERS] [-se SEED] [-p] [-nr NUM_ROW]
+                 [-nc NUM_COLUMN] [-r] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE]
 
 optional arguments:
   -h, --help            show this help message and exit
   -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
-                        Relative path to the output folder, default 'cytospace_results'
+                        Relative path to the output folder
   -op OUTPUT_PREFIX, --output-prefix OUTPUT_PREFIX
-                        Prefix of results stored in the 'output_folder', default ''
+                        Prefix of results stored in the 'output_folder'
   -d DELIMITER, --delimiter DELIMITER
-                        Set delimiter of the input files, default ',' (set to '\t' for tab-delimited files)
-  -m {shortest_augmenting_path,cost_scaling_push_relabel}, --method {shortest_augmenting_path,cost_scaling_push_relabel}
-                        Method for computing the linear assignment sum, default 'shortest_augmenting_path'
-  -sm {lap,lapjv}, --solver-method {lap,lapjv}
+                        Set delimiter of the input files, for instance '\t'
+  -sm {lapjv,lapjv_compat,lap_CSPR}, --solver-method {lapjv,lapjv_compat,lap_CSPR}
                         Which solver to use for the linear assignment problem when setting
-                        'method'='shortest_augmenting_path', default 'lapjv'
+                        'method'='shortest_augmenting_path'.
   -mcn MEAN_CELL_NUMBERS, --mean-cell-numbers MEAN_CELL_NUMBERS
-                        Mean number of cells per spot, default 5 (appropriate for most Visium -- if analyzing legacy spatial
-                        transcriptomics data, other options e.g. 20 may be more appropriate)
+                        Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy
+                        spatial transcriptomics data, set to 20
   -se SEED, --seed SEED
-                        Set seed for random generators, default 1
-  -p, --plot-off        Turn create plots on/off, default False (set to True if you do not want plots)
+                        Set seed for random generators
+  -p, --plot-off        Turn create plots on/off
   -nr NUM_ROW, --num-row NUM_ROW
-                        Number of rows in pdf figure, default 4
+                        Number of rows in pdf figure
   -nc NUM_COLUMN, --num-column NUM_COLUMN
-                        Number of coulmns in pdf figure, default 4
-  -r, --rotation-flag   Rotate plot, default True (appropriate for Visium data with row and column indices provided)
+                        Number of coulmns in pdf figure
+  -r, --rotation-flag   Rotate plot
   -rd ROTATION_DEGREES, --rotation-degrees ROTATION_DEGREES
-                        Rotation on plot, default 270 (appropriate for Visium data with row and column indices provided)
+                        Rotation on plot
   -ss SPOT_SIZE, --spot-size SPOT_SIZE
-                        Set size of ST spots, default 155 (appropriate for standard Visium data)
+                        Set size of ST spots
 
 Required arguments:
   -sp SCRNA_PATH, --scRNA-path SCRNA_PATH
-                        Path to scRNA-Seq data, which should be a 
+                        Path to scRNA-Seq data
   -ctp CELL_TYPE_PATH, --cell-type-path CELL_TYPE_PATH
                         Path to cell type labels
   -stp ST_PATH, --st-path ST_PATH
