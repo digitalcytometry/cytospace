@@ -75,7 +75,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/STdatafile.png" width="800"> 
 
 4. __A spatial transcriptomics coordinates file:__
-- A table consisting of 3 columns, where the first column contains the ST spot IDs corresponding to the columns of the ST gene expression matrix, and column 2 and 3 contain the X and Y coordinates of the spatial transcriptomics data, respectively. 
+- A table consisting of 3 columns, where the first column contains the ST spot IDs corresponding to and in the same order as the columns of the ST gene expression matrix, and column 2 and 3 contain the row and column indices of the spatial transcriptomics data, respectively. 
 - The columns must have a header. 
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/STcoordfile.png" width="250"> 
 
