@@ -7,40 +7,43 @@ from cytospace.common import normalize_data, matrix_correlation
 
 def import_solver(solver_method):
     try:
-        if solver_method == "lap":
+        if solver_method == "lapjv_compat":
             from lap import lapjv
             solver = lapjv
         elif solver_method == "lapjv":
             from lapjv import lapjv
             solver = lapjv
-        elif solver_method == "lapsolver":
-            from lapsolver import solve_dense
-            solver = solve_dense
+        #elif solver_method == "lapsolver":
+        #    from lapsolver import solve_dense
+        #    solver = solve_dense
         else:
-            raise NotImplementedError(f"The method {solver_method} is not an supported method, "
-                                      "choose between lap, lapjv, and lapsolver.")
+            raise NotImplementedError(f"The solver {solver_method} is not a supported solver "
+                                      "for the shortest augmenting path method, choose between "
+                                      "'lapjv' and 'lapjv_compat'.")
     except ModuleNotFoundError:
-        raise ModuleNotFoundError(f"The solver_method option you have chosen {solver_method} "
-                                  "depends on the python package with the same name. Please "
-                                  f"install it by running ´pip install {solver_method}´ or check "
-                                  "with the package home page for further instructions.")
+        raise ModuleNotFoundError("The Python package containing the solver_method option "
+                                  f"you have chosen {solver_method} was not found. If you "
+                                  "selected 'lapjv_compat' solver, install package 'lap'"
+                                  "by running 'pip install lap'. If you selected 'lapjv'"
+                                  "solver, install package 'lapjv' by running `pip intall lapjv'"
+                                  "or check the package home page for further instructions.")
 
     return solver
 
 
 def call_solver(solver, solver_method, cost_scaled):
-    if solver_method == "lap":
+    if solver_method == "lapjv_compat":
         _, _, y = solver(cost_scaled)
     elif solver_method == "lapjv":
         _, y, _ = solver(cost_scaled)
-    elif solver_method == "lapsolver":
-        _, y = solver(cost_scaled)
+    #elif solver_method == "lapsolver":
+    #    _, y = solver(cost_scaled)
 
     return y
 
 
 def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels, cell_type_numbers_int,
-                   cell_number_to_node_assignment, seed, linear=False):
+                   cell_number_to_node_assignment, seed, solver_method):
     # Find intersection genes
     intersect_genes = expressions_st_data.index.intersection(expressions_scRNA_data.index)
     expressions_scRNA_data_intersect_genes = expressions_scRNA_data.loc[intersect_genes, :]
@@ -83,7 +86,7 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
 
         new_cell_type[k + 1] = new_cell_type[k] + new_cells.shape[1]
 
-    if linear:
+    if solver_method=="lap_CSPR":
         cost = -np.transpose(matrix_correlation(expressions_tpm_st_log, sampled_cells))
     else:
         cost = -matrix_correlation(sampled_cells, expressions_tpm_st_log)
