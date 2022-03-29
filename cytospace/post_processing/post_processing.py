@@ -7,7 +7,7 @@ from scipy.spatial.transform import Rotation
 from cytospace.common import read_file
 
 
-def plot_output(cell_type_path, num_row, num_column, rotation_degrees, rotation_flag, spot_size,
+def plot_output(cell_type_path, num_row, num_column, rotation_degrees, rotation_flag, spot_size, plot_marker,
                 output_path, output_prefix, assigned_nodes, new_cell_index, coordinates):
     number_of_cells_per_page = num_row * num_column
     cell_type_labels = read_file(cell_type_path)
@@ -42,9 +42,9 @@ def plot_output(cell_type_path, num_row, num_column, rotation_degrees, rotation_
             x = coordinates[:, 0]
             y = coordinates[:, 1]
             if max(node_assignment) == 0:
-               ps = plt.scatter(x, y, s=155, c=node_assignment, vmin=0, vmax=5, marker='h')
+               ps = plt.scatter(x, y, s=spot_size, c=node_assignment, vmin=0, vmax=5, marker=plot_marker)
             else:
-               ps = plt.scatter(x, y, s=155, c=node_assignment, marker='h')    
+               ps = plt.scatter(x, y, s=spot_size, c=node_assignment, marker='h')    
             len_x = (np.max(x) - np.min(x))
             len_y = (np.max(y) - np.min(y))
             x_limit = (127 - len_x)/2
