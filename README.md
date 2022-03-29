@@ -14,9 +14,10 @@
 
 The key innovations of our method are:
 
-- In contrast to conventional methods, CytoSPACE dissects spatial organizations of cells in a given tissue at single cell level.
-
-- Since our method maps single cells from scRNA-sequencing data, in which larger numbers of genes are sequenced per each cell compared to available spatial transcriptomics technology, our method improves the gene coverage of a recontructed tissue significantly.
+- Unlike conventional methods which calculate cell type decompositions by spot, CytoSPACE yields a reconstructed tissue specimen with both high gene coverage and spatially-resolved scRNA-seq data suitable for downstream analysis.
+- CytoSPACE is highly robust to noise, and due to its implementation of cell-to-spot assignment via constrained convex optimization, all output assignments are  globally optimal. (See the paper for full details.)
+- Unlike other methods which generally work in a shared embedding space or on pre-selected marker genes, CytoSPACE uses all genes shared between scRNA-seq and ST sets for mapping, helping it retain sensitivity to subtle cell states while remaining robust to noise.
+- CytoSPACE is easy and quick to execute. It runs in minutes even on a personal laptop and requires no hyperparameter tuning or gene or feature selection.
 
 ## Installation instructions
 1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
