@@ -197,9 +197,9 @@ cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp mel
 ## CytoSPACE output files for example breast cancer data
 The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned. 
 
-<p align="center">
-  <img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/BRCA_plot_cell_type_locations.png">
-</p>
+```
+include image here
+```
 
 The CytoSPACE results are visualized in heatmaps saved as `plot_cell_type_locations.pdf` showing the distribution of single cells across ST spots for each cell type. Below are the heatmaps produced for the example BRCA data.
 
