@@ -1,4 +1,6 @@
-<img align="center" src="https://github.com/digitalcytometry/cytospace/blob/main/images/CytoSPACE_logo.jpeg" width="300"> 
+<p align="center">
+  <img width="300" src="https://github.com/digitalcytometry/cytospace/blob/main/images/CytoSPACE_logo.jpeg">
+</p>
 
 # Robust alignment of single-cell and spatial transcriptomes
 
