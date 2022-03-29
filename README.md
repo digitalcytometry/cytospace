@@ -132,7 +132,7 @@ Or with more condensed parameter names:
 For full usage details with additional options, see the __Extended usage details__ section below. 
 
 ### Choosing a solver
-CytoSPACE provides three solver options. In short, we recommend using the default option `lapjv` if your system supports AVX2 (you were able to successfully install it with `pip install lapjv`) and `lap_CSPR` otherwise. No options are required to use the default solver `lapjv`. To use `lap_CSPR` instead, pass the argument `-sm lap_CSPR` to your `cytospace` call. For full solver details, see the __Solver options__ section below.
+CytoSPACE provides three solver options. In short, we recommend using the default option `lapjv` if your system supports AVX2 (i.e., if you were able to successfully install it with `pip install lapjv`) and `lap_CSPR` otherwise. No options are required to use the default solver `lapjv`. To use `lap_CSPR` instead, pass the argument `-sm lap_CSPR` to your `cytospace` call. For full solver details, see the __Solver options__ section below.
 
 
 ### Other ways CytoSPACE can be run:
