@@ -22,7 +22,10 @@ The key innovations of our method are:
 ## Installation instructions
 1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
 
-2. Clone this repository (`git clone`)
+2. Clone this repository:
+```bash
+git clone https://github.com/digitalcytometry/cytospace
+```
 
 3. Navigate to `cytospace` directory:
 ```bash
