@@ -160,7 +160,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
 
     print('Saving results ...')
     save_results(output_path, output_prefix, cell_ids_selected, assigned_locations,
-                 new_cell_index, index, assigned_nodes)
+                 new_cell_index, index, assigned_nodes, st_path, coordinates_path, cell_type_path)
 
     if not plot_off:
         plot_output(cell_type_fraction_estimation_path, num_row, num_column, rotation_degrees, rotation_flag, plot_visium,
