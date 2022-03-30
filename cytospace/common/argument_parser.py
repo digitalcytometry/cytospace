@@ -36,12 +36,8 @@ def argument_parser():
                         help="Set delimiter of the input files, for instance '\\t'")
 
     # Solver / method options
-    #parser.add_argument("-m", "--method", type=str, default="shortest_augmenting_path",
-    #                    help="Method for computing the linear assignment sum",
-    #                    choices=["shortest_augmenting_path", "cost_scaling_push_relabel"])
     parser.add_argument("-sm", "--solver-method", default="lapjv",
-                        help="Which solver to use for the linear assignment problem when setting "
-                             "'method'='shortest_augmenting_path'.",
+                        help="Which solver to use for the linear assignment problem.",
                         choices=["lapjv", "lapjv_compat", "lap_CSPR"])
     parser.add_argument("-mcn", "--mean-cell-numbers", type=int, default=5,
                         help="Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy spatial transcriptomics data, set to 20")
@@ -55,10 +51,13 @@ def argument_parser():
     parser.add_argument("-nc", "--num-column", help="Number of coulmns in pdf figure", type=int,
                         default=4)
     parser.add_argument("-r", "--rotation-flag", help="Rotate plot", action="store_false")
+    parser.add_argument("-pv", "--plot-visium", help="Plot based on standard 10x Visium slide dimensions", action="store_false")
     parser.add_argument("-rd", "--rotation-degrees", help="Rotation on plot", type=int,
                         default=270)
     parser.add_argument("-ss", "--spot-size", help="Set size of ST spots", type=int,
-                        default=155)
+                        default=175)
+    parser.add_argument("-pm", "--plot-marker", help="Shape of ST spots", type=str,
+                        default='h')
 
     arguments = parser.parse_args()
 

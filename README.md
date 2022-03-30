@@ -2,9 +2,11 @@
   <img width="300" src="https://github.com/digitalcytometry/cytospace/blob/main/images/CytoSPACE_logo.jpeg">
 </p>
 
-# Robust alignment of single-cell and spatial transcriptomes
+<h1> <p align="center">
+    Robust and rapid alignment of single-cell and spatial transcriptomes
+</p> </h1>
 
-**CytoSPACE** is a novel computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
+**CytoSPACE** is a novel computational tool for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
 
 <p align="center">
   <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/CytoSPACE_overview.png" width="900"> 
@@ -12,14 +14,18 @@
 
 The key innovations of our method are:
 
-- In contrast to conventional methods, CytoSPACE dissects spatial organizations of cells in a given tissue at single cell level.
-
-- Since our method maps single cells from scRNA-sequencing data, in which larger numbers of genes are sequenced per each cell compared to available spatial transcriptomics technology, our method improves the gene coverage of a recontructed tissue significantly.
+- Unlike conventional methods which calculate cell type decompositions by spot, CytoSPACE yields a reconstructed tissue specimen with both high gene coverage and spatially-resolved scRNA-seq data suitable for downstream analysis.
+- CytoSPACE is highly robust to noise, and due to its implementation of cell-to-spot assignment via constrained convex optimization, returns globally optimal cell-to-spot assignments. (See the paper for full details.)
+- Unlike other methods which generally operate on pre-selected marker genes or on a shared embedding space (the latter of which can erase true biological variation), CytoSPACE uses the full transcriptome without the need for batch correction, helping it retain sensitivity to subtle cell states.
+- CytoSPACE is quick and simple to execute. It runs in minutes even with a single CPU on a personal laptop and requires no hyperparameter tuning or gene/feature selection.
 
 ## Installation instructions
 1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
 
-2. Clone this repository (`git clone`)
+2. Clone this repository:
+```bash
+git clone https://github.com/digitalcytometry/cytospace
+```
 
 3. Navigate to `cytospace` directory:
 ```bash
@@ -57,6 +63,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 
 2. __A cell type label file:__
 - Cell type labels corresponding to the single cell IDs in the scRNA-seq gene expression matrix. 
+- Cell type label strings should be alphanumeric.
 - The table should contain two columns, where column 1 contains the single cell IDs corresponding to the columns of the scRNA-seq matrix and column 2 contains the corresponding cell type labels.
 - The columns must have a header. 
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/celllabelfile.png" width="250"> 
@@ -69,14 +76,17 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/STdatafile.png" width="800"> 
 
 4. __A spatial transcriptomics coordinates file:__
-- A table consisting of 3 columns, where the first column contains the ST spot IDs corresponding to the columns of the ST gene expression matrix, and column 2 and 3 contain the X and Y coordinates of the spatial transcriptomics data, respectively. 
+- A table consisting of 3 columns, where the first column contains the ST spot IDs corresponding to and in the same order as the columns of the ST gene expression matrix, and column 2 and 3 contain the row and column indices of the spatial transcriptomics data, respectively. 
 - The columns must have a header. 
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/STcoordfile.png" width="250"> 
 
-5. __A file with cell type fraction estimates, obtained from the `R` script `get_cellfracs_seuratv3.R`.__ 
-- A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names. 
-- For further details on running `get_cellfracs_seuratv3.R`, see section "__Preprocessing__" below.
+5. __A file with cell type fraction estimates:__
+- A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names.
+- The cell type fractions should sum to one.  
+- Cell type fractions can be generated via any method for fractional abundance estimation. We provide one such implementation using Spatial Seurat in `get_cellfracs_seuratv3.R`. For further details, see section "__Preprocessing__" below.
+<img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width="800"> 
 
+                                                                                                                 
 ## File preparation
 If you are starting with outputs from Cell Ranger (scRNA-seq from 10x) or Space Ranger (ST from 10x), you can use the `R` script `???` to produce files formatted for CytoSPACE input.
 
@@ -130,7 +140,7 @@ Or with more condensed parameter names:
 For full usage details with additional options, see the __Extended usage details__ section below. 
 
 ### Choosing a solver
-CytoSPACE provides three solver options. In short, we recommend using the default option `lapjv` if your system supports AVX2 (you were able to successfully install it with `pip install lapjv`) and `lap_CSPR` otherwise. No options are required to use the default solver `lapjv`. To use `lap_CSPR` instead, pass the argument `-sm lap_CSPR` to your `cytospace` call. For full solver details, see the __Solver options__ section below.
+CytoSPACE provides three solver options. In short, we recommend using the default option `lapjv` if your system supports AVX2 (i.e., if you were able to successfully install it with `pip install lapjv`) and `lap_CSPR` otherwise. No options are required to use the default solver `lapjv`. To use `lap_CSPR` instead, pass the argument `-sm lap_CSPR` to your `cytospace` call. For full solver details, see the __Solver options__ section below.
 
 
 ### Other ways CytoSPACE can be run:
@@ -156,43 +166,55 @@ CytoSPACE will produce five output files by default.
 
 ## Example datasets for running CytoSPACE
 For users to test CytoSPACE, we have included files for two example runs:
-1. A melanoma scRNA-seq atlas by Tirosh et al (<a href="https://www.science.org/doi/10.1126/science.aad0501?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed" target="_blank">Science, 2016</a>), and a melanoma specimen profiled by the legacy ST platform (Thrane et al, <a href="https://aacrjournals.org/cancerres/article/78/20/5970/631815/Spatially-Resolved-Transcriptomics-Enables" target="_blank">Cancer Research, 2018</a>). This example is very quick to run, and a good test case to make sure that CytoSPACE is running as expected. As the legacy ST platform has larger spot sizes, we recommend mapping an average of 20 cells per spot, i.e. passing the argument `-mcn 20` to your `cytospace` call.
-2. A HER2+ breast cancer scRNA-seq atlas by Wu et al (<a href="https://www.nature.com/articles/s41588-021-00911-1" target="_blank">Nature Genetics, 2021</a>) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (<a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">10x Genomics</a>). Default parameters were selected with 10x Visium samples in mind and are appropriate here.
+1. A HER2+ breast cancer scRNA-seq atlas by Wu et al. (<a href="https://www.nature.com/articles/s41588-021-00911-1" target="_blank">Nature Genetics, 2021</a>) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (<a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">10x Genomics</a>). Default parameters were selected with Visium samples in mind and are appropriate here.
+2. A melanoma scRNA-seq atlas by Tirosh et al. (<a href="https://www.science.org/doi/10.1126/science.aad0501?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed" target="_blank">Science, 2016</a>), and a melanoma specimen profiled by the legacy ST platform (Thrane et al, <a href="https://aacrjournals.org/cancerres/article/78/20/5970/631815/Spatially-Resolved-Transcriptomics-Enables" target="_blank">Cancer Research, 2018</a>). As the legacy ST platform has larger spot sizes, we recommend mapping an average of 20 cells per spot, i.e. passing the argument `-mcn 20` to your `cytospace` call.
 
 ### Download example datasets
 Zip files containing the example datasets can be downloaded from the following links:
-1. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma</a> 
-2. <a href="https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing" target="_blank">Breast cancer</a>
+1. <a href="https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing" target="_blank">Breast cancer</a>
+2. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma</a> 
 
 To download from the command line using `gdown`:
-1. Melanoma
-   ```bash
-   gdown --fuzzy https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing
-   unzip CytoSPACE_example_melanoma.zip
-   ```
-2. Breast cancer
+1. Breast cancer
    ```bash
    gdown --fuzzy https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing
    unzip CytoSPACE_example_breast_cancer.zip
    ```
+2. Melanoma
+   ```bash
+   gdown --fuzzy https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing
+   unzip CytoSPACE_example_melanoma.zip
+   ```
    
 ### Commands for running example analyses:
 Once the example files are downloaded, the commands below can be run from the folders where the example datasets are located:
- ```bash
-cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20
-```
-
 ```bash
 cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_GEP.txt -cp brca_STdata_coordinates.txt -ctfep brca_cell_fraction_estimates.txt
 ```
+
+```bash
+cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20
+```
+
 ## CytoSPACE output files for example breast cancer data
-The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned. In this case,
+The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned. 
 
-
-The CytoSPACE results are visualized in heatmaps saved as `plot_cell_type_locations.pdf` showing the distribution of single cells across ST spots for each cell type. 
 ```
 include image here
 ```
+
+The CytoSPACE results are visualized in heatmaps saved as `plot_cell_type_locations.pdf` showing the distribution of single cells across ST spots for each cell type. Below are the heatmaps produced for the example BRCA data.
+
+<p align="center">
+  <img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/BRCA_plot_cell_type_locations.png">
+</p>
+
+For comparison, consider the pathologist annotations of this ST sample as provided by 10x:
+
+<p align="center">
+  <img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/Visium_FFPE_Human_Breast_Cancer_Pathologist_Annotations.png">
+</p>
+
 The number of cells per spot by cell type as well as in total are provided in the file `cell_type_assignments_by_spot.csv`.
 ```
 include image here
@@ -202,46 +224,43 @@ Fractional abundances of each cell type are returned in the file `fractional_abu
 include image here
 ```
 
-
 ## Extended usage details
 ```
 usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDINATES_PATH -ctfep
                  CELL_TYPE_FRACTION_ESTIMATION_PATH [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-d DELIMITER]
-                 [-m {shortest_augmenting_path,cost_scaling_push_relabel}] [-sm {lap,lapjv}] [-mcn MEAN_CELL_NUMBERS]
-                 [-se SEED] [-p] [-nr NUM_ROW] [-nc NUM_COLUMN] [-r] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE]
+                 [-sm {lapjv,lapjv_compat,lap_CSPR}] [-mcn MEAN_CELL_NUMBERS] [-se SEED] [-p] [-nr NUM_ROW]
+                 [-nc NUM_COLUMN] [-r] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE]
 
 optional arguments:
   -h, --help            show this help message and exit
   -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
-                        Relative path to the output folder, default 'cytospace_results'
+                        Relative path to the output folder
   -op OUTPUT_PREFIX, --output-prefix OUTPUT_PREFIX
-                        Prefix of results stored in the 'output_folder', default ''
+                        Prefix of results stored in the 'output_folder'
   -d DELIMITER, --delimiter DELIMITER
-                        Set delimiter of the input files, default ',' (set to '\t' for tab-delimited files)
-  -m {shortest_augmenting_path,cost_scaling_push_relabel}, --method {shortest_augmenting_path,cost_scaling_push_relabel}
-                        Method for computing the linear assignment sum, default 'shortest_augmenting_path'
-  -sm {lap,lapjv}, --solver-method {lap,lapjv}
+                        Set delimiter of the input files, for instance '\t'
+  -sm {lapjv,lapjv_compat,lap_CSPR}, --solver-method {lapjv,lapjv_compat,lap_CSPR}
                         Which solver to use for the linear assignment problem when setting
-                        'method'='shortest_augmenting_path', default 'lapjv'
+                        'method'='shortest_augmenting_path'.
   -mcn MEAN_CELL_NUMBERS, --mean-cell-numbers MEAN_CELL_NUMBERS
-                        Mean number of cells per spot, default 5 (appropriate for most Visium -- if analyzing legacy spatial
-                        transcriptomics data, other options e.g. 20 may be more appropriate)
+                        Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy
+                        spatial transcriptomics data, set to 20
   -se SEED, --seed SEED
-                        Set seed for random generators, default 1
-  -p, --plot-off        Turn create plots on/off, default False (set to True if you do not want plots)
+                        Set seed for random generators
+  -p, --plot-off        Turn create plots on/off
   -nr NUM_ROW, --num-row NUM_ROW
-                        Number of rows in pdf figure, default 4
+                        Number of rows in pdf figure
   -nc NUM_COLUMN, --num-column NUM_COLUMN
-                        Number of coulmns in pdf figure, default 4
-  -r, --rotation-flag   Rotate plot, default True (appropriate for Visium data with row and column indices provided)
+                        Number of coulmns in pdf figure
+  -r, --rotation-flag   Rotate plot
   -rd ROTATION_DEGREES, --rotation-degrees ROTATION_DEGREES
-                        Rotation on plot, default 270 (appropriate for Visium data with row and column indices provided)
+                        Rotation on plot
   -ss SPOT_SIZE, --spot-size SPOT_SIZE
-                        Set size of ST spots, default 155 (appropriate for standard Visium data)
+                        Set size of ST spots
 
 Required arguments:
   -sp SCRNA_PATH, --scRNA-path SCRNA_PATH
-                        Path to scRNA-Seq data, which should be a 
+                        Path to scRNA-Seq data
   -ctp CELL_TYPE_PATH, --cell-type-path CELL_TYPE_PATH
                         Path to cell type labels
   -stp ST_PATH, --st-path ST_PATH
@@ -259,7 +278,20 @@ You can see this list of variables and default values for running CytoSPACE from
 1. `lapjv` __(Recommended for most systems)__    By default, CytoSPACE calls the `lapjv` solver from package `lapjv`. This solver is a fast implementation of the Jonker-Volgenant shortest augmenting path assignment algorithm and returns a globally optimal solution given the objective function as defined in our paper [cite]. As noted above, however, this package is not supported on all systems as it achieves its speedup through use of AVX2 instructions. This solver will be selected by default and can be specified explicitly by passing arguments `--solver-method lapjv` or `-sm lapjv` to `cytospace`.
 2. `lap_CSPR` __(Recommended for systems not supporting `lapjv`)__    A second solver option is the `linear_assignment` method from the `ortools` package. This solver uses a different method than the first and third options, an assignment algorithm called the cost scaling push relabel method. This algorithm approximates assignment costs to integer values and loses some numerical precision in doing so. Therefore, while it returns a globally optimal solution __after approximation__ given the objective function defined in the paper, it will return similar but generally not identical results to the first two methods. This solver has a similar running time to the first option and is a good option for systems not supporting the `lapjv` package. This solver can be selected by passing arguments `--solver-method lap_CSPR` or `-sm lap_CSPR` to `cytospace`.
 3. `lapjv_compat`   A third solver option implements the `lapjv` solver from package `lap`. Like the first option `lapjv`, this solver also implements the Jonker-Volgenant shortest augmenting path assignment algorithm to return the same globally optimal solution given the objective function defined in the paper. Furthermore, it is broadly supported and should work on all standard operating systems. However, it takes 3-4 times as long to run as the first solver option, the `lapjv` solver from the `lapjv` package, so we only recommend it for systems that do not support the first option. This solver can be selected by passing arguments `--solver-method lapjv_compat` or `-sm lapjv_compat` to `cytospace`.
-4. 
+
+## Updating local installations
+To update your local installation of CytoSPACE following updates of this GitHub repository, navigate to your `cytospace` directory and execute the following commands:
+```bash
+git pull
+conda env update --name cytospace --file environment_withoutlapjv.yml
+pip install .
+```
+If you have made local updates to your version of the CytoSPACE source code, you should execute 
+```bash
+pip install .
+``` 
+once more before running. 
+
 ## Authors
 CytoSPACE was developed by
 
@@ -268,12 +300,12 @@ CytoSPACE was developed by
 * Chloé B. Steen (cbsteen)
 * Aaron M. Newman (aaronmnewman)
 
-## Licence
+## License
 CytoSPACE is licensed under the GNU GPL, version 3 or (at your option) any
 later version.
 CytoSPACE is Copyright (2022-) by the authors.
 
 ## Citation
-If you are using CytoSPACE for scientific work, please cite it by:
+If you use CytoSPACE, please cite:
 
-    TODO
+    Coming soon
