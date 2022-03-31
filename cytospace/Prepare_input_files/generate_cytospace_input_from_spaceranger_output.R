@@ -13,7 +13,6 @@
 # Rscript generate_cytospace_input_from_spaceranger_output.R path_to_ST_dir_spaceranger path_to_output_dir
 #
 ##########################################################
-library(hdf5r)
 library(rhdf5)
 library(Seurat)
 library(Matrix)
