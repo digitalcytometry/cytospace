@@ -11,13 +11,12 @@
 # 3. Path to the output directory to store the results, i.e., generated CytoSPACE input files
 #
 ##########################################################
-library(hdf5r)
-library(rhdf5)
 library(Seurat)
-library(Matrix)
+
 
 generate_cytospace_from_seurat_object <- function(scrna_seurat,
-                                                   st_seurat){
+                                                   st_seurat,
+                                                   fn_out){
   scrna_count <- as.data.frame(as.matrix(GetAssayData(object = scrna_seurat, slot = "counts")))
   scrna_count <- cbind(rownames(scrna_count), scrna_count)
   colnames(scrna_count)[1] <- 'GENES'

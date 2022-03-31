@@ -11,7 +11,8 @@ dependencies:
   - pip=22.0.4
   - pandas=1.4.1
   - matplotlib=3.5.1
-  - r-seurat=3.1.4
+  - r-seurat=3.2.3
+  - r-spatstat=1.64-1
   - gdown=4.4.0
   - pip:
     - ortools==9.2.9972
