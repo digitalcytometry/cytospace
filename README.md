@@ -82,6 +82,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 
 5. __A file with cell type fraction estimates:__
 - A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names.
+- __The first row of cell type labels must match the labels present in the cell type label file.__
 - The cell type fractions should sum to one.  
 - Cell type fractions can be generated via any method for fractional abundance estimation. We provide one such implementation using Spatial Seurat in `get_cellfracs_seuratv3.R`. For further details, see section "__Preprocessing__" below.
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width="800"> 
@@ -158,10 +159,10 @@ for mean_cell_numbers in [5, 10, 20]:
 
 ## CytoSPACE outputs
 CytoSPACE will produce five output files by default.
-1. ```FILE NAME``` Heatmaps of cell type assignments within the ST sample. Along with a plot showing the total number of cells mapped to each spot, these will show the number of cells per cell type mapped to each spot.
-2. ```FILE NAME``` This file will provide the assigned locations of each single cell mapped to ST spots. As some cells may be mapped to multiple locations depending on the size of the input scRNA-seq set, new cell IDs (`UniqueCID`) are assigned to each cell and given in the first column. The second column includes original cell IDs (`OriginalCID`); the third includes assigned spot IDs (`SpotID`); the fourth and fifth columns respectively include  `row` and `column` indices of the corresponding spots; and then optionally, the sixth and seventh columns include `coord_x` and `coord_y` of the corresponding spots if these details were provided in the initial Coordinates file.
-3. ```FILE NAME``` This file gives the raw number of cells of each cell type per spot by `SpotID` as well as the total number of cells assigned to that spot.
-4. ```FILE NAME``` This file gives the fractional abundance of cell types assigned to each spot by `SpotID`.
+1. ```plot_cell_type_locations.pdf``` Heatmaps of cell type assignments within the ST sample. Along with a plot showing the total number of cells mapped to each spot, these will show the number of cells per cell type mapped to each spot.
+2. ```assigned_locations.csv``` This file will provide the assigned locations of each single cell mapped to ST spots. As some cells may be mapped to multiple locations depending on the size of the input scRNA-seq set, new cell IDs (`UniqueCID`) are assigned to each cell and given in the first column. The second column includes original cell IDs (`OriginalCID`); the third includes assigned spot IDs (`SpotID`); the fourth and fifth columns respectively include  `row` and `column` indices of the corresponding spots; and then optionally, the sixth and seventh columns include `coord_x` and `coord_y` of the corresponding spots if these details were provided in the initial Coordinates file.
+3. ```cell_type_assignments_by_spot.csv``` This file gives the raw number of cells of each cell type per spot by `SpotID` as well as the total number of cells assigned to that spot.
+4. ```fractional_abundances_by_spot.csv``` This file gives the fractional abundance of cell types assigned to each spot by `SpotID`.
 5. ```log.txt``` This file contains a log of CytoSPACE run parameters and running time.
 
 ## Example datasets for running CytoSPACE
