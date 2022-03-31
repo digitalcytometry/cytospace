@@ -88,18 +88,26 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width="800"> 
 
                                                                                                                  
-## File preparation
-If you are starting with outputs from Cell Ranger (scRNA-seq from 10x) or Space Ranger (ST from 10x), you can use the `R` script `???` to produce files formatted for CytoSPACE input.
-
+## File preparation [ in progress ]
+If you are starting with outputs from Cell Ranger (scRNA-seq from 10x) or Space Ranger (ST from 10x), you can use the `R` scripts `generate_cytospace_input_from_cellranger_output.R` and `generate_cytospace_input_from_spaceranger_output.R` respectively to produce files formatted for CytoSPACE input. These are included in `cytospace/Prepare_input_files`. Similarly, if you are starting with Seurat objects derived from any source, you can use the `R` function `generate_cytospace_from_seurat_object.R` to produce files formatted for CytoSPACE input. Please note that these scripts require separate package dependencies from the `conda` environment provided for CytoSPACE, including Seurat v4 rather than Seurat v3. We provide an additional `conda` environment in `cytospace/Prepare_input_files/preparation_environment.yml` which you may install by 
 ```bash
-ADD DETAILS
+conda env create -f preparation_environment.yml`
 ```
+after navigating to `cytospace/Prepare_input_files`. 
 
-Similarly, if you are starting with Seurat objects derived from any source, you can use the `R` function `???` to produce files formatted for CytoSPACE input.
-
+To run `generate_cytospace_input_from_cellranger_output.R` from the command line:
 ```bash
-ADD DETAILS
+Rscript /path/to/generate_cytospace_input_from_cellranger_output.R /path/to/scRNA_h5_directory /path/to/output
 ```
+Please note that this script expects the standard output file named `filtered_feature_bc_matrix.h5` to be located in the provided `/path/to/scRNA_h5_directory`. Your specified output directory must already exist.
+
+To run `generate_cytospace_input_from_spaceranger_output.R` from the command line:
+```bash
+Rscript /path/to/generate_cytospace_input_from_spaceranger_output.R /path/to/ST_h5_directory /path/to/output
+```
+Please note that your specified output directory must already exist.
+
+For producing CytoSPACE inputs from Seurat objects, import the function `generate_cytospace_from_seurat_object` from `generate_cytospace_from_seurat_object.R`. You can then call it as `generate_cytospace_from_seurat_object(scRNA_Seurat_Object,ST_Seurat_Object)`.
 
 ## Preprocessing
 To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
@@ -230,7 +238,11 @@ include image here
 usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDINATES_PATH -ctfep
                  CELL_TYPE_FRACTION_ESTIMATION_PATH [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-d DELIMITER]
                  [-sm {lapjv,lapjv_compat,lap_CSPR}] [-mcn MEAN_CELL_NUMBERS] [-se SEED] [-p] [-nr NUM_ROW]
-                 [-nc NUM_COLUMN] [-r] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE]
+                 [-nc NUM_COLUMN] [-r] [-pv] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE] [-pm PLOT_MARKER]
+
+CytoSPACE is a computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST)
+data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear
+programming-based optimization routine.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -241,11 +253,10 @@ optional arguments:
   -d DELIMITER, --delimiter DELIMITER
                         Set delimiter of the input files, for instance '\t'
   -sm {lapjv,lapjv_compat,lap_CSPR}, --solver-method {lapjv,lapjv_compat,lap_CSPR}
-                        Which solver to use for the linear assignment problem when setting
-                        'method'='shortest_augmenting_path'.
+                        Which solver to use for the linear assignment problem.
   -mcn MEAN_CELL_NUMBERS, --mean-cell-numbers MEAN_CELL_NUMBERS
-                        Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy
-                        spatial transcriptomics data, set to 20
+                        Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy spatial
+                        transcriptomics data, set to 20
   -se SEED, --seed SEED
                         Set seed for random generators
   -p, --plot-off        Turn create plots on/off
@@ -254,10 +265,13 @@ optional arguments:
   -nc NUM_COLUMN, --num-column NUM_COLUMN
                         Number of coulmns in pdf figure
   -r, --rotation-flag   Rotate plot
+  -pv, --plot-visium    Plot based on standard 10x Visium slide dimensions
   -rd ROTATION_DEGREES, --rotation-degrees ROTATION_DEGREES
                         Rotation on plot
   -ss SPOT_SIZE, --spot-size SPOT_SIZE
                         Set size of ST spots
+  -pm PLOT_MARKER, --plot-marker PLOT_MARKER
+                        Shape of ST spots
 
 Required arguments:
   -sp SCRNA_PATH, --scRNA-path SCRNA_PATH
