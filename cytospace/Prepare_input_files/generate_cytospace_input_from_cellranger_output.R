@@ -24,9 +24,6 @@ args = commandArgs(T)
 fin_scrna = args[1]
 fn_out = args[2]
 
-fin_scrna = '/Users/miladrv/Desktop/Paper/March28_github_rscript/cell_ranger/'
-fn_out = '/Users/miladrv/Desktop/Paper/March28_github_rscript/output_files/'
-
 barcodes <- as.character(h5read(paste(fin_scrna, 'filtered_feature_bc_matrix.h5', sep =""), "matrix/barcodes"))
 h5 <- h5read(paste(fin_scrna, 'filtered_feature_bc_matrix.h5', sep =""), "matrix")
 counts <- as.data.frame(as.matrix(sparseMatrix(
