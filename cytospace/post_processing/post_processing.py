@@ -81,8 +81,8 @@ def save_results(output_path, output_prefix, cell_ids_selected, assigned_locatio
     df_coords.index = st_names
 
     coords_columns = list(df_coords.columns)
-    if len(coords_columns) > 3:
-        additional_columns = coords_columns[3:]
+    #if len(coords_columns) > 3:
+    #    additional_columns = coords_columns[3:]
 
     cell_ids_selected_list = cell_ids_selected.tolist()
 
