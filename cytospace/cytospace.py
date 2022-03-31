@@ -122,7 +122,37 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    rotation_flag=True, plot_visium=True, plot_off=False, spot_size=175, plot_marker = 'h',
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
-    
+ 
+    start_time = time.perf_counter()
+
+    # Record log
+    fout_log = str(output_folder)+'/'+output_prefix+'log.txt'
+
+    with open(fout_log,"w") as f:
+        f.write("CytoSPACE log file \n\nStart time: "+str(time.asctime( time.localtime(time.time()) ))+"\n")
+
+    with open(fout_log,"a") as f:
+        f.write("\nINPUT ARGUMENTS\n")
+        f.write("scRNA_path: "+str(scRNA_path)+"\n")
+        f.write("cell_type_path: "+str(cell_type_path)+"\n")
+        f.write("st_path: "+str(st_path)+"\n")
+        f.write("coordinates_path: "+str(coordinates_path)+"\n")
+        f.write("cell_type_fraction_estimation_path: "+str(cell_type_fraction_estimation_path)+"\n")
+        f.write("output_folder: "+str(output_folder)+"\n")
+        f.write("rotation_flag: "+str(rotation_flag)+"\n")
+        f.write("plot_visium: "+str(plot_visium)+"\n")
+        f.write("plot_off: "+str(plot_off)+"\n")
+        f.write("spot_size: "+str(spot_size)+"\n")
+        f.write("plot_marker: "+str(plot_marker)+"\n")
+        f.write("mean_cell_numbers: "+str(mean_cell_numbers)+"\n")
+        f.write("num_row: "+str(num_row)+"\n")
+        f.write("num_column: "+str(num_column)+"\n")
+        f.write("rotation_degrees: "+str(rotation_degrees)+"\n")
+        f.write("output_prefix: "+str(output_prefix)+"\n")
+        f.write("seed: "+str(seed)+"\n")
+        f.write("delimiter: "+str(delimiter)+"\n")
+        f.write("solver_method: "+str(solver_method)+"\n\n")
+
     # For timing execution
     start_time = time.perf_counter()
 
@@ -138,6 +168,8 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         read_data(scRNA_path, cell_type_path, st_path, coordinates_path,
                   cell_type_fraction_estimation_path, delimiter)
     print(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds")
+    with open(fout_log,"a") as f:
+        f.write(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds\n")
 
     # Check paths
     output_path = check_paths(output_folder, output_prefix)
@@ -167,7 +199,9 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                     spot_size, plot_marker, output_path, output_prefix, assigned_nodes, new_cell_index, coordinates_data)
 
     print(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds")
-
+    with open(fout_log,"a") as f:
+        f.write(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds\n")
+    
 
 def run_cytospace():
     arguments = argument_parser()
