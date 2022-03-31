@@ -82,6 +82,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 
 5. __A file with cell type fraction estimates:__
 - A table consisting of 2 rows, where the first row is the cell type labels, and the second row is the cell fractions of each cell type represented as proportions between 0 and 1. The first column is the row names.
+- __The first row of cell type labels must match the labels present in the cell type label file.__
 - The cell type fractions should sum to one.  
 - Cell type fractions can be generated via any method for fractional abundance estimation. We provide one such implementation using Spatial Seurat in `get_cellfracs_seuratv3.R`. For further details, see section "__Preprocessing__" below.
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width="800"> 
