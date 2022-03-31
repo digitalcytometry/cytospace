@@ -235,6 +235,7 @@ A log file recording CytoSPACE inputs and running times is output in the file `l
 
 <img width="400" src="https://github.com/digitalcytometry/cytospace/blob/main/images/log.png">
 
+## Customizing plotting outputs [ TBA ]
 
 ## Extended usage details
 ```
