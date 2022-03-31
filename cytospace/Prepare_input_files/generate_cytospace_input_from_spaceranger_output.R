@@ -21,11 +21,11 @@ library(Matrix)
 # Read inputs from command line
 args = commandArgs(T)
 
-# fin_ST = args[1]
-# fn_out = args[2]
+fin_ST = args[1]
+fn_out = args[2]
 
-fin_ST <- '/Users/i0461476/Desktop/OpenTargets/Spatial_data/data/'
-fn_out <- '/Users/i0461476/Desktop/OpenTargets/Spatial_data/data/'
+#fin_ST <- '/Users/i0461476/Desktop/OpenTargets/Spatial_data/data/'
+#fn_out <- '/Users/i0461476/Desktop/OpenTargets/Spatial_data/data/'
 
 ST_data <- Load10X_Spatial(fin_ST)
 ST_expressions <- as.matrix(ST_data@assays$Spatial@counts)
