@@ -230,7 +230,11 @@ include image here
 usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDINATES_PATH -ctfep
                  CELL_TYPE_FRACTION_ESTIMATION_PATH [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-d DELIMITER]
                  [-sm {lapjv,lapjv_compat,lap_CSPR}] [-mcn MEAN_CELL_NUMBERS] [-se SEED] [-p] [-nr NUM_ROW]
-                 [-nc NUM_COLUMN] [-r] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE]
+                 [-nc NUM_COLUMN] [-r] [-pv] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE] [-pm PLOT_MARKER]
+
+CytoSPACE is a computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST)
+data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear
+programming-based optimization routine.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -241,11 +245,10 @@ optional arguments:
   -d DELIMITER, --delimiter DELIMITER
                         Set delimiter of the input files, for instance '\t'
   -sm {lapjv,lapjv_compat,lap_CSPR}, --solver-method {lapjv,lapjv_compat,lap_CSPR}
-                        Which solver to use for the linear assignment problem when setting
-                        'method'='shortest_augmenting_path'.
+                        Which solver to use for the linear assignment problem.
   -mcn MEAN_CELL_NUMBERS, --mean-cell-numbers MEAN_CELL_NUMBERS
-                        Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy
-                        spatial transcriptomics data, set to 20
+                        Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy spatial
+                        transcriptomics data, set to 20
   -se SEED, --seed SEED
                         Set seed for random generators
   -p, --plot-off        Turn create plots on/off
@@ -254,10 +257,13 @@ optional arguments:
   -nc NUM_COLUMN, --num-column NUM_COLUMN
                         Number of coulmns in pdf figure
   -r, --rotation-flag   Rotate plot
+  -pv, --plot-visium    Plot based on standard 10x Visium slide dimensions
   -rd ROTATION_DEGREES, --rotation-degrees ROTATION_DEGREES
                         Rotation on plot
   -ss SPOT_SIZE, --spot-size SPOT_SIZE
                         Set size of ST spots
+  -pm PLOT_MARKER, --plot-marker PLOT_MARKER
+                        Shape of ST spots
 
 Required arguments:
   -sp SCRNA_PATH, --scRNA-path SCRNA_PATH
