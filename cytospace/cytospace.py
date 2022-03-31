@@ -2,6 +2,7 @@ import random
 import time
 import pandas as pd
 import numpy as np
+import os
 
 from cytospace.common import read_file, normalize_data, check_paths, argument_parser
 from cytospace.post_processing import plot_output, save_results
@@ -124,7 +125,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
  
     start_time = time.perf_counter()
-
+    os.makedirs(str(output_folder),exist_ok=True)
     # Record log
     fout_log = str(output_folder)+'/'+output_prefix+'log.txt'
 
