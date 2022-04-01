@@ -13,7 +13,7 @@
 # Rscript generate_cytospace_input_from_cellranger_output.R path_to_scrna_dir_cellranger path_to_output_dir
 #
 ##########################################################
-library(rhdf5)
+library(hdf5r)
 library(Seurat)
 library(Matrix)
 
@@ -23,8 +23,8 @@ args = commandArgs(T)
 fin_scrna = args[1]
 fn_out = args[2]
 
-barcodes <- as.character(h5read(paste(fin_scrna, 'filtered_feature_bc_matrix.h5', sep =""), "matrix/barcodes"))
-h5 <- h5read(paste(fin_scrna, 'filtered_feature_bc_matrix.h5', sep =""), "matrix")
+barcodes <- as.character(h5read(paste(fin_scrna, '/filtered_feature_bc_matrix.h5', sep =""), "matrix/barcodes"))
+h5 <- h5read(paste(fin_scrna, '/filtered_feature_bc_matrix.h5', sep =""), "matrix")
 counts <- as.data.frame(as.matrix(sparseMatrix(
   dims = h5$shape,
   i = as.numeric(h5$indices),
@@ -41,7 +41,6 @@ counts_non_duplicated_genes <- cbind(rownames(counts_non_duplicated_genes), coun
 colnames(counts_non_duplicated_genes)[1] <- 'GENES'
 
 print("Writing output to file")
-write.csv(counts_non_duplicated_genes, file = paste(fn_out, 'scRNA_data.csv'), row.names = F)
+dir.create(fn_out, showWarnings = FALSE)
+write.csv(counts_non_duplicated_genes, file = paste(fn_out, '/scRNA_data.csv', sep = ""), row.names = F)
 print("Done")
-
-sessionInfo()

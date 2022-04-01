@@ -13,7 +13,7 @@
 # Rscript generate_cytospace_input_from_spaceranger_output.R path_to_ST_dir_spaceranger path_to_output_dir
 #
 ##########################################################
-library(rhdf5)
+library(hdf5r)
 library(Seurat)
 library(Matrix)
 
@@ -33,8 +33,8 @@ coordinates <- cbind(rownames(coordinates), coordinates)
 colnames(coordinates)[1] <- 'Spot ID'
 
 print("Writing output to file")
-write.csv(coordinates, file = paste(fn_out, 'Coordinates.csv'), row.names = F)
-write.csv(ST_expressions, file = paste(fn_out, 'ST_data.csv'), row.names = F)
+dir.create(fn_out, showWarnings = FALSE)
+write.csv(coordinates, file = paste(fn_out, '/Coordinates.csv', sep = ""), row.names = F)
+write.csv(ST_expressions, file = paste(fn_out, '/ST_data.csv', sep = ""), row.names = F)
 print("Done")
 
-sessionInfo()

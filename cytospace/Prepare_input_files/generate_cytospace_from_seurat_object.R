@@ -29,9 +29,10 @@ generate_cytospace_from_seurat_object <- function(scrna_seurat,
   colnames(coordinates)[1] <- 'Spot ID'
   
   print("Writing output to file")
-  write.csv(scrna_count, file = paste(fn_out, 'scRNA_data.csv'), row.names = F)
-  write.csv(coordinates, file = paste(fn_out, 'Coordinates.csv'), row.names = F)
-  write.csv(ST_expressions, file = paste(fn_out, 'ST_data.csv'), row.names = F)
+  dir.create(fn_out, showWarnings = FALSE)
+  write.csv(scrna_count, file = paste(fn_out, '/scRNA_data.csv', sep = ""), row.names = F)
+  write.csv(coordinates, file = paste(fn_out, '/Coordinates.csv', sep = ""), row.names = F)
+  write.csv(ST_expressions, file = paste(fn_out, '/ST_data.csv', sep = ""), row.names = F)
   print("Done")
 }
 
