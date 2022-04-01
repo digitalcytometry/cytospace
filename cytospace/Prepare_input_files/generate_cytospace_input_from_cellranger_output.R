@@ -13,7 +13,7 @@
 # Rscript generate_cytospace_input_from_cellranger_output.R path_to_scrna_dir_cellranger path_to_output_dir
 #
 ##########################################################
-library(hdf5r)
+library(rhdf5)
 library(Seurat)
 library(Matrix)
 

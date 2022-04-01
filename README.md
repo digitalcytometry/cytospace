@@ -91,7 +91,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 ## File preparation
 If you are starting with outputs from Cell Ranger (scRNA-seq from 10x) or Space Ranger (ST from 10x), you can use the `R` scripts `generate_cytospace_input_from_cellranger_output.R` and `generate_cytospace_input_from_spaceranger_output.R` respectively to produce files formatted for CytoSPACE input. These are included in `cytospace/Prepare_input_files`. Similarly, if you are starting with Seurat objects derived from any source, you can use the `R` function `generate_cytospace_from_seurat_object.R` to produce files formatted for CytoSPACE input. To run `generate_cytospace_input_from_cellranger_output.R` from the command line:
 ```bash
-conda install -c conda-forge r-hdf5r
+conda install -c bioconda bioconductor-rhdf5
 Rscript /path/to/generate_cytospace_input_from_cellranger_output.R /path/to/scRNA_h5_directory /path/to/output
 ```
 Please note that this script expects the standard output file named `filtered_feature_bc_matrix.h5` to be located in the provided `/path/to/scRNA_h5_directory`. Your specified output directory must already exist.
