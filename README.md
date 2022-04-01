@@ -94,7 +94,7 @@ If you are starting with outputs from Cell Ranger (scRNA-seq from 10x) or Space 
 conda install -c bioconda bioconductor-rhdf5
 Rscript /path/to/generate_cytospace_input_from_cellranger_output.R /path/to/scRNA_h5_directory /path/to/output
 ```
-Please note that this script expects the standard output file named `filtered_feature_bc_matrix.h5` to be located in the provided `/path/to/scRNA_h5_directory`. Your specified output directory must already exist.
+Please note that this script expects the standard output file named `filtered_feature_bc_matrix.h5` to be located in the provided `/path/to/scRNA_h5_directory`. 
 
 To run `generate_cytospace_input_from_spaceranger_output.R` from the command line:
 ```bash
