@@ -36,9 +36,4 @@ generate_cytospace_from_seurat_object <- function(scrna_seurat,
   print("Done")
 }
 
-########################### Main #########################
-generate_cytospace_from_seurat_object(scrna_seurat,
-                                      st_seurat,
-                                      fn_out)
-
 
