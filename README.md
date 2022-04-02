@@ -322,12 +322,15 @@ pip install .
 once more before running. 
 
 ## Authors
-CytoSPACE was developed by
+CytoSPACE was developed in the <a href="https://anlab.stanford.edu/" target="_blank">Newman Lab</a> by
 
 * Milad R. Vahid (miladrv)
 * Erin L. Brown (erinlbrown)
 * Chloé B. Steen (cbsteen)
 * Aaron M. Newman (aaronmnewman)
+
+## Contact
+If you have any questions, please contact the CytoSPACE team at cytospaceteam@gmail.com.
 
 ## License
 CytoSPACE is licensed under the GNU GPL, version 3 or (at your option) any
