@@ -94,7 +94,7 @@ If you are starting with outputs from Space Ranger (ST from 10x), you can use th
 conda install -c conda-forge r-hdf5r
 Rscript /path/to/generate_cytospace_input_from_spaceranger_output.R /path/to/ST_h5_directory /path/to/output
 ```
-For producing CytoSPACE inputs from scRNA and ST Seurat objects, import the functions `generate_cytospace_from_scRNA_seurat_object` and `generate_cytospace_from_ST_seurat_object`, respectively, from `generate_cytospace_from_seurat_object.R`. For example, you can then call it as `generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,fn_out)`, where `gn_out` is the path to the output directory to store the results.
+For producing CytoSPACE inputs from scRNA and ST Seurat objects, import the functions `generate_cytospace_from_scRNA_seurat_object` and `generate_cytospace_from_ST_seurat_object`, respectively, from `generate_cytospace_from_seurat_object.R`. For example, you can then call it as `generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,fn_out)`, where `fn_out` is the path to the output directory to store the results.
 
 ## Preprocessing
 To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
