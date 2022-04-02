@@ -102,7 +102,7 @@ and
 ```bash
 generate_cytospace_from_ST_seurat_object(scRNA_Seurat_Object,dir_out,fout_prefix)
 ```
-where the first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `scRNA_data.txt` and `cell_type_labels.txt` for scRNA-seq Seurat objects and as `ST_data.txt` and `Coordinates.txt` for ST Seurat objects.
+where the first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `scRNA_data.txt` and `cell_type_labels.txt` for scRNA-seq Seurat objects and as `ST_data.txt` and `Coordinates.txt` for ST Seurat objects. Please note for scRNA-seq Seurat objects that `Idents(scRNA_Seurat_Object)` should be set to include cell types.
 
 For ST data, if you wish to start with raw outputs from Space Ranger, you can use the `R` script `generate_cytospace_input_from_spaceranger_output.R` to produce files formatted for CytoSPACE input. To run `generate_cytospace_input_from_spaceranger_output.R` from the command line:
 ```bash
