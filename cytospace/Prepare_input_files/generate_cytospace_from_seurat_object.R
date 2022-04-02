@@ -14,7 +14,7 @@ library(Seurat)
 ##########################################################
 
 generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
-                                                        fn_out){
+                                                        dir_out){
   scrna_count <- as.data.frame(as.matrix(GetAssayData(object = scrna_seurat, slot = "counts")))
   scrna_count_combined <- cbind(rownames(scrna_count), scrna_count)
   colnames(scrna_count_combined)[1] <- 'GENES'
@@ -25,8 +25,8 @@ generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
 
   print("Writing output to file")
   dir.create(fn_out, showWarnings = FALSE)
-  write.csv(scrna_count_combined, file = paste(fn_out, '/scRNA_data.csv', sep = ""), row.names = F)
-  write.csv(cell_type_labels_combined, file = paste(fn_out, '/cell_type_labels.csv', sep = ""), row.names = F)
+  write.csv(scrna_count_combined, file = paste(dir_out, '/scRNA_data.csv', sep = ""), row.names = F)
+  write.csv(cell_type_labels_combined, file = paste(dir_out, '/cell_type_labels.csv', sep = ""), row.names = F)
   print("Done")
 }
 
@@ -44,7 +44,7 @@ generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
 ##########################################################
 
 generate_cytospace_from_ST_seurat_object <- function(st_seurat,
-                                                     fn_out){
+                                                     dir_out){
   ST_expressions <- as.matrix(st_seurat@assays$Spatial@counts)
   ST_expressions <- cbind(rownames(ST_expressions), ST_expressions)
   colnames(ST_expressions)[1] <- 'GENES'
@@ -55,7 +55,7 @@ generate_cytospace_from_ST_seurat_object <- function(st_seurat,
   
   print("Writing output to file")
   dir.create(fn_out, showWarnings = FALSE)
-  write.csv(coordinates, file = paste(fn_out, '/Coordinates.csv', sep = ""), row.names = F)
-  write.csv(ST_expressions, file = paste(fn_out, '/ST_data.csv', sep = ""), row.names = F)
+  write.csv(coordinates, file = paste(dir_out, '/Coordinates.csv', sep = ""), row.names = F)
+  write.csv(ST_expressions, file = paste(dir_out, '/ST_data.csv', sep = ""), row.names = F)
   print("Done")
 }
