@@ -90,7 +90,11 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
                                                                                                                  
 ## File preparation
 If you have data in the form of Seurat objects, you can generate files formatted for CytoSPACE input via helper functions we have provided in the `R` script `generate_cytospace_from_seurat_object.R` in `cytospace/Prepare_input_files`.
-For producing CytoSPACE inputs from scRNA and ST Seurat objects, import the functions `generate_cytospace_from_scRNA_seurat_object` and `generate_cytospace_from_ST_seurat_object`, respectively, from `generate_cytospace_from_seurat_object.R`. They may be called as 
+For producing CytoSPACE inputs from scRNA and ST Seurat objects, import the functions `generate_cytospace_from_scRNA_seurat_object` and `generate_cytospace_from_ST_seurat_object`, respectively, from `generate_cytospace_from_seurat_object.R` by including 
+```bash
+source('/path/to/cytospace/Prepare_input_files/generate_cytospace_from_seurat_object.R')
+```
+in your R script. The functions may be called as 
 ```bash
 generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,fn_out)
 ```
@@ -100,11 +104,10 @@ generate_cytospace_from_ST_seurat_object(scRNA_Seurat_Object,fn_out)
 ```
 where `fn_out` is the path to the output directory to store the results.
 
-For ST data, if you wish to starting with raw outputs from Space Ranger, you can use the `R` script `generate_cytospace_input_from_spaceranger_output.R` to produce files formatted for CytoSPACE input.
+For ST data, if you wish to start with raw outputs from Space Ranger, you can use the `R` script `generate_cytospace_input_from_spaceranger_output.R` to produce files formatted for CytoSPACE input.
 
 To run `generate_cytospace_input_from_spaceranger_output.R` from the command line:
 ```bash
-conda install -c conda-forge r-hdf5r
 Rscript /path/to/generate_cytospace_input_from_spaceranger_output.R /path/to/ST_h5_directory /path/to/output
 ```
 
