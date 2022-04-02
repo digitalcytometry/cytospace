@@ -63,7 +63,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
 
 2. __A cell type label file:__
 - Cell type labels corresponding to the single cell IDs in the scRNA-seq gene expression matrix. 
-- Cell type label strings should be alphanumeric.
+- Cell type label strings should not have special characters. 
 - The table should contain two columns, where column 1 contains the single cell IDs corresponding to the columns of the scRNA-seq matrix and column 2 contains the corresponding cell type labels.
 - The columns must have a header. 
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/celllabelfile.png" width="250"> 
