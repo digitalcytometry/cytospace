@@ -310,7 +310,7 @@ pip install .
 once more before running. 
 
 ## Authors
-CytoSPACE was developed within the <a href="https://anlab.stanford.edu/" target="_blank">Newman Lab</a> by
+CytoSPACE was developed in the <a href="https://anlab.stanford.edu/" target="_blank">Newman Lab</a> by
 
 * Milad R. Vahid (miladrv)
 * Erin L. Brown (erinlbrown)
