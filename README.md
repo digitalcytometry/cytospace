@@ -52,7 +52,7 @@ pip install lapjv
 We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
 
 ## File format
-CytoSPACE requires 5 files as input. All files should be provided in tab or comma-delimited tabular input format (saved as .txt or .csv, respectively) with no double quotations. Further formatting details for each input file are specified below:
+CytoSPACE requires 5 files as input. All files should be provided in tab-delimited tabular input format (saved as .txt) with no double quotations. Further formatting details for each input file are specified below:
 
 1. __A scRNA-seq gene expression file:__
 - The matrix must be genes (rows) by cells (columns).
@@ -89,12 +89,24 @@ CytoSPACE requires 5 files as input. All files should be provided in tab or comm
 
                                                                                                                  
 ## File preparation
-If you are starting with outputs from Space Ranger (ST from 10x), you can use the `R` script `generate_cytospace_input_from_spaceranger_output.R` to produce files formatted for CytoSPACE input. This is included in `cytospace/Prepare_input_files`. Similarly, if you are starting with Seurat objects derived from any source, you can use the `R` functions within the `R` script `generate_cytospace_from_seurat_object.R` to produce files formatted for CytoSPACE input. To run `generate_cytospace_input_from_spaceranger_output.R` from the command line:
+If you have data in the form of Seurat objects, you can generate files formatted for CytoSPACE input via helper functions we have provided in the `R` script `generate_cytospace_from_seurat_object.R` in `cytospace/Prepare_input_files`.
+For producing CytoSPACE inputs from scRNA and ST Seurat objects, import the functions `generate_cytospace_from_scRNA_seurat_object` and `generate_cytospace_from_ST_seurat_object`, respectively, from `generate_cytospace_from_seurat_object.R`. They may be called as 
+```bash
+generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,fn_out)
+```
+and 
+```bash
+generate_cytospace_from_ST_seurat_object(scRNA_Seurat_Object,fn_out)
+```
+where `fn_out` is the path to the output directory to store the results.
+
+For ST data, if you wish to starting with raw outputs from Space Ranger, you can use the `R` script `generate_cytospace_input_from_spaceranger_output.R` to produce files formatted for CytoSPACE input.
+
+To run `generate_cytospace_input_from_spaceranger_output.R` from the command line:
 ```bash
 conda install -c conda-forge r-hdf5r
 Rscript /path/to/generate_cytospace_input_from_spaceranger_output.R /path/to/ST_h5_directory /path/to/output
 ```
-For producing CytoSPACE inputs from scRNA and ST Seurat objects, import the functions `generate_cytospace_from_scRNA_seurat_object` and `generate_cytospace_from_ST_seurat_object`, respectively, from `generate_cytospace_from_seurat_object.R`. For example, you can then call it as `generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,fn_out)`, where `fn_out` is the path to the output directory to store the results.
 
 ## Preprocessing
 To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
