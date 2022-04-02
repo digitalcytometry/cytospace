@@ -9,26 +9,36 @@ library(Seurat)
 # function inptuts
 #
 # 1. scRNA Seurat object 
-# 2. Path to the output directory to store the results, i.e., generated CytoSPACE input files
-#
+# 2. Path to the output directory to store the results. 
+#    Default is working directory.
+# 3. String to prefix output files with. Default is none.
 ##########################################################
 
 generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
-                                                        dir_out){
+                                                        dir_out='',fout_prefix=''){
   scrna_count <- as.data.frame(as.matrix(GetAssayData(object = scrna_seurat, slot = "counts")))
-  scrna_count_combined <- cbind(rownames(scrna_count), scrna_count)
-  colnames(scrna_count_combined)[1] <- 'GENES'
-  cell_type_labels <- data.frame(pbmc@meta.data$orig.ident)
-  rownames(cell_type_labels) <- colnames(scrna_count)
-  cell_type_labels_combined <- cbind(rownames(cell_type_labels), cell_type_labels)
-  colnames(cell_type_labels_combined) <- c('Cell IDs', 'CellType')
+  cell_names <- colnames(scrna_count)
+  scrna_count <- cbind(rownames(scrna_count), scrna_count)
+  colnames(scrna_count)[1] <- 'GENES'
+  cell_type_labels <- data.frame(Idents(scrna_seurat))
+  rownames(cell_type_labels) <- cell_names
+  cell_type_labels <- cbind(rownames(cell_type_labels), cell_type_labels)
+  colnames(cell_type_labels) <- c('Cell IDs', 'CellType')
 
   print("Writing output to file")
-  dir.create(fn_out, showWarnings = FALSE)
-  write.csv(scrna_count_combined, file = paste(dir_out, '/scRNA_data.csv', sep = ""), row.names = F)
-  write.csv(cell_type_labels_combined, file = paste(dir_out, '/cell_type_labels.csv', sep = ""), row.names = F)
+  if(nchar(dir_out)>0){
+    dir.create(dir_out, showWarnings = FALSE)
+    fout_scrna <- paste0(dir_out,'/',fout_prefix,'scRNA_data.txt')
+    fout_labels <- paste0(dir_out,'/',fout_prefix,'cell_type_labels.txt')  
+  } else{
+    fout_scrna <- paste0(fout_prefix,'scRNA_data.txt')
+    fout_labels <- paste0(fout_prefix,'cell_type_labels.txt')  
+  }
+  write.table(scrna_count, fout_scrna, row.names = F, sep='\t', quote = F)
+  write.table(cell_type_labels, file = fout_labels, row.names = F, sep='\t', quote = F)
   print("Done")
 }
+
 
 ##########################################################
 # README
