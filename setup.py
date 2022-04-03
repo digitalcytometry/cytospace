@@ -11,6 +11,7 @@ setup(
               'cytospace.post_processing'],
     package_dir={'cytospace': 'cytospace'},
     entry_points={'console_scripts':
-                      ['cytospace=cytospace.cytospace:run_cytospace']
+                      ['cytospace=cytospace.cytospace:run_cytospace',
+                       'cytospace-plot=cytospace.plot:run_cytospace_plot']
                   }
 )
