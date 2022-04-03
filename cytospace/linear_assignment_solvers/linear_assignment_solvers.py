@@ -13,9 +13,6 @@ def import_solver(solver_method):
         elif solver_method == "lapjv":
             from lapjv import lapjv
             solver = lapjv
-        #elif solver_method == "lapsolver":
-        #    from lapsolver import solve_dense
-        #    solver = solve_dense
         else:
             raise NotImplementedError(f"The solver {solver_method} is not a supported solver "
                                       "for the shortest augmenting path method, choose between "
@@ -36,8 +33,6 @@ def call_solver(solver, solver_method, cost_scaled):
         _, _, y = solver(cost_scaled)
     elif solver_method == "lapjv":
         _, y, _ = solver(cost_scaled)
-    #elif solver_method == "lapsolver":
-    #    _, y = solver(cost_scaled)
 
     return y
 

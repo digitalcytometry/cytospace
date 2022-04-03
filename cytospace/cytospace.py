@@ -2,7 +2,6 @@ import random
 import time
 import pandas as pd
 import numpy as np
-import os
 
 from cytospace.common import read_file, normalize_data, check_paths, argument_parser
 from cytospace.post_processing import plot_output, save_results
@@ -123,16 +122,13 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    rotation_flag=True, plot_visium=True, plot_off=False, spot_size=175, plot_marker = 'h',
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
- 
-    start_time = time.perf_counter()
-    os.makedirs(str(output_folder),exist_ok=True)
+     # Check paths
+    output_path = check_paths(output_folder, output_prefix)
+
     # Record log
-    fout_log = str(output_folder)+'/'+output_prefix+'log.txt'
-
-    with open(fout_log,"w") as f:
+    fout_log = output_path / f"{output_prefix}log.txt"
+    with open(fout_log, "w") as f:
         f.write("CytoSPACE log file \n\nStart time: "+str(time.asctime( time.localtime(time.time()) ))+"\n")
-
-    with open(fout_log,"a") as f:
         f.write("\nINPUT ARGUMENTS\n")
         f.write("scRNA_path: "+str(scRNA_path)+"\n")
         f.write("cell_type_path: "+str(cell_type_path)+"\n")
@@ -160,7 +156,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     if solver_method == "lapjv" or solver_method == "lapjv_compat":
         solver = import_solver(solver_method)
     else:
-        solver = 'None'
+        solver = None
 
     # Read data
     print("Read and validate data ...")
@@ -171,9 +167,6 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     print(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds\n")
-
-    # Check paths
-    output_path = check_paths(output_folder, output_prefix)
 
     # Set seed
     random.seed(seed)

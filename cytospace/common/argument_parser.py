@@ -33,7 +33,7 @@ def argument_parser():
     parser.add_argument("-op", "--output-prefix", type=str, default="",
                         help="Prefix of results stored in the 'output_folder'")
     parser.add_argument("-d", "--delimiter", type=str, default="\t",
-                        help="Set delimiter of the input files, default '\t'")
+                        help="Set delimiter of the input files, default '\\t'")
 
     # Solver / method options
     parser.add_argument("-sm", "--solver-method", default="lapjv",

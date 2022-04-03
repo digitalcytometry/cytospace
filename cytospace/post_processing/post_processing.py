@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import csv
-import pickle
 from scipy.spatial.transform import Rotation
 from cytospace.common import read_file
 
@@ -100,9 +99,8 @@ def save_results(output_path, output_prefix, cell_ids_selected, assigned_locatio
                                 'SpotID': assigned_node_names,
                                 'row': list(assigned_locations.iloc[:, 0]),
                                 'col': list(assigned_locations.iloc[:, 1])})
-    fout = str(output_path)+'/'+str(output_prefix)+'assigned_locations.csv'
+    fout = output_path / f'{output_prefix}assigned_locations.csv'
     df_locations.to_csv(fout,index=False)
-  
     
     metadata = df_locations.copy()
     df = pd.DataFrame(columns=metadata['CellType'].unique(),index=metadata['SpotID'].unique())
@@ -112,17 +110,17 @@ def save_results(output_path, output_prefix, cell_ids_selected, assigned_locatio
     df['Total cells'] = df.sum(axis=1)
     df = df.astype(int)
     df.index.name='SpotID'
-    fout = str(output_path)+'/'+str(output_prefix)+'cell_type_assignments_by_spot.csv'
+    fout = output_path / f'{output_prefix}cell_type_assignments_by_spot.csv'
     df.to_csv(fout)
 
 
     total_cells = np.array(df['Total cells'],dtype=float)
     df = df.iloc[:,:-1].copy()
     df_fracs = df.div(total_cells,axis=0)
-    fout = str(output_path)+'/'+str(output_prefix)+'fractional_abundances_by_spot.csv'
+    fout = output_path / f'{output_prefix}fractional_abundances_by_spot.csv'
     df_fracs.to_csv(fout)
 
-    fout = str(output_path)+'/'+str(output_prefix)+'new_cell_type.csv'
+    fout = output_path / f'{output_prefix}new_cell_type.csv'
 
     with open(fout,'w',newline = '') as f:
         thewriter = csv.writer(f, delimiter = ',')
