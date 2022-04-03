@@ -7,11 +7,11 @@ setup(
     version='0.0.1',
     packages=['cytospace',
               'cytospace.common',
-		      'cytospace.linear_assignment_solvers',
+              'cytospace.linear_assignment_solvers',
               'cytospace.post_processing'],
     package_dir={'cytospace': 'cytospace'},
     entry_points={'console_scripts':
                       ['cytospace=cytospace.cytospace:run_cytospace',
-                       'cytospace-plot=cytospace.plot:run_cytospace_plot']
+                       'cytospace-plot=cytospace.post_processing.plot:run_cytospace_plot']
                   }
 )

@@ -103,7 +103,8 @@ def plot_results(assigned_locations_path, coordinates_path, output_filename, num
             ax.axis("off")
 
             index = s + 1
-            plt.savefig(output_filename)
+            output_filename = Path(output_filename)
+            plt.savefig(output_filename.parent / (output_filename.stem + f'_{index}' + output_filename.suffix))
 
         clusters = clusters - number_of_cells_per_page
         plt.close()

@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 from cytospace.common import read_file, normalize_data, check_paths, argument_parser
-from cytospace.post_processing import plot_output, save_results
+from cytospace.post_processing import save_results, plot_results
 from cytospace.linear_assignment_solvers import (calculate_cost, match_solution, import_solver,
                                                  call_solver)
 
@@ -185,12 +185,15 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                                         cell_number_to_node_assignment, solver_method, solver, seed)
 
     print('Saving results ...')
+    assigned_locations_path = str(output_path / f'{output_prefix}assigned_locations.csv')
     save_results(output_path, output_prefix, cell_ids_selected, assigned_locations,
-                 new_cell_index, index, assigned_nodes, st_path, coordinates_path, cell_type_path)
+                 new_cell_index, index, assigned_nodes, st_path, coordinates_path,
+                 cell_type_path, assigned_locations_path)
 
     if not plot_off:
-        plot_output(cell_type_fraction_estimation_path, num_row, num_column, rotation_degrees, rotation_flag, plot_visium,
-                    spot_size, plot_marker, output_path, output_prefix, assigned_nodes, new_cell_index, coordinates_data)
+        output_filename = output_path / "plot_cell_type_locations.pdf"
+        plot_results(assigned_locations_path, coordinates_path, output_filename, num_row, num_column,
+                     rotation_flag, plot_visium, rotation_degrees, spot_size, plot_marker)
 
     print(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds")
     with open(fout_log,"a") as f:
