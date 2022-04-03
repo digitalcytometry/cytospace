@@ -33,7 +33,7 @@ cd cytospace
 ```
 4. Create a conda environment with the required dependencies:
 ```bash
-conda env create -f environment_withoutlapjv.yml
+conda env create -f environment.yml
 ```
 5. Activate the `cytospace` environment you just created:
 ```bash
