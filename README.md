@@ -111,13 +111,8 @@ generate_cytospace_from_ST_seurat_object(ST_Seurat_Object,dir_out,fout_prefix)
 within your R script. The first argument (required) designates your input Seurat object, `slice` (optional, default is `slice1`) provides the name of your slice as stored in your Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `ST_data.txt` and `Coordinates.txt`.
 
 ### From raw Space Ranger outputs
-If you are starting from Space Ranger outputs, an easy way to prepare inputs formatted for CytoSPACE is by loading the Space Ranger outputs into a Seurat object with .
-<a href="https://satijalab.org/seurat/reference/load10x_spatial" target="_blank">Load10X_Spatial</a>
-
-For ST data, if you wish to start with raw outputs from Space Ranger, you can use the `R` script `generate_cytospace_input_from_spaceranger_output.R` to produce files formatted for CytoSPACE input. To run `generate_cytospace_input_from_spaceranger_output.R` from the command line:
-```bash
-Rscript /path/to/generate_cytospace_input_from_spaceranger_output.R /path/to/ST_h5_directory /path/to/output
-```
+If you are starting from Space Ranger outputs, an easy way to prepare inputs formatted for CytoSPACE is by loading the Space Ranger outputs into a Seurat object with
+<a href="https://satijalab.org/seurat/reference/load10x_spatial" target="_blank">Load10X_Spatial</a>. Once you have a Seurat object, you can use the helper script provided above.
 
 ## Preprocessing
 To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
