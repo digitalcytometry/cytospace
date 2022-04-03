@@ -260,10 +260,6 @@ usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDI
                  [-sm {lapjv,lapjv_compat,lap_CSPR}] [-mcn MEAN_CELL_NUMBERS] [-se SEED] [-p] [-nr NUM_ROW]
                  [-nc NUM_COLUMN] [-r] [-pv] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE] [-pm PLOT_MARKER]
 
-CytoSPACE is a computational strategy for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST)
-data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear
-programming-based optimization routine.
-
 optional arguments:
   -h, --help            show this help message and exit
   -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
@@ -271,14 +267,14 @@ optional arguments:
   -op OUTPUT_PREFIX, --output-prefix OUTPUT_PREFIX
                         Prefix of results stored in the 'output_folder'
   -d DELIMITER, --delimiter DELIMITER
-                        Set delimiter of the input files, for instance '\t'
+                        Set delimiter of the input files, default ' '
   -sm {lapjv,lapjv_compat,lap_CSPR}, --solver-method {lapjv,lapjv_compat,lap_CSPR}
-                        Which solver to use for the linear assignment problem.
+                        Which solver to use for the linear assignment problem, default 'lapjv'
   -mcn MEAN_CELL_NUMBERS, --mean-cell-numbers MEAN_CELL_NUMBERS
-                        Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy spatial
+                        Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial
                         transcriptomics data, set to 20
   -se SEED, --seed SEED
-                        Set seed for random generators
+                        Set seed for random generators, default 1
   -p, --plot-off        Turn create plots on/off
   -nr NUM_ROW, --num-row NUM_ROW
                         Number of rows in pdf figure
