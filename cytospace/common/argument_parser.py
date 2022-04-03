@@ -32,16 +32,16 @@ def argument_parser():
                         default="cytospace_results")
     parser.add_argument("-op", "--output-prefix", type=str, default="",
                         help="Prefix of results stored in the 'output_folder'")
-    parser.add_argument("-d", "--delimiter", type=str, default=",",
-                        help="Set delimiter of the input files, for instance '\\t'")
+    parser.add_argument("-d", "--delimiter", type=str, default="\t",
+                        help="Set delimiter of the input files, default '\t'")
 
     # Solver / method options
     parser.add_argument("-sm", "--solver-method", default="lapjv",
-                        help="Which solver to use for the linear assignment problem.",
+                        help="Which solver to use for the linear assignment problem, default 'lapjv'",
                         choices=["lapjv", "lapjv_compat", "lap_CSPR"])
     parser.add_argument("-mcn", "--mean-cell-numbers", type=int, default=5,
-                        help="Mean number of cells per spot. Default is set to 5 (Visium). If analyzing legacy spatial transcriptomics data, set to 20")
-    parser.add_argument("-se", "--seed", help="Set seed for random generators", type=int,
+                        help="Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial transcriptomics data, set to 20")
+    parser.add_argument("-se", "--seed", help="Set seed for random generators, default 1", type=int,
                         default=1)
 
     # Plotting
