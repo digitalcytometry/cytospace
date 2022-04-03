@@ -207,7 +207,7 @@ cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata
 ```
 
 ```bash
-cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -sm lap_CSPR -pv
+cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -sm lap_CSPR -nv
 ```
 Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead.
 
@@ -244,7 +244,7 @@ A log file recording CytoSPACE inputs and running times is output in the file `l
 ## Customizing plotting outputs
 CytoSPACE provides two mechanisms for plotting output heatmaps. First, CytoSPACE generates heatmaps by default within the main function call.  By default, the geometry and plotting parameters have been optimized for standard 10x Visium spatial slides. To plot non-Visium spatial data, the `plot-Visium` flag should be set to `False`. As an example, to change the plotting parameters, e.g., `-nr` (number of rows of heatmaps per page), `-nc` (number of columns of heatmaps per page), `-ss` (spot size), -pm (plot marker which indicates the shape of the spots, e.g., `-pm s` plots squares and `-pm h` plots hexagons) and `-pv` (plot Visium), from command line, for the melanoma dataset:
 ```bash
-cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -nr 5 -nc 3 -ss 1100 -pm s -pv
+cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -nr 5 -nc 3 -ss 1100 -pm s -nv
 ```
 `cytospace-plot` can be used to generate heatmaps from CytoSPACE outputs. There are three paths that need to be set by users: `-alp` (assigned_locations_path), `-cp` (coordinates_path) and `-o` (output_filename). After CytoSPACE outputs have been generated, `cytospace-plot` can be run from the command line for the sample breast cancer data as:
 ```bash
