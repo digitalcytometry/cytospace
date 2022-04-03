@@ -4,10 +4,10 @@ import argparse
 def add_plotting_arguments(parser):
     parser.add_argument("-nr", "--num-row", help="Number of rows in pdf figure", type=int,
                         default=4)
-    parser.add_argument("-nc", "--num-column", help="Number of coulmns in pdf figure", type=int,
+    parser.add_argument("-nc", "--num-column", help="Number of columns in pdf figure", type=int,
                         default=4)
     parser.add_argument("-r", "--rotation-flag", help="Rotate plot", action="store_false")
-    parser.add_argument("-pv", "--plot-visium", help="Plot based on standard 10x Visium slide dimensions", action="store_false")
+    parser.add_argument("-nv", "--plot-nonvisium", help="Plot based on standard 10x Visium slide dimensions", action="store_false")
     parser.add_argument("-rd", "--rotation-degrees", help="Rotation on plot", type=int,
                         default=270)
     parser.add_argument("-ss", "--spot-size", help="Set size of ST spots", type=int,
