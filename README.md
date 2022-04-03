@@ -191,7 +191,7 @@ Zip files containing the example datasets can be downloaded from the following l
 To download from the command line using `gdown`:
 1. Breast cancer
    ```bash
-   gdown --fuzzy https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing
+   gdown --fuzzy https://drive.google.com/file/d/1ODN7Ux2x9XNl1K8cOLl4JxIZpjJL2GwG/view?usp=sharing
    unzip CytoSPACE_example_breast_cancer.zip
    ```
 2. Melanoma
