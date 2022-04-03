@@ -230,11 +230,11 @@ For comparison, consider the pathologist annotations of this ST sample as provid
 
 The number of cells per spot by cell type as well as in total are provided in the file `cell_type_assignments_by_spot.csv`.
 
-<img width="600" src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_assignments_by_spot.png">
+<img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_assignments_by_spot.png">
 
 Fractional abundances of each cell type are returned in the file `fractional_abundances_by_spot.csv`
 
-<img width="600" src="https://github.com/digitalcytometry/cytospace/blob/main/images/fractional_abundances_by_spot.png">
+<img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/fractional_abundances_by_spot.png">
 
 A log file recording CytoSPACE inputs and running times is output in the file `log.txt`:
 
