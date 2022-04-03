@@ -207,7 +207,7 @@ cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata
 ```
 
 ```bash
-cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -sm lap_CSPR -nr 5 -nc 3 -ss 1100 -pm s -pv
+cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -nr 5 -nc 3 -ss 1100 -pm s -sm lap_CSPR
 ```
 Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead.
 
