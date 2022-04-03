@@ -49,8 +49,11 @@ generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
 # function inptuts
 #
 # 1. ST Seurat object 
-# 2. Path to the output directory to store the results, i.e., generated CytoSPACE input files
-#
+# 2. Slice name. Default "slice1".
+# 3. Path to the output directory to store the results.
+#    Default is working directory.
+# 4. String to prefix output files with. Default is none.
+#  
 ##########################################################
 
 generate_cytospace_from_ST_seurat_object <- function(st_seurat,
@@ -75,7 +78,7 @@ generate_cytospace_from_ST_seurat_object <- function(st_seurat,
     fout_st <- paste0(fout_prefix,'ST_data.txt')
     fout_coords <- paste0(fout_prefix,'Coordinates.txt')  
   }
-  write.table(ST_expression, fout_st, row.names = F, sep='\t', quote = F)
+  write.table(ST_expressions, fout_st, row.names = F, sep='\t', quote = F)
   write.table(coordinates, file = fout_coords, row.names = F, sep='\t', quote = F)
   print("Done")
 }
