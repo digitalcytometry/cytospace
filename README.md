@@ -115,7 +115,7 @@ If you are starting from Space Ranger outputs, an easy way to prepare inputs for
 <a href="https://satijalab.org/seurat/reference/load10x_spatial" target="_blank">Load10X_Spatial</a>. Once you have a Seurat object, you can use the helper script provided above.
 
 ## Preprocessing
-To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as Spatial Seurat, CIBERSORTx, or SPOTlight. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
+To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as <a href="https://satijalab.org/seurat/articles/spatial_vignette.html" target="_blank">Spatial Seurat</a>, <a href="https://www.sanger.ac.uk/tool/cell2location/" target="_blank">cell2location</a>, <a href="https://github.com/MarcElosua/SPOTlight" target="_blank">SPOTlight</a>, or <a href="https://cibersortx.stanford.edu/" target="_blank">CIBERSORTx</a>. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
 
 Run the script `get_cellfracs_seuratv3.R` from command line with the following inputs:
 1. Path to scRNA counts file (same scRNA-seq gene expression matrix input file format as specified in __File format__ section point 1)
@@ -203,12 +203,13 @@ To download from the command line using `gdown`:
 ### Commands for running example analyses:
 Once the example files are downloaded, the commands below can be run from the folders where the example datasets are located:
 ```bash
-cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_GEP.txt -cp brca_STdata_coordinates.txt -ctfep brca_cell_fraction_estimates.txt
+cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_GEP.txt -cp brca_STdata_coordinates.txt -ctfep brca_cell_fraction_estimates.txt -o cytospace_results_brca -sm lap_CSPR
 ```
 
 ```bash
-cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20
+cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -sm lap_CSPR -nr 5 -nc 3 -ss 1100 -pm s -pv
 ```
+Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead.
 
 ## CytoSPACE output files for example breast cancer data
 The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned. 
@@ -230,11 +231,11 @@ For comparison, consider the pathologist annotations of this ST sample as provid
 
 The number of cells per spot by cell type as well as in total are provided in the file `cell_type_assignments_by_spot.csv`.
 
-<img width="600" src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_assignments_by_spot.png">
+<img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_assignments_by_spot.png">
 
 Fractional abundances of each cell type are returned in the file `fractional_abundances_by_spot.csv`
 
-<img width="600" src="https://github.com/digitalcytometry/cytospace/blob/main/images/fractional_abundances_by_spot.png">
+<img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/fractional_abundances_by_spot.png">
 
 A log file recording CytoSPACE inputs and running times is output in the file `log.txt`:
 
