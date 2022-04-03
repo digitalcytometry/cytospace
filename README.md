@@ -47,7 +47,7 @@ pip install .
 
 7. (Recommended) Install package `lapjv` by executing:
 ```bash
-pip install lapjv
+pip install lapjv==1.3.14
 ```
 We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
 
@@ -89,20 +89,30 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
 
                                                                                                                  
 ## File preparation
-If you have data in the form of Seurat objects, you can generate files formatted for CytoSPACE input via helper functions we have provided in the `R` script `generate_cytospace_from_seurat_object.R` in `cytospace/Prepare_input_files`.
-For producing CytoSPACE inputs from scRNA and ST Seurat objects, import the functions `generate_cytospace_from_scRNA_seurat_object` and `generate_cytospace_from_ST_seurat_object`, respectively, from `generate_cytospace_from_seurat_object.R` by including 
+If you have data in the form of Seurat objects, you can generate files formatted for CytoSPACE input via helper functions we have provided in the `R` script `generate_cytospace_from_seurat_object.R` in `cytospace/Prepare_input_files`. To use these helper functions, first import them from `generate_cytospace_from_seurat_object.R` by including 
 ```bash
 source('/path/to/generate_cytospace_from_seurat_object.R')
 ```
-in your R script. The functions may be called as 
+in your R script. 
+
+### From scRNA-seq Seurat object
+For producing CytoSPACE inputs from scRNA Seurat objects, we provide the function `generate_cytospace_from_scRNA_seurat_object` which may be called as
 ```bash
 generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,dir_out,fout_prefix)
 ```
-and 
+within your R script. The first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `scRNA_data.txt` and `cell_type_labels.txt`. Please note that `Idents(scRNA_Seurat_Object)` must be set to include cell types.
+
+
+### From Spatial Seurat object
+For producing CytoSPACE inputs from ST Seurat objects, we provide the function `generate_cytospace_from_ST_seurat_object` which may be called as
 ```bash
-generate_cytospace_from_ST_seurat_object(scRNA_Seurat_Object,dir_out,fout_prefix)
+generate_cytospace_from_ST_seurat_object(ST_Seurat_Object,dir_out,fout_prefix)
 ```
-where the first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `scRNA_data.txt` and `cell_type_labels.txt` for scRNA-seq Seurat objects and as `ST_data.txt` and `Coordinates.txt` for ST Seurat objects. Please note for scRNA-seq Seurat objects that `Idents(scRNA_Seurat_Object)` should be set to include cell types.
+within your R script. The first argument (required) designates your input Seurat object, `slice` (optional, default is `slice1`) provides the name of your slice as stored in your Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `ST_data.txt` and `Coordinates.txt`.
+
+### From raw Space Ranger outputs
+If you are starting from Space Ranger outputs, an easy way to prepare inputs formatted for CytoSPACE is by loading the Space Ranger outputs into a Seurat object with .
+<a href="https://satijalab.org/seurat/reference/load10x_spatial" target="_blank">Load10X_Spatial</a>
 
 For ST data, if you wish to start with raw outputs from Space Ranger, you can use the `R` script `generate_cytospace_input_from_spaceranger_output.R` to produce files formatted for CytoSPACE input. To run `generate_cytospace_input_from_spaceranger_output.R` from the command line:
 ```bash
