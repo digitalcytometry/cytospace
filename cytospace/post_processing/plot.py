@@ -18,7 +18,7 @@ def argument_parser():
                           help="Path to the assigned locations by CytoSPACE", default=None)
     required.add_argument("-cp", "--coordinates-path", type=str, required=True,
                          help="Path to transcriptomics data (coordinates)", default=None)
-    parser.add_argument("-o", "--output-filename", type=str, required=True,
+    required.add_argument("-o", "--output-filename", type=str, required=True,
                         help="Output file name, i.e. 'cytospace_results.pdf'",  default=None)
 
     # Plotting
