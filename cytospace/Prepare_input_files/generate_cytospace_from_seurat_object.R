@@ -54,18 +54,28 @@ generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
 ##########################################################
 
 generate_cytospace_from_ST_seurat_object <- function(st_seurat,
-                                                     dir_out){
+                                                     slice='slice1',
+                                                     dir_out='',
+                                                     fout_prefix=''){
   ST_expressions <- as.matrix(st_seurat@assays$Spatial@counts)
   ST_expressions <- cbind(rownames(ST_expressions), ST_expressions)
   colnames(ST_expressions)[1] <- 'GENES'
-  coordinates_raw <- st_seurat@images$slice1@coordinates
-  coordinates <- coordinates_raw[,-1]
+  coordinates_raw <- st_seurat@images[[slice]]@coordinates
+  coordinates <- coordinates_raw[,c('row','col')]
   coordinates <- cbind(rownames(coordinates), coordinates)
   colnames(coordinates)[1] <- 'Spot ID'
   
   print("Writing output to file")
-  dir.create(fn_out, showWarnings = FALSE)
-  write.csv(coordinates, file = paste(dir_out, '/Coordinates.csv', sep = ""), row.names = F)
-  write.csv(ST_expressions, file = paste(dir_out, '/ST_data.csv', sep = ""), row.names = F)
+  print("Writing output to file")
+  if(nchar(dir_out)>0){
+    dir.create(dir_out, showWarnings = FALSE)
+    fout_st <- paste0(dir_out,'/',fout_prefix,'ST_data.txt')
+    fout_coords <- paste0(dir_out,'/',fout_prefix,'Coordinates.txt')  
+  } else{
+    fout_st <- paste0(fout_prefix,'ST_data.txt')
+    fout_coords <- paste0(fout_prefix,'Coordinates.txt')  
+  }
+  write.table(ST_expression, fout_st, row.names = F, sep='\t', quote = F)
+  write.table(coordinates, file = fout_coords, row.names = F, sep='\t', quote = F)
   print("Done")
 }
