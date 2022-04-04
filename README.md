@@ -237,7 +237,7 @@ Fractional abundances of each cell type are returned in the file `fractional_abu
 
 Zip files of expected CytoSPACE outputs (with `lap_CSPR` solver) are available to download at the following links:
 1. <a href="https://drive.google.com/file/d/1CLfy4Txez8ThID8YzIH04hlvrBRCQ4Rh/view?usp=sharing" target="_blank">Breast cancer results</a>
-2. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma results</a> 
+2. <a href="https://drive.google.com/file/d/1X4jMwctRNmqCRIJcop2hL3jRdlhxnnlc/view?usp=sharing" target="_blank">Melanoma results</a> 
 
 To download from the command line using `gdown`:
 1. Breast cancer
@@ -247,12 +247,12 @@ To download from the command line using `gdown`:
    ```
 2. Melanoma
    ```bash
-   gdown --fuzzy https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing
+   gdown --fuzzy https://drive.google.com/file/d/1X4jMwctRNmqCRIJcop2hL3jRdlhxnnlc/view?usp=sharing
    unzip CytoSPACE_example_melanoma_results.zip
    ```
 
 ## Customizing plotting outputs
-CytoSPACE provides two mechanisms for plotting output heatmaps. First, CytoSPACE generates heatmaps by default within the main function call.  By default, the geometry and plotting parameters have been optimized for standard 10x Visium spatial slides. To plot non-Visium spatial data, the `plot-Visium` flag should be set to `False`. As an example, to change the plotting parameters, e.g., `-nr` (number of rows of heatmaps per page), `-nc` (number of columns of heatmaps per page), `-ss` (spot size), -pm (plot marker which indicates the shape of the spots, e.g., `-pm s` plots squares and `-pm h` plots hexagons) and `-pv` (plot Visium), from command line, for the melanoma dataset:
+CytoSPACE provides two mechanisms for plotting output heatmaps. First, CytoSPACE generates heatmaps by default within the main function call.  By default, the geometry and plotting parameters have been optimized for standard 10x Visium spatial slides. To plot non-Visium spatial data, the `plot-nonvisium` flag should be set to `True`. As an example, to change the plotting parameters, e.g., `-nr` (number of rows of heatmaps per page), `-nc` (number of columns of heatmaps per page), `-ss` (spot size), -pm (plot marker which indicates the shape of the spots, e.g., `-pm s` plots squares and `-pm h` plots hexagons) and `-nv` (plot non-Visium), from command line, for the melanoma dataset:
 ```bash
 cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -nr 5 -nc 3 -ss 1100 -pm s -nv
 ```
@@ -292,7 +292,7 @@ optional arguments:
   -nc NUM_COLUMN, --num-column NUM_COLUMN
                         Number of coulmns in pdf figure
   -r, --rotation-flag   Rotate plot
-  -nv, --plot-nonvisium    Plot based on standard 10x Visium slide dimensions
+  -nv, --plot-nonvisium    Plot custom slide dimensions
   -rd ROTATION_DEGREES, --rotation-degrees ROTATION_DEGREES
                         Rotation on plot
   -ss SPOT_SIZE, --spot-size SPOT_SIZE
