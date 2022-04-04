@@ -119,7 +119,7 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
 
 def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    cell_type_fraction_estimation_path, output_folder="cytospace_results",
-                   rotation_flag=True, plot_visium=True, plot_off=False, spot_size=175, plot_marker = 'h',
+                   rotation_flag=True, plot_nonvisium=False, plot_off=False, spot_size=175, plot_marker = 'h',
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
      # Check paths
@@ -193,7 +193,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     if not plot_off:
         output_filename = output_path / "plot_cell_type_locations.pdf"
         plot_results(assigned_locations_path, coordinates_path, output_filename, num_row, num_column,
-                     rotation_flag, plot_visium, rotation_degrees, spot_size, plot_marker)
+                     rotation_flag, plot_nonvisium, rotation_degrees, spot_size, plot_marker)
 
     print(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds")
     with open(fout_log,"a") as f:
