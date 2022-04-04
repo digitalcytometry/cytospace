@@ -262,7 +262,7 @@ cytospace-plot -alp cytospace_results_brca/assigned_locations.csv -cp  brca_STda
 ```
 and for the sample melanoma data as: 
 ```bash
-cytospace-plot -alp cytospace_results_melanoma/assigned_locations.csv -cp  melanoma_STdata_slide1_coordinates.txt -o melanoma_results.pdf -nr 5 -nc 3 -ss 1100 -pm s -pv
+cytospace-plot -alp cytospace_results_melanoma/assigned_locations.csv -cp  melanoma_STdata_slide1_coordinates.txt -o melanoma_results.pdf -nr 5 -nc 3 -ss 1100 -pm s -nv
 ```
 ## Extended usage details
 ```
