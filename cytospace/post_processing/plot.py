@@ -83,7 +83,7 @@ def plot_results(assigned_locations_path, coordinates_path, output_filename, num
             else:
                ps = plt.scatter(x, y, s=spot_size, c=node_assignment, marker=plot_marker)
 
-            if !plot_nonvisium:
+            if not plot_nonvisium:
                 len_x = (np.max(x) - np.min(x))
                 len_y = (np.max(y) - np.min(y))
                 x_limit = (127 - len_x)/2
