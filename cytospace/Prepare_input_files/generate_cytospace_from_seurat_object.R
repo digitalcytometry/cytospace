@@ -69,7 +69,6 @@ generate_cytospace_from_ST_seurat_object <- function(st_seurat,
   colnames(coordinates)[1] <- 'Spot ID'
   
   print("Writing output to file")
-  print("Writing output to file")
   if(nchar(dir_out)>0){
     dir.create(dir_out, showWarnings = FALSE)
     fout_st <- paste0(dir_out,'/',fout_prefix,'ST_data.txt')
