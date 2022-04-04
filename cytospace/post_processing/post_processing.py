@@ -55,11 +55,3 @@ def save_results(output_path, output_prefix, cell_ids_selected, assigned_locatio
     df_fracs = df.div(total_cells,axis=0)
     fout = output_path / f'{output_prefix}fractional_abundances_by_spot.csv'
     df_fracs.to_csv(fout)
-
-    fout = output_path / f'{output_prefix}new_cell_type.csv'
-
-    with open(fout,'w',newline = '') as f:
-        thewriter = csv.writer(f, delimiter = ',')
-        thewriter.writerow( ('n') )
-        for row in range(new_cell_index.shape[0]):
-            thewriter.writerow([new_cell_index[row]])
