@@ -135,7 +135,7 @@ Rscript /path/to/get_cellfracs_seuratv3.R melanoma_scRNA_GEP.txt melanoma_scRNA_
 3. We use `Seurat v3` for estimating cell fractions, and this is installed as part of the CytoSPACE environment. If you want to run other analyses using more recent versions of Seurat after running CytoSPACE, for example Seurvat v4, make sure to first __deactivate the CytoSPACE environment__ once you are done running CytoSPACE. This is done using the command `conda deactivate cytospace`.
 
 ## Running CytoSPACE
-CytoSPACE can be called from the command line from any folder using `cytospace` once the conda environment is activated via `conda activate cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
+After activating the `cytospace` conda environment via `conda activate cytospace`, CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
 
 A typical CytoSPACE run with default settings would look like this: 
  ```bash
