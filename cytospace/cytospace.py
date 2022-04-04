@@ -106,7 +106,9 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
         cost_scaled = np.transpose(cost_scaled)
         cost_scaled_int = cost_scaled.astype(int)
         cost_scaled_int_list = cost_scaled_int.tolist()
+        t0 = time.perf_counter()
         assignment = match_solution(cost_scaled_int_list)
+        print(f"Time to solve LAP-problem: {round(time.perf_counter() - t0, 2)} seconds")
         assigned_nodes = location_repeat[assignment[:, 0].astype(int)]
         index = assigned_nodes.tolist()
         assigned_locations = coordinates.iloc[index]
