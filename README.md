@@ -322,6 +322,7 @@ To update your local installation of CytoSPACE following updates of this GitHub 
 ```bash
 git pull
 conda env update --name cytospace --file environment.yml
+conda activate cytospace
 pip install .
 ```
 If you have made local updates to your version of the CytoSPACE source code, you should execute 
