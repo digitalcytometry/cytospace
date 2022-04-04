@@ -329,7 +329,7 @@ If you have made local updates to your version of the CytoSPACE source code, you
 ```bash
 pip install .
 ``` 
-once more before running. 
+before running. 
 
 ## Authors
 CytoSPACE was developed in the <a href="https://anlab.stanford.edu/" target="_blank">Newman Lab</a> by
