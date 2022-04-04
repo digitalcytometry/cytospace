@@ -49,17 +49,17 @@ generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
 # function inptuts
 #
 # 1. ST Seurat object 
-# 2. Slice name. Default "slice1".
-# 3. Path to the output directory to store the results.
+# 2. Path to the output directory to store the results.
 #    Default is working directory.
-# 4. String to prefix output files with. Default is none.
+# 3. String to prefix output files with. Default is none.
+# 4. Slice name. Default "slice1".
 #  
 ##########################################################
 
 generate_cytospace_from_ST_seurat_object <- function(st_seurat,
-                                                     slice='slice1',
                                                      dir_out='',
-                                                     fout_prefix=''){
+                                                     fout_prefix='',
+                                                     slice='slice1'){
   ST_expressions <- as.matrix(st_seurat@assays$Spatial@counts)
   ST_expressions <- cbind(rownames(ST_expressions), ST_expressions)
   colnames(ST_expressions)[1] <- 'GENES'
