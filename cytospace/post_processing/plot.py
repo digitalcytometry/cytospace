@@ -29,7 +29,7 @@ def argument_parser():
     return arguments.__dict__
 
 
-def plot_results(assigned_locations_path, coordinates_path, output_filename, num_row=4, num_column=4, rotation_flag=True, plot_visium=True,
+def plot_results(assigned_locations_path, coordinates_path, output_filename, num_row=4, num_column=4, rotation_flag=True, plot_nonvisium=False,
                  rotation_degrees=270, spot_size=175, plot_marker='h'):
     # Read data
     coordinates = read_file(coordinates_path)
@@ -83,7 +83,7 @@ def plot_results(assigned_locations_path, coordinates_path, output_filename, num
             else:
                ps = plt.scatter(x, y, s=spot_size, c=node_assignment, marker=plot_marker)
 
-            if plot_visium:
+            if !plot_nonvisium:
                 len_x = (np.max(x) - np.min(x))
                 len_y = (np.max(y) - np.min(y))
                 x_limit = (127 - len_x)/2
