@@ -98,7 +98,7 @@ in your R script.
 ### From scRNA-seq Seurat object
 For producing CytoSPACE inputs from scRNA Seurat objects, we provide the function `generate_cytospace_from_scRNA_seurat_object` which may be called as
 ```bash
-generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,dir_out,fout_prefix)
+generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,dir_out='',fout_prefix='')
 ```
 within your R script. The first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `scRNA_data.txt` and `cell_type_labels.txt`. Please note that `Idents(scRNA_Seurat_Object)` must be set to include cell types.
 
@@ -106,7 +106,7 @@ within your R script. The first argument (required) designates your input Seurat
 ### From Spatial Seurat object
 For producing CytoSPACE inputs from ST Seurat objects, we provide the function `generate_cytospace_from_ST_seurat_object` which may be called as
 ```bash
-generate_cytospace_from_ST_seurat_object(ST_Seurat_Object,dir_out,fout_prefix)
+generate_cytospace_from_ST_seurat_object(ST_Seurat_Object,dir_out='',fout_prefix='',slice=slice1)
 ```
 within your R script. The first argument (required) designates your input Seurat object, `slice` (optional, default is `slice1`) provides the name of your slice as stored in your Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `ST_data.txt` and `Coordinates.txt`.
 
