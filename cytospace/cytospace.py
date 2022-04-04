@@ -137,7 +137,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         f.write("cell_type_fraction_estimation_path: "+str(cell_type_fraction_estimation_path)+"\n")
         f.write("output_folder: "+str(output_folder)+"\n")
         f.write("rotation_flag: "+str(rotation_flag)+"\n")
-        f.write("plot_visium: "+str(plot_visium)+"\n")
+        f.write("plot_nonvisium: "+str(plot_nonvisium)+"\n")
         f.write("plot_off: "+str(plot_off)+"\n")
         f.write("spot_size: "+str(spot_size)+"\n")
         f.write("plot_marker: "+str(plot_marker)+"\n")
