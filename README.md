@@ -235,15 +235,14 @@ The number of cells per spot by cell type as well as in total are provided in th
 
 Fractional abundances of each cell type are returned in the file `fractional_abundances_by_spot.csv`, and a log file recording CytoSPACE inputs and running times is output in the file `log.txt`.
 
-Full expected CytoSPACE outputs (with `lap_CSPR` solver) are available to download at the following links:
-Zip files containing the example datasets can be downloaded from the following links:
-1. <a href="https://drive.google.com/file/d/1ODN7Ux2x9XNl1K8cOLl4JxIZpjJL2GwG/view?usp=sharing" target="_blank">Breast cancer results</a>
+Zip files of expected CytoSPACE outputs (with `lap_CSPR` solver) are available to download at the following links:
+1. <a href="https://drive.google.com/file/d/1CLfy4Txez8ThID8YzIH04hlvrBRCQ4Rh/view?usp=sharing" target="_blank">Breast cancer results</a>
 2. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma results</a> 
 
 To download from the command line using `gdown`:
 1. Breast cancer
    ```bash
-   gdown --fuzzy https://drive.google.com/file/d/1ODN7Ux2x9XNl1K8cOLl4JxIZpjJL2GwG/view?usp=sharing
+   gdown --fuzzy https://drive.google.com/file/d/1CLfy4Txez8ThID8YzIH04hlvrBRCQ4Rh/view?usp=sharing
    unzip CytoSPACE_example_breast_cancer_results.zip
    ```
 2. Melanoma
