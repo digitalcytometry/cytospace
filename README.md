@@ -123,7 +123,7 @@ Run the script `get_cellfracs_seuratv3.R` from command line with the following i
 3. Path to ST data (same ST gene expression matrix input file format as specified above in __File format__ section point  3)
 4. Name of output file
 
-Please note that you should run this script within  the `cytospace` conda environment. For example:
+For example:
 ```bash
 conda activate cytospace
 Rscript /path/to/get_cellfracs_seuratv3.R melanoma_scRNA_GEP.txt melanoma_scRNA_celllabels.txt melanoma_STdata_slide1_GEP.txt melanoma_cell_fraction_estimates.txt
@@ -131,7 +131,8 @@ Rscript /path/to/get_cellfracs_seuratv3.R melanoma_scRNA_GEP.txt melanoma_scRNA_
 
 ### Important, please note:
 1. While `cytospace` can be run from any path and folder, the path to `get_cellfracs_seuratv3.R` must be specified in the command. 
-2. We use `Seurat v3` for estimating cell fractions, and this is installed as part of the CytoSPACE environment. If you want to run other analyses using more recent versions of Seurat after running CytoSPACE, for example Seurvat v4, make sure to first __deactivate the CytoSPACE environment__ once you are done running CytoSPACE. This is done using the command `conda deactivate cytospace`.
+2. __You must run this script within the `cytospace` conda environment.__
+3. We use `Seurat v3` for estimating cell fractions, and this is installed as part of the CytoSPACE environment. If you want to run other analyses using more recent versions of Seurat after running CytoSPACE, for example Seurvat v4, make sure to first __deactivate the CytoSPACE environment__ once you are done running CytoSPACE. This is done using the command `conda deactivate cytospace`.
 
 ## Running CytoSPACE
 CytoSPACE can be called from the command line from any folder using `cytospace` once the conda environment is activated via `conda activate cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
