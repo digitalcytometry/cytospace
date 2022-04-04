@@ -185,7 +185,7 @@ For users to test CytoSPACE, we have included files for two example runs:
 
 ### Download example datasets
 Zip files containing the example datasets can be downloaded from the following links:
-1. <a href="https://drive.google.com/file/d/1vAqszYk3-B2vgwkSFMprsUcRBFr-lS2f/view?usp=sharing" target="_blank">Breast cancer</a>
+1. <a href="https://drive.google.com/file/d/1ODN7Ux2x9XNl1K8cOLl4JxIZpjJL2GwG/view?usp=sharing" target="_blank">Breast cancer</a>
 2. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma</a> 
 
 To download from the command line using `gdown`:
@@ -233,13 +233,24 @@ The number of cells per spot by cell type as well as in total are provided in th
 
 <img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_assignments_by_spot.png">
 
-Fractional abundances of each cell type are returned in the file `fractional_abundances_by_spot.csv`
+Fractional abundances of each cell type are returned in the file `fractional_abundances_by_spot.csv`, and a log file recording CytoSPACE inputs and running times is output in the file `log.txt`.
 
-<img width="800" src="https://github.com/digitalcytometry/cytospace/blob/main/images/fractional_abundances_by_spot.png">
+Full expected CytoSPACE outputs (with `lap_CSPR` solver) are available to download at the following links:
+Zip files containing the example datasets can be downloaded from the following links:
+1. <a href="https://drive.google.com/file/d/1ODN7Ux2x9XNl1K8cOLl4JxIZpjJL2GwG/view?usp=sharing" target="_blank">Breast cancer results</a>
+2. <a href="https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing" target="_blank">Melanoma results</a> 
 
-A log file recording CytoSPACE inputs and running times is output in the file `log.txt`:
-
-<img width="400" src="https://github.com/digitalcytometry/cytospace/blob/main/images/log.png">
+To download from the command line using `gdown`:
+1. Breast cancer
+   ```bash
+   gdown --fuzzy https://drive.google.com/file/d/1ODN7Ux2x9XNl1K8cOLl4JxIZpjJL2GwG/view?usp=sharing
+   unzip CytoSPACE_example_breast_cancer_results.zip
+   ```
+2. Melanoma
+   ```bash
+   gdown --fuzzy https://drive.google.com/file/d/1oHe4UP2K0kQS9gNFVvZtjqtJyJK_VeBp/view?usp=sharing
+   unzip CytoSPACE_example_melanoma_results.zip
+   ```
 
 ## Customizing plotting outputs
 CytoSPACE provides two mechanisms for plotting output heatmaps. First, CytoSPACE generates heatmaps by default within the main function call.  By default, the geometry and plotting parameters have been optimized for standard 10x Visium spatial slides. To plot non-Visium spatial data, the `plot-Visium` flag should be set to `False`. As an example, to change the plotting parameters, e.g., `-nr` (number of rows of heatmaps per page), `-nc` (number of columns of heatmaps per page), `-ss` (spot size), -pm (plot marker which indicates the shape of the spots, e.g., `-pm s` plots squares and `-pm h` plots hexagons) and `-pv` (plot Visium), from command line, for the melanoma dataset:
@@ -282,7 +293,7 @@ optional arguments:
   -nc NUM_COLUMN, --num-column NUM_COLUMN
                         Number of coulmns in pdf figure
   -r, --rotation-flag   Rotate plot
-  -pv, --plot-visium    Plot based on standard 10x Visium slide dimensions
+  -nv, --plot-nonvisium    Plot based on standard 10x Visium slide dimensions
   -rd ROTATION_DEGREES, --rotation-degrees ROTATION_DEGREES
                         Rotation on plot
   -ss SPOT_SIZE, --spot-size SPOT_SIZE
