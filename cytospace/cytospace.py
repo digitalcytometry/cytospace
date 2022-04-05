@@ -74,10 +74,11 @@ def get_cell_type_fraction(number_of_cells, cell_type_fraction_data):
 
 def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
                                     cell_type_numbers_int, coordinates,
-                                    cell_number_to_node_assignment, solver_method, solver, seed):
+                                    cell_number_to_node_assignment, solver_method, solver, seed,
+                                    cell_type_factions_data):
     distance_repeat, location_repeat, cell_ids_selected, new_cell_index =\
         calculate_cost(scRNA_data, st_data, cell_type_data, cell_type_numbers_int,
-                       cell_number_to_node_assignment, seed, solver_method)
+                       cell_number_to_node_assignment, seed, solver_method, cell_type_factions_data)
 
     if solver_method == 'lapjv' or solver_method == 'lapjv_compat':
         print('Solving linear assignment problem ...')
@@ -170,9 +171,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     t0_core = time.perf_counter()
     print('Estimating number of cells in each spot ...')
     cell_number_to_node_assignment = estimate_cell_number_RNA_reads(st_data, mean_cell_numbers)
-    print(f"Time to run estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds")
-    with open(fout_log,"a") as f:
-        f.write(f"Time to run estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds\n")
+    print(f"Time to estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds")
 
     print('Get cell type fractions ...')
     number_of_cells = np.sum(cell_number_to_node_assignment)
@@ -181,8 +180,9 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes =\
         solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
                                         cell_type_numbers_int, coordinates_data,
-                                        cell_number_to_node_assignment, solver_method, solver, seed)
-    print(f"Time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds")
+                                        cell_number_to_node_assignment, solver_method, solver, seed,
+                                        cell_type_factions_data)
+    print(f"Total time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds\n")
 
