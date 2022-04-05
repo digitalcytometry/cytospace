@@ -39,7 +39,7 @@ def call_solver(solver, solver_method, cost_scaled):
 
 
 def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels, cell_type_numbers_int,
-                   cell_number_to_node_assignment, seed, solver_method, cell_type_factions_data):
+                   cell_number_to_node_assignment, seed, solver_method):
     print("Down/up sample of scRNA-seq data according to estimated cell type fractions")
     t0 = time.perf_counter()
     # Find intersection genes
@@ -54,7 +54,7 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     expressions_tpm_scRNA_log = normalize_data(expressions_scRNA)
 
     # Down/up sample of scRNA-seq data according to estimated cell type fractions
-    unique_cell_type_labels = sorted(cell_type_factions_data.columns, key=str.lower)
+    unique_cell_type_labels = sorted(np.unique(cell_type_labels.values), key=str.lower)
     number_classes = len(unique_cell_type_labels)
     new_cell_type = np.zeros(number_classes + 1)
 
