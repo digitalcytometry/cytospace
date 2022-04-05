@@ -20,7 +20,6 @@ def read_file(file_path):
     return file_data
 
 
-
 def normalize_data(data):
     data = np.nan_to_num(data)
     data = 10**6 * (data / np.sum(data, axis=0, dtype=float))

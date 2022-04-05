@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import time
 from ortools.graph import pywrapgraph
 
 from cytospace.common import normalize_data, matrix_correlation
@@ -21,8 +22,8 @@ def import_solver(solver_method):
         raise ModuleNotFoundError("The Python package containing the solver_method option "
                                   f"you have chosen {solver_method} was not found. If you "
                                   "selected 'lapjv_compat' solver, install package 'lap'"
-                                  "by running 'pip install lap'. If you selected 'lapjv'"
-                                  "solver, install package 'lapjv' by running `pip intall lapjv'"
+                                  "by running 'pip install lap==0.4.0'. If you selected 'lapjv'"
+                                  "solver, install package 'lapjv' by running `pip intall lapjv==1.3.14'"
                                   "or check the package home page for further instructions.")
 
     return solver
@@ -39,6 +40,8 @@ def call_solver(solver, solver_method, cost_scaled):
 
 def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels, cell_type_numbers_int,
                    cell_number_to_node_assignment, seed, solver_method):
+    print("Down/up sample of scRNA-seq data according to estimated cell type fractions")
+    t0 = time.perf_counter()
     # Find intersection genes
     intersect_genes = expressions_st_data.index.intersection(expressions_scRNA_data.index)
     expressions_scRNA_data_intersect_genes = expressions_scRNA_data.loc[intersect_genes, :]
@@ -80,7 +83,10 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
             sampled_cells = np.concatenate((sampled_cells, new_cells), axis=1)
 
         new_cell_type[k + 1] = new_cell_type[k] + new_cells.shape[1]
+    print(f"Time to down/up sample scRNA-seq data: {round(time.perf_counter() - t0, 2)} seconds")
 
+    print("Building cost matrix ...")
+    t0 = time.perf_counter()
     if solver_method=="lap_CSPR":
         cost = -np.transpose(matrix_correlation(expressions_tpm_st_log, sampled_cells))
     else:
@@ -96,6 +102,7 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     distance_repeat = cost[location_repeat, :]
     cell_ids = expressions_scRNA_data.columns.values
     cell_ids_selected = cell_ids[sampled_index_total]
+    print(f"Time to build cost matrix: {round(time.perf_counter() - t0, 2)} seconds")
 
     return distance_repeat, location_repeat, cell_ids_selected, new_cell_type
 
