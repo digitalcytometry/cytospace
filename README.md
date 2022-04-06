@@ -66,6 +66,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
 - Cell type label strings should not have special characters. 
 - The table should contain two columns, where column 1 contains the single cell IDs corresponding to the columns of the scRNA-seq matrix and column 2 contains the corresponding cell type labels.
 - The columns must have a header. 
+- __Additional annotation columns are not supported currently. You should only include two columns, cell IDs and cell type labels.__
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/celllabelfile.png" width="250"> 
 
 3. __A spatial transcriptomics (ST) gene expression file:__
