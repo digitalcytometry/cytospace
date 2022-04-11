@@ -51,7 +51,7 @@ The key innovations of our method are:
 ```
 We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
 
-## File format
+## File formatting
 CytoSPACE requires 5 files as input. All files should be provided in tab-delimited tabular input format (saved as .txt) with no double quotations. Further formatting details for each input file are specified below:
 
 1. __A scRNA-seq gene expression file:__
@@ -89,7 +89,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width="800"> 
 
                                                                                                                  
-## File preparation
+## Preprocessing: File preparation
 If you have data in the form of Seurat objects, you can generate files formatted for CytoSPACE input via helper functions we have provided in the `R` script `generate_cytospace_from_seurat_object.R` in `cytospace/Prepare_input_files`. To use these helper functions, first import them from `generate_cytospace_from_seurat_object.R` by including 
 ```bash
   source('/path/to/generate_cytospace_from_seurat_object.R')
@@ -115,7 +115,7 @@ within your R script. The first argument (required) designates your input Seurat
 If you are starting from Space Ranger outputs, an easy way to prepare inputs formatted for CytoSPACE is by loading the Space Ranger outputs into a Seurat object with
 <a href="https://satijalab.org/seurat/reference/load10x_spatial" target="_blank">Load10X_Spatial</a>. Once you have a Seurat object, you can use the helper script provided above.
 
-## Preprocessing
+## Preprocessing: Cell fraction estimation with Seurat v3
 To account for the disparity between scRNA-seq and ST data in the number of cells per cell type, the fractional composition of each cell type in the ST tissue needs to be provided as input to CytoSPACE. This is determined using an external deconvolution tool, such as <a href="https://satijalab.org/seurat/articles/spatial_vignette.html" target="_blank">Spatial Seurat</a>, <a href="https://www.sanger.ac.uk/tool/cell2location/" target="_blank">cell2location</a>, <a href="https://github.com/MarcElosua/SPOTlight" target="_blank">SPOTlight</a>, or <a href="https://cibersortx.stanford.edu/" target="_blank">CIBERSORTx</a>. We have included Spatial Seurat in our benchmarking, and provide here a script to obtain the cell type fractions using this approach.
 
 Run the script `get_cellfracs_seuratv3.R` from command line with the following inputs:
@@ -214,7 +214,7 @@ Once the example files are downloaded, the commands below can be run from the fo
 ```
 Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead.
 
-## CytoSPACE output files for example breast cancer data
+### CytoSPACE output files for example breast cancer data
 The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned. 
 
 <img width="600" src="https://github.com/digitalcytometry/cytospace/blob/main/images/assigned_locations.png">
@@ -315,7 +315,7 @@ Required arguments:
 You can see this list of variables and default values for running CytoSPACE from the commmand line as well at any time by calling `cytospace` along with the `-h` or 
 `--help` flag, i.e., `cytospace -h`.
 
-## Solver options
+## CytoSPACE Solver options
 1. `lapjv` __(Recommended for most systems)__    By default, CytoSPACE calls the `lapjv` solver from package `lapjv`. This solver is a fast implementation of the Jonker-Volgenant shortest augmenting path assignment algorithm and returns a globally optimal solution given the objective function as defined in our paper [cite]. As noted above, however, this package is not supported on all systems as it achieves its speedup through use of AVX2 instructions. This solver will be selected by default and can be specified explicitly by passing arguments `--solver-method lapjv` or `-sm lapjv` to `cytospace`.
 2. `lap_CSPR` __(Recommended for systems not supporting `lapjv`)__    A second solver option is the `linear_assignment` method from the `ortools` package. This solver uses a different method than the first and third options, an assignment algorithm called the cost scaling push relabel method. This algorithm approximates assignment costs to integer values and loses some numerical precision in doing so. Therefore, while it returns a globally optimal solution __after approximation__ given the objective function defined in the paper, it will return similar but generally not identical results to the first two methods. This solver has a similar running time to the first option and is a good option for systems not supporting the `lapjv` package. This solver can be selected by passing arguments `--solver-method lap_CSPR` or `-sm lap_CSPR` to `cytospace`.
 3. `lapjv_compat`   A third solver option implements the `lapjv` solver from package `lap`. Like the first option `lapjv`, this solver also implements the Jonker-Volgenant shortest augmenting path assignment algorithm to return the same globally optimal solution given the objective function defined in the paper. Furthermore, it is broadly supported and should work on all standard operating systems. However, it takes 3-4 times as long to run as the first solver option, the `lapjv` solver from the `lapjv` package, so we only recommend it for systems that do not support the first option. This solver can be selected by passing arguments `--solver-method lapjv_compat` or `-sm lapjv_compat` to `cytospace`.
