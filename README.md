@@ -24,30 +24,30 @@ The key innovations of our method are:
 
 2. Clone this repository:
 ```bash
-git clone https://github.com/digitalcytometry/cytospace
+  git clone https://github.com/digitalcytometry/cytospace
 ```
 
 3. Navigate to `cytospace` directory:
 ```bash
-cd cytospace
+  cd cytospace
 ```
 4. Create a conda environment with the required dependencies:
 ```bash
-conda env create -f environment.yml
+  conda env create -f environment.yml
 ```
 5. Activate the `cytospace` environment you just created:
 ```bash
-conda activate cytospace
+  conda activate cytospace
 ``` 
 
 6. Install CytoSPACE by executing:
 ```bash
-pip install .
+  pip install .
 ``` 
 
 7. (Recommended) Install package `lapjv` by executing:
 ```bash
-pip install lapjv==1.3.14
+  pip install lapjv==1.3.14
 ```
 We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
 
@@ -92,14 +92,14 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
 ## File preparation
 If you have data in the form of Seurat objects, you can generate files formatted for CytoSPACE input via helper functions we have provided in the `R` script `generate_cytospace_from_seurat_object.R` in `cytospace/Prepare_input_files`. To use these helper functions, first import them from `generate_cytospace_from_seurat_object.R` by including 
 ```bash
-source('/path/to/generate_cytospace_from_seurat_object.R')
+  source('/path/to/generate_cytospace_from_seurat_object.R')
 ```
 in your R script. 
 
 ### From scRNA-seq Seurat object
 For producing CytoSPACE inputs from scRNA Seurat objects, we provide the function `generate_cytospace_from_scRNA_seurat_object` which may be called as
 ```bash
-generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,dir_out='',fout_prefix='')
+  generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,dir_out='',fout_prefix='')
 ```
 within your R script. The first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `scRNA_data.txt` and `cell_type_labels.txt`. Please note that `Idents(scRNA_Seurat_Object)` must be set to include cell types.
 
@@ -107,7 +107,7 @@ within your R script. The first argument (required) designates your input Seurat
 ### From Spatial Seurat object
 For producing CytoSPACE inputs from ST Seurat objects, we provide the function `generate_cytospace_from_ST_seurat_object` which may be called as
 ```bash
-generate_cytospace_from_ST_seurat_object(ST_Seurat_Object,dir_out='',fout_prefix='',slice='slice1')
+  generate_cytospace_from_ST_seurat_object(ST_Seurat_Object,dir_out='',fout_prefix='',slice='slice1')
 ```
 within your R script. The first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `ST_data.txt` and `Coordinates.txt`, and `slice` (optional, default is `slice1`) provides the name of your slice as stored in your Seurat object.
 
@@ -126,7 +126,7 @@ Run the script `get_cellfracs_seuratv3.R` from command line with the following i
 
 For example:
 ```bash
-Rscript /path/to/get_cellfracs_seuratv3.R melanoma_scRNA_GEP.txt melanoma_scRNA_celllabels.txt melanoma_STdata_slide1_GEP.txt melanoma_cell_fraction_estimates.txt
+  Rscript /path/to/get_cellfracs_seuratv3.R melanoma_scRNA_GEP.txt melanoma_scRNA_celllabels.txt melanoma_STdata_slide1_GEP.txt melanoma_cell_fraction_estimates.txt
 ```
 
 ### Important, please note:
@@ -162,15 +162,15 @@ CytoSPACE provides three solver options. In short, we recommend using the defaul
 
 ### Other ways CytoSPACE can be run:
 1. You can call the `cytospace.py` script directly with python:
- `python cytospace/cytospace.py`
+ `  python cytospace/cytospace.py`
  
 2. You can import methods or functions from `CytoSPACE` in python and modify/create your own 
     pipeline. For example:
 ```python
-from cytospace import cytospace
+  from cytospace import cytospace
 
-for mean_cell_numbers in [5, 10, 20]:
-    cytospace(..., mean_cell_numbers=mean_cell_numbers)
+  for mean_cell_numbers in [5, 10, 20]:
+      cytospace(..., mean_cell_numbers=mean_cell_numbers)
 ```
 
 ## CytoSPACE outputs
@@ -206,11 +206,11 @@ To download from the command line using `gdown`:
 ### Commands for running example analyses:
 Once the example files are downloaded, the commands below can be run from the folders where the example datasets are located:
 ```bash
-cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_GEP.txt -cp brca_STdata_coordinates.txt -ctfep brca_cell_fraction_estimates.txt -o cytospace_results_brca -sm lap_CSPR
+  cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_GEP.txt -cp brca_STdata_coordinates.txt -ctfep brca_cell_fraction_estimates.txt -o cytospace_results_brca -sm lap_CSPR
 ```
 
 ```bash
-cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -nv -sm lap_CSPR 
+  cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -nv -sm lap_CSPR 
 ```
 Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead.
 
@@ -253,15 +253,15 @@ To download from the command line using `gdown`:
 ## Customizing plotting outputs
 CytoSPACE provides two mechanisms for plotting output heatmaps. First, CytoSPACE generates heatmaps by default within the main function call.  By default, the geometry and plotting parameters have been optimized for standard 10x Visium spatial slides. To plot non-Visium spatial data, the `plot-nonvisium` flag should be set to `True`. As an example, to change the plotting parameters, e.g., `-nr` (number of rows of heatmaps per page), `-nc` (number of columns of heatmaps per page), `-ss` (spot size), -pm (plot marker which indicates the shape of the spots, e.g., `-pm s` plots squares and `-pm h` plots hexagons) and `-nv` (plot non-Visium), from command line, for the melanoma dataset:
 ```bash
-cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -nr 5 -nc 3 -ss 1100 -pm s -nv
+  cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -nr 5 -nc 3 -ss 1100 -pm s -nv
 ```
 `cytospace-plot` can be used to generate heatmaps from CytoSPACE outputs. There are three paths that need to be set by users: `-alp` (assigned_locations_path), `-cp` (coordinates_path) and `-o` (output_filename). After CytoSPACE outputs have been generated, `cytospace-plot` can be run from the command line for the sample breast cancer data as:
 ```bash
-cytospace-plot -alp cytospace_results_brca/assigned_locations.csv -cp  brca_STdata_coordinates.txt -o brca_results.pdf
+  cytospace-plot -alp cytospace_results_brca/assigned_locations.csv -cp  brca_STdata_coordinates.txt -o brca_results.pdf
 ```
 and for the sample melanoma data as: 
 ```bash
-cytospace-plot -alp cytospace_results_melanoma/assigned_locations.csv -cp  melanoma_STdata_slide1_coordinates.txt -o melanoma_results.pdf -nr 5 -nc 3 -ss 1100 -pm s -nv
+  cytospace-plot -alp cytospace_results_melanoma/assigned_locations.csv -cp  melanoma_STdata_slide1_coordinates.txt -o melanoma_results.pdf -nr 5 -nc 3 -ss 1100 -pm s -nv
 ```
 ## Extended usage details
 ```
@@ -323,14 +323,14 @@ You can see this list of variables and default values for running CytoSPACE from
 ## Updating local installations
 To update your local installation of CytoSPACE following updates of this GitHub repository, navigate to your `cytospace` directory and execute the following commands:
 ```bash
-git pull
-conda env update --name cytospace --file environment.yml
-conda activate cytospace
-pip install .
+  git pull
+  conda env update --name cytospace --file environment.yml
+  conda activate cytospace
+  pip install .
 ```
 If you have made local updates to your version of the CytoSPACE source code, you should execute 
 ```bash
-pip install .
+  pip install .
 ``` 
 before running. 
 
