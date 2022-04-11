@@ -19,6 +19,24 @@ The key innovations of our method are:
 - Unlike other methods which generally operate on pre-selected marker genes or on a shared embedding space (the latter of which can erase true biological variation), CytoSPACE uses the full transcriptome without the need for batch correction, helping it retain sensitivity to subtle cell states.
 - CytoSPACE is quick and simple to execute. It runs in minutes even with a single CPU on a personal laptop and requires no hyperparameter tuning or gene/feature selection.
 
+Overview of README:
+-   [**Installation instructions**](#installation-instructions)
+-   [**File formatting**](#file-formatting)
+-   [**Preprocessing: Input file preparation**](#preprocessing-input-file-preparation)
+-   [**Preprocessing: Cell fraction estimation with Seurat v3**](#preprocessing-cell-fraction-estimation-with-seurat-v3)
+-   [**Running CytoSPACE**](#running-cytospace)
+-   [**CytoSPACE outputs**](#cytospace-outputs)
+-   [**Example datasets for running CytoSPACE**](#example-datasets-for-running-cytospace)
+-   [**Customizing plotting outputs**](#customizing-plotting-outputs)
+-   [**Extended usage details**](#extended-usage-details)
+-   [**CytoSPACE Solver options**](#cytospace-solver-options)
+-   [**Updating local installations**](#updating-local-installations)
+-   [**Authors**](#authors)
+-   [**Contact**](#contact)
+-   [**License**](#license)
+-   [**Citation**](#citation)
+
+
 ## Installation instructions
 1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
 
@@ -89,7 +107,7 @@ CytoSPACE requires 5 files as input. All files should be provided in tab-delimit
 <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/cell_type_fractions_file.png" width="800"> 
 
                                                                                                                  
-## Preprocessing: File preparation
+## Preprocessing: Input file preparation
 If you have data in the form of Seurat objects, you can generate files formatted for CytoSPACE input via helper functions we have provided in the `R` script `generate_cytospace_from_seurat_object.R` in `cytospace/Prepare_input_files`. To use these helper functions, first import them from `generate_cytospace_from_seurat_object.R` by including 
 ```bash
   source('/path/to/generate_cytospace_from_seurat_object.R')
