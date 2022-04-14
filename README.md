@@ -37,7 +37,7 @@ Overview of README:
 -   [**Citation**](#citation)
 
 
-## Installation instructions
+## Installation instructions (5-10 minutes)
 1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
 
 2. Clone this repository:
@@ -49,7 +49,7 @@ Overview of README:
 ```bash
   cd cytospace
 ```
-4. Create a conda environment with the required dependencies:
+4. (5-10 minutes) Create a conda environment with the required dependencies:
 ```bash
   conda env create -f environment.yml
 ```
@@ -58,12 +58,12 @@ Overview of README:
   conda activate cytospace
 ``` 
 
-6. Install CytoSPACE by executing:
+6. (~30 seconds) Install CytoSPACE by executing:
 ```bash
   pip install .
 ``` 
 
-7. (Recommended) Install package `lapjv` by executing:
+7. (Recommended, ~1 minute) Install package `lapjv` by executing:
 ```bash
   pip install lapjv==1.3.14
 ```
@@ -230,7 +230,7 @@ Once the example files are downloaded, the commands below can be run from the fo
 ```bash
   cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -nv -sm lap_CSPR 
 ```
-Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead.
+Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead. These CytoSPACE runs should take around 5 minutes each.
 
 ### CytoSPACE output files for example breast cancer data
 The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned. 
