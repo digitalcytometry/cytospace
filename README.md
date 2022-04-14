@@ -230,7 +230,7 @@ Once the example files are downloaded, the commands below can be run from the fo
 ```bash
   cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -mcn 20 -o cytospace_results_melanoma -nr 5 -nc 3 -ss 1100 -pm s -nv -sm lap_CSPR 
 ```
-Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead. These CytoSPACE runs should take around 5 minutes each.
+Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead. __These CytoSPACE runs should take around 5 minutes each.__
 
 ### CytoSPACE output files for example breast cancer data
 The main output from a CytoSPACE run is the file named `assigned_locations.csv`, which provides the ST spots to which the single cells have been assigned. 
