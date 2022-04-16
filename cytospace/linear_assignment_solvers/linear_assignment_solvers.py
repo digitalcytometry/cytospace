@@ -54,7 +54,7 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     expressions_tpm_scRNA_log = normalize_data(expressions_scRNA)
 
     # Down/up sample of scRNA-seq data according to estimated cell type fractions
-    unique_cell_type_labels = sorted(np.unique(cell_type_labels.values), key=str.lower)
+    unique_cell_type_labels = sorted(np.unique(cell_type_labels.values[:,0]), key=str.lower)
     number_classes = len(unique_cell_type_labels)
     new_cell_type = np.zeros(number_classes + 1)
 
