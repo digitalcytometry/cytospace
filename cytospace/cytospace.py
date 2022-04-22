@@ -23,9 +23,14 @@ def read_data(scRNA_path, cell_type_path, st_path, coordinates_path,
         n_cells_per_spot_data = None
 
     # Order data to match
+    n_cells_per_spot_data
     try:
         st_data = st_data[coordinates_data.index]
         scRNA_data = scRNA_data[cell_type_data.index]
+        if n_cells_per_spot_data is not None:
+            n_cells_per_spot_data = n_cells_per_spot_data.transpose(copy=False)
+            n_cells_per_spot_data = n_cells_per_spot_data[coordinates_data.index]
+            n_cells_per_spot_data = n_cells_per_spot_data.transpose(copy=False)
     except Exception as e:
         raise IndexError("The ST data: {st_path} and coordinates data: {coordinates_path} have to "
                          "have the same spot IDs for columns and rows, respectively, "
