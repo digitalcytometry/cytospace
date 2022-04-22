@@ -23,7 +23,6 @@ def read_data(scRNA_path, cell_type_path, st_path, coordinates_path,
         n_cells_per_spot_data = None
 
     # Order data to match
-    n_cells_per_spot_data
     try:
         st_data = st_data[coordinates_data.index]
         scRNA_data = scRNA_data[cell_type_data.index]
