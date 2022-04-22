@@ -1,4 +1,4 @@
-name: cytospace
+name: cytospace_ncells_spot
 channels:
   - conda-forge
   - bioconda

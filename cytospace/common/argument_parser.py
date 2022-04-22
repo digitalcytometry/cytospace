@@ -42,6 +42,9 @@ def argument_parser():
                           default=None, required=True)
 
     # I/O options
+    parser.add_argument("-ncpsp", "--n-cells-per-spot-path",
+                        help="Path to number of cells per ST spot file", type=str,
+                        default=None)
     parser.add_argument("-o", "--output-folder", help="Relative path to the output folder",
                         type=str,
                         default="cytospace_results")

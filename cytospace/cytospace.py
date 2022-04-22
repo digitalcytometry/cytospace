@@ -10,13 +10,17 @@ from cytospace.linear_assignment_solvers import (calculate_cost, match_solution,
 
 
 def read_data(scRNA_path, cell_type_path, st_path, coordinates_path,
-              cell_type_fraction_estimation_path, delimiter):
+              cell_type_fraction_estimation_path, n_cells_per_spot_path, delimiter):
     # Read data
     st_data = read_file(st_path)
     coordinates_data = read_file(coordinates_path)
     scRNA_data = read_file(scRNA_path)
     cell_type_data = read_file(cell_type_path)
     cell_type_faction_data = read_file(cell_type_fraction_estimation_path)
+    if n_cells_per_spot_path is not None:
+        n_cells_per_spot_data = read_file(n_cells_per_spot_path)
+    else:
+        n_cells_per_spot_data = None
 
     # Order data to match
     try:
@@ -37,7 +41,7 @@ def read_data(scRNA_path, cell_type_path, st_path, coordinates_path,
         raise IndexError(f"The scRNA data: {scRNA_path} and cell type data: {cell_type_path} have"
                          " to have the same cell IDs for columns and rows, respectively.")
 
-    return scRNA_data, cell_type_data, st_data, coordinates_data, cell_type_faction_data
+    return scRNA_data, cell_type_data, st_data, coordinates_data, cell_type_faction_data, n_cells_per_spot_data
 
 
 def estimate_cell_number_RNA_reads(st_data, mean_cell_numbers):
@@ -113,7 +117,7 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
 
 
 def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
-                   cell_type_fraction_estimation_path, output_folder="cytospace_results",
+                   cell_type_fraction_estimation_path, n_cells_per_spot_path, output_folder="cytospace_results",
                    rotation_flag=True, plot_nonvisium=False, plot_off=False, spot_size=175, plot_marker = 'h',
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
@@ -132,6 +136,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         f.write("cell_type_path: "+str(cell_type_path)+"\n")
         f.write("st_path: "+str(st_path)+"\n")
         f.write("coordinates_path: "+str(coordinates_path)+"\n")
+        f.write("n_cells_per_spot_path: "+str(n_cells_per_spot_path)+"\n")
         f.write("cell_type_fraction_estimation_path: "+str(cell_type_fraction_estimation_path)+"\n")
         f.write("output_folder: "+str(output_folder)+"\n")
         f.write("rotation_flag: "+str(rotation_flag)+"\n")
@@ -156,9 +161,9 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     # Read data
     print("Read and validate data ...")
     t0 = time.perf_counter()
-    scRNA_data, cell_type_data, st_data, coordinates_data, cell_type_factions_data =\
+    scRNA_data, cell_type_data, st_data, coordinates_data, cell_type_factions_data, n_cells_per_spot_data =\
         read_data(scRNA_path, cell_type_path, st_path, coordinates_path,
-                  cell_type_fraction_estimation_path, delimiter)
+                  cell_type_fraction_estimation_path, n_cells_per_spot_path, delimiter)
     print(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds\n")
@@ -168,9 +173,12 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     np.random.seed(seed)
 
     t0_core = time.perf_counter()
-    print('Estimating number of cells in each spot ...')
-    cell_number_to_node_assignment = estimate_cell_number_RNA_reads(st_data, mean_cell_numbers)
-    print(f"Time to estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds")
+    if n_cells_per_spot_data is None:
+        print('Estimating number of cells in each spot ...')
+        cell_number_to_node_assignment = estimate_cell_number_RNA_reads(st_data, mean_cell_numbers)
+        print(f"Time to estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds")
+    else:
+        cell_number_to_node_assignment = n_cells_per_spot_data.values[:, 0].astype(int)
 
     print('Get cell type fractions ...')
     number_of_cells = np.sum(cell_number_to_node_assignment)
