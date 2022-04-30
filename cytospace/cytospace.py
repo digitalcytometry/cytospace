@@ -82,10 +82,10 @@ def get_cell_type_fraction(number_of_cells, cell_type_fraction_data):
 
 def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
                                     cell_type_numbers_int, coordinates,
-                                    cell_number_to_node_assignment, solver_method, solver, seed):
-    distance_repeat, location_repeat, cell_ids_selected, new_cell_index =\
+                                    cell_number_to_node_assignment, solver_method, sampling_method, solver, seed):
+    distance_repeat, location_repeat, cell_ids_selected, new_cell_index, cell_ids_new =\
         calculate_cost(scRNA_data, st_data, cell_type_data, cell_type_numbers_int,
-                       cell_number_to_node_assignment, seed, solver_method)
+                       cell_number_to_node_assignment, seed, solver_method, sampling_method)
 
     if solver_method == 'lapjv' or solver_method == 'lapjv_compat':
         print('Solving linear assignment problem ...')
@@ -116,7 +116,7 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
     else:
         raise ValueError("Invalid solver_method provided")
 
-    return assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes
+    return assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new
 
 
 
@@ -124,7 +124,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    cell_type_fraction_estimation_path, n_cells_per_spot_path, output_folder="cytospace_results",
                    rotation_flag=True, plot_nonvisium=False, plot_off=False, spot_size=175, plot_marker = 'h',
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
-                   output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
+                   output_prefix="", seed=1, delimiter=",", solver_method="lapjv", sampling_method="place_holders"):
     # For timing execution
     start_time = time.perf_counter()
 
@@ -156,6 +156,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         f.write("seed: "+str(seed)+"\n")
         f.write("delimiter: "+str(delimiter)+"\n")
         f.write("solver_method: "+str(solver_method)+"\n\n")
+        f.write("sampling_method: "+str(sampling_method)+"\n\n")
 
     if solver_method == "lapjv" or solver_method == "lapjv_compat":
         solver = import_solver(solver_method)
@@ -188,17 +189,17 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     number_of_cells = np.sum(cell_number_to_node_assignment)
     cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
 
-    assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes =\
+    assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new =\
         solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
                                         cell_type_numbers_int, coordinates_data,
-                                        cell_number_to_node_assignment, solver_method, solver, seed)
+                                        cell_number_to_node_assignment, solver_method, sampling_method, solver, seed)
     print(f"Total time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds\n")
 
     print('Saving results ...')
     assigned_locations_path = str(output_path / f'{output_prefix}assigned_locations.csv')
-    save_results(output_path, output_prefix, cell_ids_selected, assigned_locations,
+    save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, assigned_locations,
                  new_cell_index, index, assigned_nodes, st_path, coordinates_path,
                  cell_type_path, assigned_locations_path)
 
