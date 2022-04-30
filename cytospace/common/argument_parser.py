@@ -1,6 +1,5 @@
 import argparse
 
-
 def add_plotting_arguments(parser):
     parser.add_argument("-nr", "--num-row", help="Number of rows in pdf figure", type=int,
                         default=4)
@@ -57,6 +56,9 @@ def argument_parser():
     parser.add_argument("-sm", "--solver-method", default="lapjv",
                         help="Which solver to use for the linear assignment problem, default 'lapjv'",
                         choices=["lapjv", "lapjv_compat", "lap_CSPR"])
+    parser.add_argument("-sam", "--sampling-method", default="place_holders",
+                        help="Which unerlying method to use for dealing with duplicated cells, default 'place_holders'",
+                        choices=["duplicates", "place_holders"])
     parser.add_argument("-mcn", "--mean-cell-numbers", type=int, default=5,
                         help="Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial transcriptomics data, set to 20")
     parser.add_argument("-se", "--seed", help="Set seed for random generators, default 1", type=int,
@@ -69,3 +71,4 @@ def argument_parser():
     arguments = parser.parse_args()
 
     return arguments.__dict__
+
