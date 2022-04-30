@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import random
 import time
 from ortools.graph import pywrapgraph
@@ -39,11 +40,12 @@ def call_solver(solver, solver_method, cost_scaled):
 
 
 def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels, cell_type_numbers_int,
-                   cell_number_to_node_assignment, seed, solver_method):
+                   cell_number_to_node_assignment, seed, solver_method, sampling_method):
     print("Down/up sample of scRNA-seq data according to estimated cell type fractions")
     t0 = time.perf_counter()
     # Find intersection genes
     intersect_genes = expressions_st_data.index.intersection(expressions_scRNA_data.index)
+    original_cell_names = expressions_scRNA_data.columns
     expressions_scRNA_data_intersect_genes = expressions_scRNA_data.loc[intersect_genes, :]
     expressions_st_data_intersect_genes = expressions_st_data.loc[intersect_genes, :]
     expressions_scRNA = expressions_scRNA_data_intersect_genes.values.astype(float)
@@ -62,27 +64,73 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     np.random.seed(seed)
     random.seed(seed)
     sampled_index_total = []
-    for k in range(0, number_classes):
-        cell_type_index = np.nonzero(cell_type_labels.values == unique_cell_type_labels[k])[0].tolist()
-        fractions_cells = len(cell_type_index)
-        fractions_beads = int(cell_type_numbers_int[k])
-        if fractions_beads > fractions_cells:
-            sampled_index = np.random.choice(cell_type_index,
-                                             fractions_beads - fractions_cells).tolist()
-            new_cells = np.concatenate((expressions_tpm_scRNA_log[:, cell_type_index],
-                                        expressions_tpm_scRNA_log[:, sampled_index]), axis=1)
-            sampled_index_total += cell_type_index + sampled_index
-        else:
-            sampled_index = random.sample(cell_type_index, fractions_beads)
-            new_cells = expressions_tpm_scRNA_log[:, sampled_index]
-            sampled_index_total += sampled_index
+    cell_names = []
+    if sampling_method == "place_holders":
+        for k in range(0, number_classes):
+            cell_type_index = np.nonzero(cell_type_labels.values == unique_cell_type_labels[k])[0].tolist()
+            fractions_cells = len(cell_type_index)
+            fractions_beads = int(cell_type_numbers_int[k])
+            if fractions_beads > fractions_cells:
+               sampled_index = np.random.choice(cell_type_index,
+                                                 fractions_beads - fractions_cells).tolist()
+               exp_mat = expressions_scRNA[:,cell_type_index]
+               num_genes = np.shape(expressions_scRNA)[0]
+               num_cells = fractions_beads-fractions_cells
+               b = np.zeros((num_genes,num_cells)) 
+               for i1 in range(num_cells):
+                   b[:,i1] = [np.random.choice(exp_mat[j1,:]) for j1 in range(num_genes)]
+               cell_names = np.concatenate((cell_names,np.array(original_cell_names[cell_type_index])),axis=0)
+               cell_names = np.concatenate((cell_names,np.array([unique_cell_type_labels[k]+'_new_'+str(i+1) for i in range(fractions_beads-fractions_cells)])),axis=0)
+               b = (10**6) * (b/np.sum(b, axis = 0, dtype = float))
+               b = np.log2(b + 1)
+               new_cells = np.concatenate((expressions_tpm_scRNA_log[:,cell_type_index], b), axis = 1)
+               sampled_index_total += cell_type_index + sampled_index                
+            else:
+               sampled_index = random.sample(cell_type_index, fractions_beads) 
+               new_cells = expressions_tpm_scRNA_log[:,sampled_index]
+               cell_names = np.concatenate((cell_names,np.array(original_cell_names[sampled_index])),axis=0)
+               sampled_index_total += sampled_index
+               
+            if k == 0:
+                sampled_cells = new_cells
+                cell_types = np.array([unique_cell_type_labels[k]]*np.shape(new_cells)[1])
 
-        if k == 0:
-            sampled_cells = new_cells
-        else:
-            sampled_cells = np.concatenate((sampled_cells, new_cells), axis=1)
+            else:
+                sampled_cells = np.concatenate((sampled_cells, new_cells), axis=1)
+                cell_types = np.concatenate((cell_types,np.array([unique_cell_type_labels[k]]*np.shape(new_cells)[1])),axis=0)
 
-        new_cell_type[k + 1] = new_cell_type[k] + new_cells.shape[1]
+        cell_ids_new = cell_names
+    else:
+                       
+        for k in range(0, number_classes):
+            cell_type_index = np.nonzero(cell_type_labels.values == unique_cell_type_labels[k])[0].tolist()
+            fractions_cells = len(cell_type_index)
+            fractions_beads = int(cell_type_numbers_int[k])
+            if fractions_beads > fractions_cells:
+                sampled_index = np.random.choice(cell_type_index,
+                                                 fractions_beads - fractions_cells).tolist()
+                new_cells = np.concatenate((expressions_tpm_scRNA_log[:, cell_type_index],
+                                            expressions_tpm_scRNA_log[:, sampled_index]), axis=1)
+                sampled_index_total += cell_type_index + sampled_index
+            else:
+                sampled_index = random.sample(cell_type_index, fractions_beads)
+                new_cells = expressions_tpm_scRNA_log[:, sampled_index]
+                sampled_index_total += sampled_index
+
+            if k == 0:
+                sampled_cells = new_cells
+            else:
+                sampled_cells = np.concatenate((sampled_cells, new_cells), axis=1)
+                
+        cell_ids = expressions_scRNA_data.columns.values
+        cell_ids_new = cell_ids[sampled_index_total]
+    
+    new_cell_type[k + 1] = new_cell_type[k] + new_cells.shape[1]
+    cell_ids = expressions_scRNA_data.columns.values
+    cell_ids_selected = cell_ids[sampled_index_total]
+    
+#    labels_df = pd.DataFrame({'CellID':cell_names,'CellType':cell_types})
+#    labels_df.to_csv('/Users/miladrv/cytospace/new_cells.csv',index=False)    
     print(f"Time to down/up sample scRNA-seq data: {round(time.perf_counter() - t0, 2)} seconds")
 
     print("Building cost matrix ...")
@@ -100,11 +148,9 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
 
     location_repeat = location_repeat.astype(int)
     distance_repeat = cost[location_repeat, :]
-    cell_ids = expressions_scRNA_data.columns.values
-    cell_ids_selected = cell_ids[sampled_index_total]
     print(f"Time to build cost matrix: {round(time.perf_counter() - t0, 2)} seconds")
 
-    return distance_repeat, location_repeat, cell_ids_selected, new_cell_type
+    return distance_repeat, location_repeat, cell_ids_selected, new_cell_type, cell_ids_new
 
 
 def match_solution(cost):
