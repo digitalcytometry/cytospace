@@ -138,11 +138,9 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     cell_ids_selected = cell_ids[sampled_index_total]
     
     all_cells_save = pd.DataFrame(all_cells_save,dtype=int)
-    print(intersect_genes)
     all_cells_save.index = intersect_genes
     all_cells_save.columns = cell_names
-#    labels_df = pd.DataFrame({'CellID':cell_names,'CellType':cell_types})
-#    labels_df.to_csv('/Users/miladrv/cytospace/new_cells.csv',index=False)    
+
     print(f"Time to down/up sample scRNA-seq data: {round(time.perf_counter() - t0, 2)} seconds")
 
     print("Building cost matrix ...")
