@@ -139,7 +139,7 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     
     all_cells_save = pd.DataFrame(all_cells_save,dtype=int)
     all_cells_save.index = intersect_genes
-    all_cells_save.columns = cell_names
+    all_cells_save.columns = cell_ids_new
 
     print(f"Time to down/up sample scRNA-seq data: {round(time.perf_counter() - t0, 2)} seconds")
 
