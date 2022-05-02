@@ -83,7 +83,7 @@ def get_cell_type_fraction(number_of_cells, cell_type_fraction_data):
 def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
                                     cell_type_numbers_int, coordinates,
                                     cell_number_to_node_assignment, solver_method, sampling_method, solver, seed):
-    distance_repeat, location_repeat, cell_ids_selected, new_cell_index, cell_ids_new =\
+    distance_repeat, location_repeat, cell_ids_selected, new_cell_index, cell_ids_new, all_cells_save =\
         calculate_cost(scRNA_data, st_data, cell_type_data, cell_type_numbers_int,
                        cell_number_to_node_assignment, seed, solver_method, sampling_method)
 
@@ -116,7 +116,7 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
     else:
         raise ValueError("Invalid solver_method provided")
 
-    return assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new
+    return assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save
 
 
 
@@ -189,7 +189,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     number_of_cells = np.sum(cell_number_to_node_assignment)
     cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
 
-    assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new =\
+    assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save =\
         solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
                                         cell_type_numbers_int, coordinates_data,
                                         cell_number_to_node_assignment, solver_method, sampling_method, solver, seed)
@@ -199,7 +199,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
 
     print('Saving results ...')
     assigned_locations_path = str(output_path / f'{output_prefix}assigned_locations.csv')
-    save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, assigned_locations,
+    save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, all_cells_save, assigned_locations,
                  new_cell_index, index, assigned_nodes, st_path, coordinates_path,
                  cell_type_path, assigned_locations_path)
 
