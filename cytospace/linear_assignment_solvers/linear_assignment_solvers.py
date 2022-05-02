@@ -84,19 +84,23 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
                b = (10**6) * (b/np.sum(b, axis = 0, dtype = float))
                b = np.log2(b + 1)
                new_cells = np.concatenate((expressions_tpm_scRNA_log[:,cell_type_index], b), axis = 1)
+               all_new_cells_save = np.concatenate((expressions_scRNA[:,cell_type_index], b), axis = 1)
                sampled_index_total += cell_type_index + sampled_index                
             else:
-               sampled_index = random.sample(cell_type_index, fractions_beads) 
+               sampled_index = random.sample(cell_type_index, fractions_beads)
                new_cells = expressions_tpm_scRNA_log[:,sampled_index]
+               all_new_cells_save = expressions_scRNA[:,sampled_index]
                cell_names = np.concatenate((cell_names,np.array(original_cell_names[sampled_index])),axis=0)
                sampled_index_total += sampled_index
                
             if k == 0:
                 sampled_cells = new_cells
+                all_cells_save = all_new_cells_save
                 cell_types = np.array([unique_cell_type_labels[k]]*np.shape(new_cells)[1])
 
             else:
                 sampled_cells = np.concatenate((sampled_cells, new_cells), axis=1)
+                all_cells_save = np.concatenate((all_cells_save, all_new_cells_save), axis=1)
                 cell_types = np.concatenate((cell_types,np.array([unique_cell_type_labels[k]]*np.shape(new_cells)[1])),axis=0)
 
         cell_ids_new = cell_names
@@ -111,17 +115,21 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
                                                  fractions_beads - fractions_cells).tolist()
                 new_cells = np.concatenate((expressions_tpm_scRNA_log[:, cell_type_index],
                                             expressions_tpm_scRNA_log[:, sampled_index]), axis=1)
+                all_new_cells_save = np.concatenate((expressions_scRNA[:,cell_type_index], expressions_scRNA[:,sampled_index]), axis = 1)
                 sampled_index_total += cell_type_index + sampled_index
             else:
                 sampled_index = random.sample(cell_type_index, fractions_beads)
                 new_cells = expressions_tpm_scRNA_log[:, sampled_index]
+                all_new_cells_save = expressions_scRNA[:,sampled_index]
                 sampled_index_total += sampled_index
 
             if k == 0:
                 sampled_cells = new_cells
+                all_cells_save = all_new_cells_save
             else:
                 sampled_cells = np.concatenate((sampled_cells, new_cells), axis=1)
-                
+                all_cells_save = np.concatenate((all_cells_save, all_new_cells_save), axis=1)
+
         cell_ids = expressions_scRNA_data.columns.values
         cell_ids_new = cell_ids[sampled_index_total]
     
@@ -129,6 +137,10 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     cell_ids = expressions_scRNA_data.columns.values
     cell_ids_selected = cell_ids[sampled_index_total]
     
+    all_cells_save = pd.DataFrame(all_cells_save,dtype=int)
+    print(intersect_genes)
+    all_cells_save.index = intersect_genes
+    all_cells_save.columns = cell_names
 #    labels_df = pd.DataFrame({'CellID':cell_names,'CellType':cell_types})
 #    labels_df.to_csv('/Users/miladrv/cytospace/new_cells.csv',index=False)    
     print(f"Time to down/up sample scRNA-seq data: {round(time.perf_counter() - t0, 2)} seconds")
@@ -150,7 +162,7 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     distance_repeat = cost[location_repeat, :]
     print(f"Time to build cost matrix: {round(time.perf_counter() - t0, 2)} seconds")
 
-    return distance_repeat, location_repeat, cell_ids_selected, new_cell_type, cell_ids_new
+    return distance_repeat, location_repeat, cell_ids_selected, new_cell_type, cell_ids_new, all_cells_save
 
 
 def match_solution(cost):
