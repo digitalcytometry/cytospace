@@ -7,7 +7,7 @@ from scipy.spatial.transform import Rotation
 from cytospace.common import read_file
 
 
-def save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, assigned_locations,
+def save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, all_cells_save, assigned_locations,
                  new_cell_index, index, assigned_nodes, st_path, coords_path,
                  cell_type_path, assigned_locations_path):
 
@@ -39,6 +39,9 @@ def save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, as
                                 'col': list(assigned_locations.iloc[:, 1])})
     df_locations.to_csv(assigned_locations_path, index=False)
     
+    fout_scrna = output_path / f'{output_prefix}new_scRNA.csv'
+    all_cells_save.to_csv(fout_scrna)
+
     metadata = df_locations.copy()
     df = pd.DataFrame(columns=metadata['CellType'].unique(),index=metadata['SpotID'].unique())
     for idx in df.index:
