@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 import warnings
-
+import datatable as dt
 
 def read_file(file_path):
     # Read file
@@ -10,8 +10,12 @@ def read_file(file_path):
         file_delim = "," if file_path.endswith(".csv") else "\t"
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=pd.errors.ParserWarning)
-            file_data = pd.read_csv(file_path, header=0, index_col=0, delimiter=file_delim)
-
+            #file_data = pd.read_csv(file_path, header=0, index_col=0, delimiter=file_delim)
+            file_data = dt.fread(file_path)
+            rownames = file_data[:,0].to_pandas().values.flatten()
+            file_data = file_data[:,1:file_data.ncols].to_pandas()
+            file_data = file_data.set_index(rownames)
+   
     except Exception as e:
         raise IOError("Make sure you provided the correct path to input files. "
                       "The following input file formats are supported: .csv with comma ',' as "
