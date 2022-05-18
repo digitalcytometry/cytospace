@@ -150,6 +150,7 @@ For example:
 1. While `cytospace` can be run from any path and folder, the path to `get_cellfracs_seuratv3.R` must be specified in the command. 
 2. __You must run this script within the `cytospace` conda environment.__ This is done using the command `conda activate cytospace`.
 3. We use `Seurat v3` for estimating cell fractions, and this is installed as part of the CytoSPACE environment. If you want to run other analyses using more recent versions of Seurat after running CytoSPACE, for example Seurvat v4, make sure to first __deactivate the CytoSPACE environment__ once you are done running CytoSPACE. This is done using the command `conda deactivate cytospace`.
+4. __We highly recommend using Seurat v3 rather than v4 for cell type fraction estimation. If fractions do not look as you expect, please verify your Seurat version.__
 
 ## Running CytoSPACE
 After activating the `cytospace` conda environment via `conda activate cytospace`, CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
