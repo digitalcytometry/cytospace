@@ -63,6 +63,7 @@ def estimate_cell_number_RNA_reads(st_data, mean_cell_numbers):
 
 
 def get_cell_type_fraction(number_of_cells, cell_type_fraction_data):
+    cell_type_fraction_data = cell_type_fraction_data.reindex(sorted(cell_type_fraction_data.columns, key=str.lower), axis = 1)
     cell_type_fractions = cell_type_fraction_data.values[0]
     cell_type_numbers = number_of_cells * cell_type_fractions
     cell_type_numbers_int = cell_type_numbers.astype(int)
