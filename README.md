@@ -373,6 +373,4 @@ later version.
 CytoSPACE is Copyright (2022-) by the authors.
 
 ## Citation
-If you use CytoSPACE, please cite:
-
-    Coming soon
+If you use CytoSPACE, please cite <a href="https://www.biorxiv.org/content/10.1101/2022.05.20.488356v1" target="_blank">Vahid*, Brown*, Steen* et al., bioRxiv 2022</a>
