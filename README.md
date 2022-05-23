@@ -373,4 +373,8 @@ later version.
 CytoSPACE is Copyright (2022-) by the authors.
 
 ## Citation
-If you use CytoSPACE, please cite <a href="https://www.biorxiv.org/content/10.1101/2022.05.20.488356v1" target="_blank">Vahid*, Brown*, Steen* et al., bioRxiv 2022</a>
+If you use CytoSPACE, please cite:  
+  
+*Robust alignment of single-cell and spatial transcriptomes with CytoSPACE* (bioxRiv 2022)  
+Milad R. Vahid*, Erin L. Brown*,  Chloé B. Steen*,  Minji Kang,  Andrew J. Gentles,  Aaron M. Newman.  
+doi: https://doi.org/10.1101/2022.05.20.488356
