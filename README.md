@@ -6,7 +6,7 @@
     Robust and rapid alignment of single-cell and spatial transcriptomes
 </p> </h1>
 
-**CytoSPACE** is a novel computational tool for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
+**CytoSPACE** is a novel computational tool for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a shortest augmenting path optimization routine. 
 
 <p align="center">
   <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/CytoSPACE_overview.png" width="900"> 
@@ -15,7 +15,7 @@
 The key innovations of our method are:
 
 - Unlike conventional methods which calculate cell type decompositions by spot, CytoSPACE yields a reconstructed tissue specimen with both high gene coverage and spatially-resolved scRNA-seq data suitable for downstream analysis.
-- CytoSPACE is highly robust to noise, and due to its implementation of cell-to-spot assignment via constrained convex optimization, returns globally optimal cell-to-spot assignments. (See the paper for full details.)
+- CytoSPACE is highly robust to noise and returns globally optimal cell-to-spot assignments. (See the paper for full details.)
 - Unlike other methods which generally operate on pre-selected marker genes or on a shared embedding space (the latter of which can erase true biological variation), CytoSPACE uses the full transcriptome without the need for batch correction, helping it retain sensitivity to subtle cell states.
 - CytoSPACE is quick and simple to execute. It runs in minutes even with a single CPU on a personal laptop and requires no hyperparameter tuning or gene/feature selection.
 
