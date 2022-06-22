@@ -67,7 +67,7 @@ Overview of README:
 ```bash
   pip install lapjv==1.3.14
 ```
-We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. Please note that if the package installs but you receive an "illegal instruction" error while running CytoSPACE, you may be able to install successfully instead with the following command:
+We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. Please note that if the package installs but you receive an "illegal instruction" error while running CytoSPACE, you may be able to build the package instead with the following command:
 ```bash
    pip3 install git+https://github.com/src-d/lapjv
 ```
