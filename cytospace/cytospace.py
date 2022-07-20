@@ -114,7 +114,7 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
 
 
 def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
-                   cell_type_fraction_estimation_path, output_folder="cytospace_results",
+                   cell_type_fraction_estimation_path, cell_number_estimation_path = None, output_folder="cytospace_results",
                    rotation_flag=True, plot_nonvisium=False, plot_off=False, spot_size=175, plot_marker = 'h',
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv"):
@@ -134,6 +134,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         f.write("st_path: "+str(st_path)+"\n")
         f.write("coordinates_path: "+str(coordinates_path)+"\n")
         f.write("cell_type_fraction_estimation_path: "+str(cell_type_fraction_estimation_path)+"\n")
+        f.write("cell_number_estimation_path: "+str(cell_number_estimation_path)+"\n")
         f.write("output_folder: "+str(output_folder)+"\n")
         f.write("rotation_flag: "+str(rotation_flag)+"\n")
         f.write("plot_nonvisium: "+str(plot_nonvisium)+"\n")
@@ -170,7 +171,11 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
 
     t0_core = time.perf_counter()
     print('Estimating number of cells in each spot ...')
-    cell_number_to_node_assignment = estimate_cell_number_RNA_reads(st_data, mean_cell_numbers)
+    if cell_number_estimation_path == None:
+         cell_number_to_node_assignment = estimate_cell_number_RNA_reads(st_data, mean_cell_numbers)
+    else:
+         cell_number_data = pd.read_csv(cell_number_estimation_path, header=0, index_col=0, delimiter=delimiter)
+         cell_number_to_node_assignment = cell_number_data.values.astype(int).flatten()
     print(f"Time to estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds")
 
     print('Get cell type fractions ...')
