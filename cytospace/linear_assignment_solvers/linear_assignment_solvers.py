@@ -2,8 +2,7 @@ import numpy as np
 import random
 import time
 from ortools.graph import pywrapgraph
-
-from cytospace.common import normalize_data, matrix_correlation
+from cytospace.common import normalize_data, matrix_correlation_pearson, matrix_correlation_spearman, matrix_cosine
 
 
 def import_solver(solver_method):
@@ -37,9 +36,8 @@ def call_solver(solver, solver_method, cost_scaled):
 
     return y
 
-
 def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels, cell_type_numbers_int,
-                   cell_number_to_node_assignment, seed, solver_method):
+                   cell_number_to_node_assignment, seed, solver_method, distance_metric):
     print("Down/up sample of scRNA-seq data according to estimated cell type fractions")
     t0 = time.perf_counter()
     # Find intersection genes
@@ -88,9 +86,19 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
     print("Building cost matrix ...")
     t0 = time.perf_counter()
     if solver_method=="lap_CSPR":
-        cost = -np.transpose(matrix_correlation(expressions_tpm_st_log, sampled_cells))
+        if distance_metric=="Pearson_correlation":
+           cost = -np.transpose(matrix_correlation_pearson(expressions_tpm_st_log, sampled_cells))
+        elif distance_metric=="Spearman_correlation":
+           cost = -np.transpose(matrix_correlation_spearman(expressions_tpm_st_log, sampled_cells))
+        elif distance_metric=="Cosine":
+           cost = -np.transpose(matrix_cosine(expressions_tpm_st_log, sampled_cells))
     else:
-        cost = -matrix_correlation(sampled_cells, expressions_tpm_st_log)
+        if distance_metric=="Pearson_correlation":
+           cost = -matrix_correlation_pearson(sampled_cells, expressions_tpm_st_log)
+        elif distance_metric=="Spearman_correlation":
+           cost = -matrix_correlation_spearman(sampled_cells, expressions_tpm_st_log)
+        elif distance_metric=="Cosine":
+           cost = -matrix_cosine(sampled_cells, expressions_tpm_st_log)
 
     location_repeat = np.zeros(cost.shape[1])
     counter = 0
