@@ -3,6 +3,7 @@ import pandas as pd
 from pathlib import Path
 import warnings
 import datatable as dt
+from numpy.linalg import norm
 
 def read_file(file_path):
     # Read file
