@@ -61,6 +61,9 @@ def argument_parser():
                         help="Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial transcriptomics data, set to 20")
     parser.add_argument("-se", "--seed", help="Set seed for random generators, default 1", type=int,
                         default=1)
+    parser.add_argument("-dm", "--distance-metric", default="Pearson_correlation",
+                        help="Which distance metric to use for the cost matrix, default 'Pearson_correlation'",
+                        choices=["Pearson_correlation", "Spearman_correlation", "Cosine"])
 
     # Plotting
     parser.add_argument("-p", "--plot-off", help="Turn create plots on/off", action="store_true")
