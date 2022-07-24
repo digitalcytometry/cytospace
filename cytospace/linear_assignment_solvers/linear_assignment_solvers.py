@@ -3,6 +3,7 @@ import random
 import time
 from ortools.graph import pywrapgraph
 from cytospace.common import normalize_data, matrix_correlation_pearson, matrix_correlation_spearman, matrix_cosine
+from scipy.spatial import distance
 
 
 def import_solver(solver_method):
@@ -92,6 +93,8 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
            cost = -np.transpose(matrix_correlation_spearman(expressions_tpm_st_log, sampled_cells))
         elif distance_metric=="Cosine":
            cost = -np.transpose(matrix_cosine(expressions_tpm_st_log, sampled_cells))
+        elif distance_metric=="Euclidean":
+           cost = np.transpose(distance.cdist(np.transpose(sampled_cells), np.transpose(expressions_tpm_st_log), 'euclidean'))
     else:
         if distance_metric=="Pearson_correlation":
            cost = -matrix_correlation_pearson(sampled_cells, expressions_tpm_st_log)
@@ -99,6 +102,8 @@ def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels
            cost = -matrix_correlation_spearman(sampled_cells, expressions_tpm_st_log)
         elif distance_metric=="Cosine":
            cost = -matrix_cosine(sampled_cells, expressions_tpm_st_log)
+        elif distance_metric=="Euclidean":
+           cost = np.transpose(distance.cdist(np.transpose(sampled_cells), np.transpose(expressions_tpm_st_log), 'euclidean'))
 
     location_repeat = np.zeros(cost.shape[1])
     counter = 0
