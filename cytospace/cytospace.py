@@ -177,6 +177,9 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     else:
          cell_number_data = pd.read_csv(cell_number_estimation_path, header=0, index_col=0, delimiter=delimiter)
          cell_number_to_node_assignment = cell_number_data.values.astype(int).flatten()
+         if np.sum(cell_number_to_node_assignment) > 300:
+            index_random = random.choices(range(len(cell_number_to_node_assignment)), weights=cell_number_to_node_assignment, k=300)
+            cell_number_to_node_assignment, bin_edges = np.histogram(index_random, bins=list(np.array(range(len(cell_number_to_node_assignment)+1)))) 
     print(f"Time to estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds")
 
     print('Get cell type fractions ...')
