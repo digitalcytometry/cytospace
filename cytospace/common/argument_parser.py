@@ -39,9 +39,6 @@ def argument_parser():
     required.add_argument("-ctfep", "--cell-type-fraction-estimation-path", type=str,
                           help="Path to cell type fraction file",
                           default=None, required=True)
-    required.add_argument("-cnep", "--cell-number-estimation-path", type=str,
-                          help="Path to cell number file",
-                          default=None, required=False)
 
     # I/O options
     parser.add_argument("-ncpsp", "--n-cells-per-spot-path",

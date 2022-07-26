@@ -39,11 +39,7 @@ def call_solver(solver, solver_method, cost_scaled):
     return y
 
 def calculate_cost(expressions_scRNA_data, expressions_st_data, cell_type_labels, cell_type_numbers_int,
-<<<<<<< HEAD
-                   cell_number_to_node_assignment, seed, solver_method, sampling_method):
-=======
-                   cell_number_to_node_assignment, seed, solver_method, distance_metric):
->>>>>>> 6b32370e3ac22545a8fa91614992e1b354abb929
+                   cell_number_to_node_assignment, seed, solver_method, sampling_method, distance_metric):
     print("Down/up sample of scRNA-seq data according to estimated cell type fractions")
     t0 = time.perf_counter()
     # Find intersection genes
