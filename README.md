@@ -6,7 +6,7 @@
     Robust and rapid alignment of single-cell and spatial transcriptomes
 </p> </h1>
 
-**CytoSPACE** is a novel computational tool for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a linear programming-based optimization routine. 
+**CytoSPACE** is a novel computational tool for assigning single-cell transcriptomes to in situ spatial transcriptomics (ST) data. Our method solves single cell/spot assignment by minimizing a correlation-based cost function through a shortest augmenting path optimization routine. 
 
 <p align="center">
   <img src="https://github.com/digitalcytometry/cytospace/blob/main/images/CytoSPACE_overview.png" width="900"> 
@@ -15,7 +15,7 @@
 The key innovations of our method are:
 
 - Unlike conventional methods which calculate cell type decompositions by spot, CytoSPACE yields a reconstructed tissue specimen with both high gene coverage and spatially-resolved scRNA-seq data suitable for downstream analysis.
-- CytoSPACE is highly robust to noise, and due to its implementation of cell-to-spot assignment via constrained convex optimization, returns globally optimal cell-to-spot assignments. (See the paper for full details.)
+- CytoSPACE is highly robust to noise and returns globally optimal cell-to-spot assignments. (See the paper for full details.)
 - Unlike other methods which generally operate on pre-selected marker genes or on a shared embedding space (the latter of which can erase true biological variation), CytoSPACE uses the full transcriptome without the need for batch correction, helping it retain sensitivity to subtle cell states.
 - CytoSPACE is quick and simple to execute. It runs in minutes even with a single CPU on a personal laptop and requires no hyperparameter tuning or gene/feature selection.
 
@@ -67,7 +67,11 @@ Overview of README:
 ```bash
   pip install lapjv==1.3.14
 ```
-We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. 
+We highly recommend you install this package, which provides a fast implementation of the default core optimization algorithm within CytoSPACE. However, some systems may not accommodate it as it requires CPU support for AVX2 instructions. To determine if your system supports this package, it is generally easiest to simply attempt to install it as above. If it installs without problems, your system will support it! If you run into an error, it is likely your system does not support it, and you can simply use one of the other options we have provided. See __Solver options__ below for details. Please note that if the package installs but you receive an "illegal instruction" error while running CytoSPACE, you may be able to build the package instead with the following command:
+```bash
+   pip3 install git+https://github.com/src-d/lapjv
+```
+For more information, see the <a href="https://pypi.org/project/lapjv/" target="_blank">lapjv documentation page</a>. 
 
 ## File formatting
 CytoSPACE requires 5 files as input. All files should be provided in tab-delimited tabular input format (saved as .txt) with no double quotations. Further formatting details for each input file are specified below. For helper scripts to prepare input files directly from Seurat objects, refer to the section [Preprocessing: Input file preparation](#preprocessing-input-file-preparation).
@@ -150,6 +154,11 @@ For example:
 1. While `cytospace` can be run from any path and folder, the path to `get_cellfracs_seuratv3.R` must be specified in the command. 
 2. __You must run this script within the `cytospace` conda environment.__ This is done using the command `conda activate cytospace`.
 3. We use `Seurat v3` for estimating cell fractions, and this is installed as part of the CytoSPACE environment. If you want to run other analyses using more recent versions of Seurat after running CytoSPACE, for example Seurvat v4, make sure to first __deactivate the CytoSPACE environment__ once you are done running CytoSPACE. This is done using the command `conda deactivate cytospace`.
+4. __We highly recommend using Seurat v3 rather than v4 for cell type fraction estimation.__ Running cell type fraction estimation from within the `cytospace` environment will ensure this. If you would like to check your Seurat version within an R session, you can use the following command:
+```
+library(Seurat)
+packageVersion('Seurat')
+```
 
 ## Running CytoSPACE
 After activating the `cytospace` conda environment via `conda activate cytospace`, CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
@@ -368,6 +377,8 @@ later version.
 CytoSPACE is Copyright (2022-) by the authors.
 
 ## Citation
-If you use CytoSPACE, please cite:
-
-    Coming soon
+If you use CytoSPACE, please cite:  
+  
+*Robust alignment of single-cell and spatial transcriptomes with CytoSPACE* (bioxRiv 2022)  
+Milad R. Vahid*, Erin L. Brown*,  Chloé B. Steen*,  Minji Kang,  Andrew J. Gentles,  Aaron M. Newman.  
+doi: https://doi.org/10.1101/2022.05.20.488356

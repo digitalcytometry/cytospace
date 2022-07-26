@@ -39,6 +39,9 @@ def argument_parser():
     required.add_argument("-ctfep", "--cell-type-fraction-estimation-path", type=str,
                           help="Path to cell type fraction file",
                           default=None, required=True)
+    required.add_argument("-cnep", "--cell-number-estimation-path", type=str,
+                          help="Path to cell number file",
+                          default=None, required=False)
 
     # I/O options
     parser.add_argument("-ncpsp", "--n-cells-per-spot-path",
@@ -63,6 +66,9 @@ def argument_parser():
                         help="Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial transcriptomics data, set to 20")
     parser.add_argument("-se", "--seed", help="Set seed for random generators, default 1", type=int,
                         default=1)
+    parser.add_argument("-dm", "--distance-metric", default="Pearson_correlation",
+                        help="Which distance metric to use for the cost matrix, default 'Pearson_correlation'",
+                        choices=["Pearson_correlation", "Spearman_correlation", "Cosine", "Euclidean"])
 
     # Plotting
     parser.add_argument("-p", "--plot-off", help="Turn create plots on/off", action="store_true")
