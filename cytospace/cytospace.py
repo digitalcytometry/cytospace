@@ -86,7 +86,7 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data, cell_ty
                                     seed, distance_metric):
     distance_repeat, location_repeat, cell_ids_selected, new_cell_index, cell_ids_new, all_cells_save =\
         calculate_cost(scRNA_data, st_data, cell_type_data, cell_type_numbers_int,
-                       cell_number_to_node_assignment, seed, solver_method, solver, sampling_method, distance_metric)
+                       cell_number_to_node_assignment, seed, solver_method, sampling_method, distance_metric)
 
     if solver_method == 'lapjv' or solver_method == 'lapjv_compat':
         print('Solving linear assignment problem ...')
