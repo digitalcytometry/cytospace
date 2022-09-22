@@ -30,8 +30,14 @@ def save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, al
 
     numzeros = int(math.log10(len(cell_ids_selected_list)))+1
     unique_cids = ['UCID'+str(i).zfill(numzeros) for i in range(len(cell_ids_selected_list))]
-
-    df_locations = pd.DataFrame.from_dict({'UniqueCID': unique_cids,'OriginalCID': cell_ids_selected_list,
+    
+    
+    original_cell_ids = ['NA' for i in range(len(cell_ids_selected_list))]
+    for i in range(len(cell_ids_selected_list)):
+        if cell_ids_selected_list[i] == cell_ids_new_list[i]:
+            original_cell_ids[i] = cell_ids_selected_list[i]
+    
+    df_locations = pd.DataFrame.from_dict({'UniqueCID': unique_cids,'OriginalCID': original_cell_ids,
                                 'PlaceHolderCID': cell_ids_new_list,
                                 'CellType': list(df_labels.loc[cell_ids_selected_list,:][df_labels.columns[1]]),
                                 'SpotID': assigned_node_names,
