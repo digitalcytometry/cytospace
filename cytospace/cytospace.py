@@ -125,7 +125,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    cell_type_fraction_estimation_path, n_cells_per_spot_path, output_folder="cytospace_results",
                    rotation_flag=True, plot_nonvisium=False, plot_off=False, spot_size=175, plot_marker = 'h',
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
-                   output_prefix="", seed=1, delimiter=",", solver_method="lapjv", sampling_method="place_holders",
+                   output_prefix="", seed=1, delimiter=",", solver_method="lapjv", sampling_method="duplicates",
                    distance_metric="Pearson_correlation"):
     # For timing execution
     start_time = time.perf_counter()
