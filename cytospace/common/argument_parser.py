@@ -56,8 +56,8 @@ def argument_parser():
     parser.add_argument("-sm", "--solver-method", default="lapjv",
                         help="Which solver to use for the linear assignment problem, default 'lapjv'",
                         choices=["lapjv", "lapjv_compat", "lap_CSPR"])
-    parser.add_argument("-sam", "--sampling-method", default="place_holders",
-                        help="Which unerlying method to use for dealing with duplicated cells, default 'place_holders'",
+    parser.add_argument("-sam", "--sampling-method", default="duplicates",
+                        help="Which unerlying method to use for dealing with duplicated cells, default 'duplicates'",
                         choices=["duplicates", "place_holders"])
     parser.add_argument("-mcn", "--mean-cell-numbers", type=int, default=5,
                         help="Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial transcriptomics data, set to 20")
