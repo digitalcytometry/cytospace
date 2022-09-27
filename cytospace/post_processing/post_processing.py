@@ -9,7 +9,7 @@ from cytospace.common import read_file
 
 def save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, all_cells_save, assigned_locations,
                  new_cell_index, index, assigned_nodes, st_path, coords_path,
-                 cell_type_path, assigned_locations_path):
+                 cell_type_path, assigned_locations_path, single_cell, sampling_method):
 
     file_delim = "," if coords_path.endswith(".csv") else "\t"
     df_coords = pd.read_csv(coords_path, delimiter=file_delim)
@@ -20,9 +20,10 @@ def save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, al
     if len(coords_columns) > 3:
         additional_columns = coords_columns[3:]
 
-    cell_ids_selected_list = cell_ids_selected.tolist()
+    cell_ids_selected_list = list(cell_ids_selected)
     cell_ids_new_list = cell_ids_new.tolist()
-    assigned_node_names = [st_names[l] for l in index]
+    # assigned_node_names = [st_names[l] for l in index]
+    assigned_node_names = list(assigned_locations.index)
 
     file_delim = "," if cell_type_path.endswith(".csv") else "\t"
     df_labels = pd.read_csv(cell_type_path, delimiter=file_delim)
@@ -37,16 +38,27 @@ def save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, al
         if cell_ids_selected_list[i] == cell_ids_new_list[i]:
             original_cell_ids[i] = cell_ids_selected_list[i]
     
-    df_locations = pd.DataFrame.from_dict({'UniqueCID': unique_cids,'OriginalCID': original_cell_ids,
-                                'PlaceHolderCID': cell_ids_new_list,
-                                'CellType': list(df_labels.loc[cell_ids_selected_list,:][df_labels.columns[1]]),
-                                'SpotID': assigned_node_names,
-                                'row': list(assigned_locations.iloc[:, 0]),
-                                'col': list(assigned_locations.iloc[:, 1])})
+    if sampling_method == "place_holders":
+        
+        df_locations = pd.DataFrame.from_dict({'UniqueCID': unique_cids,'OriginalCID': original_cell_ids,
+                                    'PlaceHolderCID': cell_ids_new_list,
+                                    'CellType': list(df_labels.loc[cell_ids_selected_list,:][df_labels.columns[1]]),
+                                    'SpotID': assigned_node_names,
+                                    'row': list(assigned_locations.iloc[:, 0]),
+                                    'col': list(assigned_locations.iloc[:, 1])})
+    else:
+        
+        df_locations = pd.DataFrame.from_dict({'UniqueCID': unique_cids,'OriginalCID': original_cell_ids,
+                            'CellType': list(df_labels.loc[cell_ids_selected_list,:][df_labels.columns[1]]),
+                            'SpotID': assigned_node_names,
+                            'row': list(assigned_locations.iloc[:, 0]),
+                            'col': list(assigned_locations.iloc[:, 1])})
+    
     df_locations.to_csv(assigned_locations_path, index=False)
     
-    fout_scrna = output_path / f'{output_prefix}new_scRNA.csv'
-    all_cells_save.to_csv(fout_scrna)
+    if not single_cell:
+        fout_scrna = output_path / f'{output_prefix}new_scRNA.csv'
+        all_cells_save.to_csv(fout_scrna)
 
     metadata = df_locations.copy()
     df = pd.DataFrame(columns=metadata['CellType'].unique(),index=metadata['SpotID'].unique())
