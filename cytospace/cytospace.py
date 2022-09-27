@@ -317,7 +317,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                  cell_type_path, assigned_locations_path, single_cell, sampling_method)
 
     if not plot_off and not single_cell:
-        output_filename = output_path / "plot_cell_type_locations.pdf"
+        output_filename = output_path / (output_prefix + "plot_cell_type_locations.pdf")
         plot_results(assigned_locations_path, coordinates_path, output_filename, num_row, num_column,
                      rotation_flag, plot_nonvisium, rotation_degrees, spot_size, plot_marker)    
 
