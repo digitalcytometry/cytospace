@@ -66,7 +66,15 @@ def argument_parser():
     parser.add_argument("-dm", "--distance-metric", default="Pearson_correlation",
                         help="Which distance metric to use for the cost matrix, default 'Pearson_correlation'",
                         choices=["Pearson_correlation", "Spearman_correlation", "Cosine", "Euclidean"])
+    parser.add_argument("-nosc", "--number-of-selected-cells", help="Number of selected cells from scRNA-seq data used in eahc iteration", type=int,
+                        default=10000)
+    parser.add_argument("-noss", "--number-of-selected-spots", help="Number of selected spots from ST data used in eahc iteration", type=int,
+                        default=10000)
+    parser.add_argument("-nop", "--number-of-processors", type=int, default=4,
+                        help="Number of processors used for the analysis")
+    parser.add_argument("-sc", "--single-cell", help="Use single-cell spatial approach or not", action="store_true")
 
+    
     # Plotting
     parser.add_argument("-p", "--plot-off", help="Turn create plots on/off", action="store_true")
     add_plotting_arguments(parser)

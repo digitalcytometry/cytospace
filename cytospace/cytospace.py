@@ -2,6 +2,8 @@ import random
 import time
 import pandas as pd
 import numpy as np
+import concurrent.futures
+from pandas.core.common import flatten
 
 from cytospace.common import read_file, normalize_data, check_paths, argument_parser
 from cytospace.post_processing import save_results, plot_results
@@ -120,18 +122,41 @@ def solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data, cell_ty
     return assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save
 
 
+def apply_linear_assignment(index_total,cell_type_factions_data,number_of_selected_cells,scRNA_data, st_data, cell_type_data,
+                                    coordinates_data, cell_number_to_node_assignment, solver_method, sampling_method, solver, seed, distance_metric):
+
+    expressions_st_selected = st_data.iloc[:, index_total]
+    selected_index_sc = list(range(scRNA_data.shape[1]))
+    index_sc = np.random.choice(selected_index_sc, number_of_selected_cells).tolist()    
+    expressions_sc_selected = scRNA_data.iloc[:, index_sc]
+    cell_type_data_selected = cell_type_data.iloc[index_sc]
+    cell_number_to_node_assignment_selected = cell_number_to_node_assignment[index_total]
+    coordinates_data_selected = coordinates_data.iloc[index_total,:]
+
+    print('Get cell type fractions ...')
+    number_of_cells = np.sum(cell_number_to_node_assignment_selected)
+    cell_type_numbers_int_selected = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
+    assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save =\
+    solve_linear_assignment_problem(expressions_sc_selected, expressions_st_selected, cell_type_data_selected,
+                                    cell_type_numbers_int_selected, coordinates_data_selected,
+                                    cell_number_to_node_assignment_selected, solver_method, sampling_method, solver, seed, distance_metric)
+    return assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save
+
+
 
 def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    cell_type_fraction_estimation_path, n_cells_per_spot_path, output_folder="cytospace_results",
                    rotation_flag=True, plot_nonvisium=False, plot_off=False, spot_size=175, plot_marker = 'h',
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv", sampling_method="duplicates",
-                   distance_metric="Pearson_correlation"):
+                   distance_metric="Pearson_correlation", number_of_selected_cells=10000, number_of_selected_spots=10000,
+                   number_of_processors=4, single_cell=False):
     # For timing execution
     start_time = time.perf_counter()
-
+    
      # Check paths
     output_path = check_paths(output_folder, output_prefix)
+    assigned_locations_path = str(output_path / f'{output_prefix}assigned_locations.csv')
 
     # Record log
     fout_log = output_path / f"{output_prefix}log.txt"
@@ -160,12 +185,13 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         f.write("solver_method: "+str(solver_method)+"\n\n")
         f.write("sampling_method: "+str(sampling_method)+"\n\n")
         f.write("distance_metric: "+str(distance_metric)+"\n\n")
-
+        f.write("single_cell: "+str(single_cell)+"\n")
+            
     if solver_method == "lapjv" or solver_method == "lapjv_compat":
         solver = import_solver(solver_method)
     else:
         solver = None
-
+        
     # Read data
     print("Read and validate data ...")
     t0 = time.perf_counter()
@@ -173,57 +199,138 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         read_data(scRNA_path, cell_type_path, st_path, coordinates_path,
                   cell_type_fraction_estimation_path, n_cells_per_spot_path, delimiter)
     print(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds")
+    
     with open(fout_log,"a") as f:
         f.write(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds\n")
-
+        
     # Set seed
-    random.seed(seed)
+    random.seed(seed) 
     np.random.seed(seed)
-
+    
     t0_core = time.perf_counter()
-    if n_cells_per_spot_data is None:
-        print('Estimating number of cells in each spot ...')
-        cell_number_to_node_assignment = estimate_cell_number_RNA_reads(st_data, mean_cell_numbers)
-        print(f"Time to estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds")
+
+    if single_cell:
+        
+        size_of_ST_data = st_data.shape[1]
+
+        # Validate "number of selected spots" input
+        if size_of_ST_data < number_of_selected_spots:
+            number_of_selected_spots = size_of_ST_data
+            print("Since number_of_selected_spots is higher than the size of ST data, number_of_selected_spots has been set to the size of ST data")
+        
+        size_of_scRNA_data = scRNA_data.shape[1]
+        
+        # Validate "number of selected spots" input
+        if size_of_scRNA_data < number_of_selected_cells:
+            number_of_selected_cells = size_of_scRNA_data
+            print("Since number_of_selected_cells is higher than the size of scRNA-seq data, number_of_selected_cells has been set to the size of scRNA-seq data")
+        
+        with open(fout_log, "a") as f:
+            f.write("number_of_selected_cells: "+str(number_of_selected_cells)+"\n\n")
+            f.write("number_of_selected_spots: "+str(number_of_selected_spots)+"\n\n")
+            f.write("number_of_processors: "+str(number_of_processors)+"\n\n")
+        
+        cell_number_to_node_assignment = np.ones(st_data.shape[1]).astype(int)
+
+        max_value = int(size_of_ST_data/(number_of_selected_spots + 1)) + 1
+        index_total = [[]*number_of_selected_spots]*max_value
+        selected_index_st = list(range(size_of_ST_data))
+        all_cells_save_combined = pd.DataFrame()
+        cell_ids_selected_combined = pd.DataFrame()
+        assigned_locations_combined = pd.DataFrame()
+        index_combined = []
+    
+        print(f"Number of required processors: {max_value}")
+    
+        for i in range(max_value):
+            index_total[i] = np.random.choice(selected_index_st, min(number_of_selected_spots,len(selected_index_st)), replace = False).tolist()
+            [selected_index_st.remove(index_total[i][j]) for j in range(len(index_total[i]))]
+    
+        iter_number = 1     
+        if max_value <= number_of_processors:
+    
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                results = [executor.submit(apply_linear_assignment, index_total[i], cell_type_factions_data, number_of_selected_cells, scRNA_data, st_data, cell_type_data, coordinates_data,
+                                            cell_number_to_node_assignment, solver_method, sampling_method, solver, seed, distance_metric) for i in range(max_value)]
+                for f in concurrent.futures.as_completed(results):
+                    assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save = f.result()
+    
+                    all_cells_save_combined = pd.concat([all_cells_save_combined, all_cells_save], axis=1)
+                    cell_ids_selected_combined = pd.concat([cell_ids_selected_combined, pd.DataFrame(cell_ids_selected)])
+                    assigned_locations_combined = pd.concat([assigned_locations_combined, assigned_locations])
+                    index_combined = index_combined + index
+                print(f"Iteration: {iter_number}")
+                iter_number = iter_number + 1
+    
+        else:
+            counter = 0
+            while max_value > 0:
+    
+                with concurrent.futures.ProcessPoolExecutor() as executor:
+                    results = [executor.submit(apply_linear_assignment, index_total[i], cell_type_factions_data, number_of_selected_cells, scRNA_data, st_data, cell_type_data, coordinates_data,
+                                                cell_number_to_node_assignment, solver_method, sampling_method, solver, seed, distance_metric) for i in range(counter, counter + min(max_value,number_of_processors))]
+                    for f in concurrent.futures.as_completed(results):
+                        assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save = f.result()
+    
+                        all_cells_save_combined = pd.concat([all_cells_save_combined, all_cells_save], axis=1)
+                        cell_ids_selected_combined = pd.concat([cell_ids_selected_combined, pd.DataFrame(cell_ids_selected)])
+                        assigned_locations_combined = pd.concat([assigned_locations_combined, assigned_locations])
+                        index_combined = index_combined + index
+                        
+                    counter = counter + min(max_value,number_of_processors)
+                    max_value = max_value - number_of_processors
+                    print(f"Iteration: {iter_number}")
+                    iter_number = iter_number + 1
+    
+        all_cells_save = all_cells_save_combined
+        cell_ids_new = all_cells_save.columns
+        cell_ids_selected = cell_ids_selected_combined
+        cell_ids_selected = cell_ids_selected.values.tolist()
+        cell_ids_selected = flatten(cell_ids_selected)
+        assigned_locations = assigned_locations_combined
+        index = index_combined
+                                     
     else:
-        cell_number_to_node_assignment = n_cells_per_spot_data.values[:, 0].astype(int)
-        if np.sum(cell_number_to_node_assignment) > 50000:
-            index_random = random.choices(range(len(cell_number_to_node_assignment)), weights=cell_number_to_node_assignment, k=50000)
-            cell_number_to_node_assignment, _ = np.histogram(index_random, bins=list(np.array(range(len(cell_number_to_node_assignment) + 1)))) 
+        
+        if n_cells_per_spot_data is None:
+            print('Estimating number of cells in each spot ...')
+            cell_number_to_node_assignment = estimate_cell_number_RNA_reads(st_data, mean_cell_numbers)
+            print(f"Time to estimate number of cells per spot: {round(time.perf_counter() - t0_core, 2)} seconds")
+        else:
+            cell_number_to_node_assignment = n_cells_per_spot_data.values[:, 0].astype(int)
 
-    print('Get cell type fractions ...')
-    number_of_cells = np.sum(cell_number_to_node_assignment)
-    cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
-
-    assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save =\
-        solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
-                                        cell_type_numbers_int, coordinates_data,
-                                        cell_number_to_node_assignment, solver_method, sampling_method, solver, seed, distance_metric)
+        print('Get cell type fractions ...')
+        number_of_cells = np.sum(cell_number_to_node_assignment)
+        cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
+    
+        assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save =\
+            solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
+                                            cell_type_numbers_int, coordinates_data,
+                                            cell_number_to_node_assignment, solver_method, sampling_method, solver, seed, distance_metric)
+            
+            
     print(f"Total time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds\n")
-
+    
     print('Saving results ...')
-    assigned_locations_path = str(output_path / f'{output_prefix}assigned_locations.csv')
     save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, all_cells_save, assigned_locations,
                  new_cell_index, index, assigned_nodes, st_path, coordinates_path,
-                 cell_type_path, assigned_locations_path)
-
-    if not plot_off:
+                 cell_type_path, assigned_locations_path, single_cell, sampling_method)
+    
+    if not plot_off and not single_cell:
         output_filename = output_path / "plot_cell_type_locations.pdf"
         plot_results(assigned_locations_path, coordinates_path, output_filename, num_row, num_column,
-                     rotation_flag, plot_nonvisium, rotation_degrees, spot_size, plot_marker)
-
+                     rotation_flag, plot_nonvisium, rotation_degrees, spot_size, plot_marker)    
+        
     print(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds\n")
     
-
 def run_cytospace():
     arguments = argument_parser()
     main_cytospace(**arguments)
-
-
+    
 if __name__ == "__main__":
     arguments = argument_parser()
     main_cytospace(**arguments)
