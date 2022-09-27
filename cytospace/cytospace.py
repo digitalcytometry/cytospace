@@ -143,7 +143,6 @@ def apply_linear_assignment(index_total,cell_type_factions_data,number_of_select
     return assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save
 
 
-
 def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    cell_type_fraction_estimation_path, n_cells_per_spot_path, output_folder="cytospace_results",
                    rotation_flag=True, plot_nonvisium=False, plot_off=False, spot_size=175, plot_marker = 'h',
@@ -153,8 +152,8 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    number_of_processors=4, single_cell=False):
     # For timing execution
     start_time = time.perf_counter()
-    
-     # Check paths
+
+    # Check paths
     output_path = check_paths(output_folder, output_prefix)
     assigned_locations_path = str(output_path / f'{output_prefix}assigned_locations.csv')
 
@@ -182,16 +181,16 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         f.write("output_prefix: "+str(output_prefix)+"\n")
         f.write("seed: "+str(seed)+"\n")
         f.write("delimiter: "+str(delimiter)+"\n")
-        f.write("solver_method: "+str(solver_method)+"\n\n")
-        f.write("sampling_method: "+str(sampling_method)+"\n\n")
-        f.write("distance_metric: "+str(distance_metric)+"\n\n")
-        f.write("single_cell: "+str(single_cell)+"\n")
+        f.write("solver_method: "+str(solver_method)+"\n")
+        f.write("sampling_method: "+str(sampling_method)+"\n")
+        f.write("distance_metric: "+str(distance_metric)+"\n")
+        f.write("single_cell: "+str(single_cell)+"\n\n")
             
     if solver_method == "lapjv" or solver_method == "lapjv_compat":
         solver = import_solver(solver_method)
     else:
         solver = None
-        
+    
     # Read data
     print("Read and validate data ...")
     t0 = time.perf_counter()
@@ -199,14 +198,13 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         read_data(scRNA_path, cell_type_path, st_path, coordinates_path,
                   cell_type_fraction_estimation_path, n_cells_per_spot_path, delimiter)
     print(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds")
-    
     with open(fout_log,"a") as f:
         f.write(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds\n")
-        
+ 
     # Set seed
-    random.seed(seed) 
+    random.seed(seed)
     np.random.seed(seed)
-    
+
     t0_core = time.perf_counter()
 
     if single_cell:
@@ -312,17 +310,17 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
     print(f"Total time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds\n")
-    
+
     print('Saving results ...')
     save_results(output_path, output_prefix, cell_ids_selected, cell_ids_new, all_cells_save, assigned_locations,
                  new_cell_index, index, assigned_nodes, st_path, coordinates_path,
                  cell_type_path, assigned_locations_path, single_cell, sampling_method)
-    
+
     if not plot_off and not single_cell:
         output_filename = output_path / "plot_cell_type_locations.pdf"
         plot_results(assigned_locations_path, coordinates_path, output_filename, num_row, num_column,
                      rotation_flag, plot_nonvisium, rotation_degrees, spot_size, plot_marker)    
-        
+
     print(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds\n")

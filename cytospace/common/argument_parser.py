@@ -74,7 +74,6 @@ def argument_parser():
                         help="Number of processors used for the analysis")
     parser.add_argument("-sc", "--single-cell", help="Use single-cell spatial approach or not", action="store_true")
 
-    
     # Plotting
     parser.add_argument("-p", "--plot-off", help="Turn create plots on/off", action="store_true")
     add_plotting_arguments(parser)
