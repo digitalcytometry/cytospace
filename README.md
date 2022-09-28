@@ -28,8 +28,9 @@ Overview of README:
 -   [**CytoSPACE outputs**](#cytospace-outputs)
 -   [**Example datasets for running CytoSPACE**](#example-datasets-for-running-cytospace)
 -   [**Customizing plotting outputs**](#customizing-plotting-outputs)
+-   [**Advanced options**](#advanced-options)
 -   [**Extended usage details**](#extended-usage-details)
--   [**CytoSPACE Solver options**](#cytospace-solver-options)
+-   [**CytoSPACE solver options**](#cytospace-solver-options)
 -   [**Updating local installations**](#updating-local-installations)
 -   [**Authors**](#authors)
 -   [**Contact**](#contact)
@@ -289,35 +290,137 @@ and for the sample melanoma data as:
 ```bash
   cytospace-plot -alp cytospace_results_melanoma/assigned_locations.csv -cp  melanoma_STdata_slide1_coordinates.txt -o melanoma_results.pdf -nr 5 -nc 3 -ss 1100 -pm s -nv
 ```
+
+## Advanced options
+While default options are recommended for most use cases, we do provide additional advanced options.
+
+### User-provided estimates of number of cells per spot
+Rather than using the internal mechanism of CytoSPACE for estimating the number of cells per spot, users can provide their own estimates (from image segmentation, for example) in a two-column file with header, in which the first column contains spot IDs and the second contains the number of cells predicted per spot:
+
+<p align="center">
+  <img width="300" src="https://github.com/digitalcytometry/cytospace/blob/main/images/n_cells_per_spot.PNG">
+</p>
+
+To run CytoSPACE with this option, pass the flag `-ncpsp` or `--n-cells-per-spot-path` followed by the file location.
+
+### Alternative distance metric
+By default, CytoSPACE uses Pearson correlation to compare cell and spot transcriptomes. Users can choose to use Spearman correlation or Euclidean distance instead by passing `-dm Spearman_correlation` or `-dm Euclidean` respectively with the function call. 
+
+### Setting a new random seed
+While the CytoSPACE algorithm is mostly deterministic, the initial step of sampling cells to be mapped is done at random. To provide an alternative random seed resulting in a different random sampling of cells, users can pass `-se` followed by the desired (integer) seed with the function call. The default random seed for CytoSPACE is 1.
+
+### Alternative handling of sampling
+CytoSPACE starts by creating a pool of cells that matches what is expected within the ST data. By default, this is done by resampling single cells to achieve the overall cell type fractions and total cell numbers estimated in the tissue. We recommend that CytoSPACE be run with this default setting for all real data analyses. However, we provide an additional option to generate new "place-holder" cells by sampling from the distribution of gene counts within each cell type instead, and used this option for ensuring uniqueness of mapped cells for benchmarking on simulated data. To run CytoSPACE with this alternative mode, users can pass `-sam place_holders` with the function call. 
+
+### Method extension: mapping quality
+While CytoSPACE's formulation as a linear assignment problem guarantees an optimal solution given its cost function, there is no underlying probabilistic framework for estimating mapping uncertainty. One possibility is to determine whether a given cell type belongs to a given spot after mapping - that is, whether a spot contains at least one cell of the same cell type. Notably, this does not distinguish between cells of the same cell type for quality of fit. As such a protocol provides some measure of mapping quality, albeit incomplete, we provide a helper script that implements this via a support vector machine that produces and trains on pseudo-bulks generated from the input scRNA-seq data. This script, `uncertainty_quantification.R`, takes as input the path to the ST dataset count matrix file, the scRNA-seq count matrix file, and the CytoSPACE output file `assigned_locations.csv`, and returns an appended output file with confidence scores in `assigned_locationswConfidenceScores.csv`. The command to run this script following a completed CytoSPACE run is as follows: 
+ ```bash
+ Rscript uncertainty_quantification.R /path/to/ST_geneexpression /path/to/scRNA_geneexpression /path/to/assigned_locations.csv
+```
+For interpreting confidence scores, we recommend a cutoff of 0.1, with higher scores indicating increased confidence that a spot contains at least one cell of the same cell type.
+
+### Method extension: single cell ST data
+While designed for Visium-type data in which most spots contain RNA from multiple cells, CytoSPACE can also be used with single-cell resolution spatial data such as <a href="https://vizgen.com/resources/meet-the-merscope-platform/" target="_blank">Vizgen's MERSCOPE platform</a>. We expect this extension to be useful for reducing noise and expanding transcriptome coverage of each cell in the ST data. For this single-cell resolution mode, CytoSPACE partitions the ST data into smaller chunks and utilizes multiple CPU cores to assign down-sampled versions of the reference scRNA-seq data to these regions.
+
+To run CytoSPACE with single-cell resolution spatial data:
+ ```bash
+ cytospace --single-cell 
+    --scRNA-path /path/to/scRNA_geneexpression
+    --cell-type-path /path/to/scRNA_celllabels
+    --st-path /path/to/ST_geneexpression
+    --coordinates-path /path/to/ST_coordinates
+    --cell-type-fraction-estimation-path path/to/cellfracestimates
+    --number-of-processors NUMBER_OF_PROCESSORS
+    --number-of-selected-cells  NUMBER_OF_SELECTED_CELLS
+    --number-of-selected-spots NUMBER_OF_SELECTED_SPOTS
+```
+Or with more condensed parameter names: 
+ ```bash
+ cytospace -sc
+    -sp /path/to/scRNA_geneexpression
+    -ctp /path/to/scRNA_celllabels
+    -stp /path/to/ST_geneexpression
+    -cp /path/to/ST_coordinates
+    -ctfep path/to/cellfracestimates
+    -nop NUMBER_OF_PROCESSORS
+    -nosc NUMBER_OF_SELECTED_CELLS
+    -noss NUMBER_OF_SELECTED_SPOTS
+```
+where `NUMBER_OF_PROCESSORS` denotes the number of cores to use, `NUMBER_OF_SELECTED_CELLS` denotes the number of cells in each dowsampled version, and `NUMBER_OF_SELECTED_SPOTS` denotes the size of each ST region. We generally recommend `-nosc 10000 -noss 10000`.
+
+A zip file of example single cell inputs is available to download from Google Drive <a href="https://drive.google.com/file/d/10fhxjCn-VfPPurrI-RE8lbs6NCPqfGXY/view?usp=sharing" target="_blank">here</a>. To download from the command line using `gdown`:
+   ```bash
+   gdown --fuzzy https://drive.google.com/file/d/10fhxjCn-VfPPurrI-RE8lbs6NCPqfGXY/view?usp=sharing
+   unzip single_cell_example_data.zip
+   ```
+
+To run CytoSPACE with this example dataset, run the following command from the location of the unzipped inputs and with your CytoSPACE conda environment active:
+ ```bash
+ cytospace -sc -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp single_cell_ST_example_GEP.txt -cp single_cell_ST_example_coors.txt -ctfep single_cell_ST_example_fractions.txt -nop 1 -nosc 10000 -noss 10000
+```
+
 ## Extended usage details
 ```
-usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp COORDINATES_PATH -ctfep
-                 CELL_TYPE_FRACTION_ESTIMATION_PATH [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-d DELIMITER]
-                 [-sm {lapjv,lapjv_compat,lap_CSPR}] [-mcn MEAN_CELL_NUMBERS] [-se SEED] [-p] [-nr NUM_ROW]
-                 [-nc NUM_COLUMN] [-r] [-pv] [-rd ROTATION_DEGREES] [-ss SPOT_SIZE] [-pm PLOT_MARKER]
+usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp
+                 COORDINATES_PATH -ctfep CELL_TYPE_FRACTION_ESTIMATION_PATH
+                 [-ncpsp N_CELLS_PER_SPOT_PATH] [-o OUTPUT_FOLDER]
+                 [-op OUTPUT_PREFIX] [-d DELIMITER]
+                 [-sm {lapjv,lapjv_compat,lap_CSPR}]
+                 [-sam {duplicates,place_holders}] [-mcn MEAN_CELL_NUMBERS]
+                 [-se SEED]
+                 [-dm {Pearson_correlation,Spearman_correlation,Cosine,Euclidean}]
+                 [-nosc NUMBER_OF_SELECTED_CELLS]
+                 [-noss NUMBER_OF_SELECTED_SPOTS] [-nop NUMBER_OF_PROCESSORS]
+                 [-sc] [-p] [-nr NUM_ROW] [-nc NUM_COLUMN] [-r] [-nv]
+                 [-rd ROTATION_DEGREES] [-ss SPOT_SIZE] [-pm PLOT_MARKER]
+
+CytoSPACE is a computational strategy for assigning single-cell transcriptomes
+to in situ spatial transcriptomics (ST) data. Our method solves single
+cell/spot assignment by minimizing a correlation-based cost function through a
+linear programming-based optimization routine.
 
 optional arguments:
   -h, --help            show this help message and exit
+  -ncpsp N_CELLS_PER_SPOT_PATH, --n-cells-per-spot-path N_CELLS_PER_SPOT_PATH
+                        Path to number of cells per ST spot file
   -o OUTPUT_FOLDER, --output-folder OUTPUT_FOLDER
                         Relative path to the output folder
   -op OUTPUT_PREFIX, --output-prefix OUTPUT_PREFIX
                         Prefix of results stored in the 'output_folder'
   -d DELIMITER, --delimiter DELIMITER
-                        Set delimiter of the input files, default ' '
+                        Set delimiter of the input files, default '\t'
   -sm {lapjv,lapjv_compat,lap_CSPR}, --solver-method {lapjv,lapjv_compat,lap_CSPR}
-                        Which solver to use for the linear assignment problem, default 'lapjv'
+                        Which solver to use for the linear assignment problem,
+                        default 'lapjv'
+  -sam {duplicates,place_holders}, --sampling-method {duplicates,place_holders}
+                        Which unerlying method to use for dealing with
+                        duplicated cells, default 'duplicates'
   -mcn MEAN_CELL_NUMBERS, --mean-cell-numbers MEAN_CELL_NUMBERS
-                        Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial
+                        Mean number of cells per spot, default 5 (appropriate
+                        for Visium). If analyzing legacy spatial
                         transcriptomics data, set to 20
   -se SEED, --seed SEED
                         Set seed for random generators, default 1
+  -dm {Pearson_correlation,Spearman_correlation,Cosine,Euclidean}, --distance-metric {Pearson_correlation,Spearman_correlation,Cosine,Euclidean}
+                        Which distance metric to use for the cost matrix,
+                        default 'Pearson_correlation'
+  -nosc NUMBER_OF_SELECTED_CELLS, --number-of-selected-cells NUMBER_OF_SELECTED_CELLS
+                        Number of selected cells from scRNA-seq data used in
+                        each iteration
+  -noss NUMBER_OF_SELECTED_SPOTS, --number-of-selected-spots NUMBER_OF_SELECTED_SPOTS
+                        Number of selected spots from ST data used in each
+                        iteration
+  -nop NUMBER_OF_PROCESSORS, --number-of-processors NUMBER_OF_PROCESSORS
+                        Number of processors used for the analysis
+  -sc, --single-cell    Use single-cell spatial approach or not
   -p, --plot-off        Turn create plots on/off
   -nr NUM_ROW, --num-row NUM_ROW
                         Number of rows in pdf figure
   -nc NUM_COLUMN, --num-column NUM_COLUMN
-                        Number of coulmns in pdf figure
+                        Number of columns in pdf figure
   -r, --rotation-flag   Rotate plot
-  -nv, --plot-nonvisium    Plot custom slide dimensions
+  -nv, --plot-nonvisium
+                        Plot with custom slide dimensions
   -rd ROTATION_DEGREES, --rotation-degrees ROTATION_DEGREES
                         Rotation on plot
   -ss SPOT_SIZE, --spot-size SPOT_SIZE
