@@ -197,6 +197,6 @@ confid <- sapply(1:nrow(assign_all), function(i) conf[assign_all$SpotID[i],assig
 assign_all <- cbind(assign_all, confid)
 colnames(assign_all)[ncol(assign_all)] <- "Confidence" #append confidence scores to CytoSPACE output
 
-write.csv(assign_all, file = outputname, row.names=F) #write to disk
+write.csv(assign_all, file = outputname, row.names=F, quote=F) #write to disk
 
 print(">Done")
