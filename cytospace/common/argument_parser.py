@@ -65,7 +65,7 @@ def argument_parser():
                         default=1)
     parser.add_argument("-dm", "--distance-metric", default="Pearson_correlation",
                         help="Which distance metric to use for the cost matrix, default 'Pearson_correlation'",
-                        choices=["Pearson_correlation", "Spearman_correlation", "Cosine", "Euclidean"])
+                        choices=["Pearson_correlation", "Spearman_correlation", "Euclidean"])
     parser.add_argument("-nosc", "--number-of-selected-cells", help="Number of selected cells from scRNA-seq data used in eahc iteration", type=int,
                         default=10000)
     parser.add_argument("-noss", "--number-of-selected-spots", help="Number of selected spots from ST data used in eahc iteration", type=int,
