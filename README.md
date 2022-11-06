@@ -319,6 +319,8 @@ While CytoSPACE's formulation as a linear assignment problem guarantees an optim
 ```
 For interpreting confidence scores, we recommend a cutoff of 0.1, with higher scores indicating increased confidence that a spot contains at least one cell of the same cell type.
 
+Please note that `uncertainty_quantification.R` requires the following R packages: `Seurat`, `data.table`, and `e1071`.
+
 ### Method extension: single cell ST data
 While designed for Visium-type data in which most spots contain RNA from multiple cells, CytoSPACE can also be used with single-cell resolution spatial data such as <a href="https://vizgen.com/resources/meet-the-merscope-platform/" target="_blank">Vizgen's MERSCOPE platform</a>. We expect this extension to be useful for reducing noise and expanding transcriptome coverage of each cell in the ST data. For this single-cell resolution mode, CytoSPACE partitions the ST data into smaller chunks and utilizes multiple CPU cores to assign down-sampled versions of the reference scRNA-seq data to these regions.
 
