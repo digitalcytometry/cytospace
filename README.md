@@ -370,7 +370,7 @@ usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH -stp ST_PATH -cp
                  [-sm {lapjv,lapjv_compat,lap_CSPR}]
                  [-sam {duplicates,place_holders}] [-mcn MEAN_CELL_NUMBERS]
                  [-se SEED]
-                 [-dm {Pearson_correlation,Spearman_correlation,Cosine,Euclidean}]
+                 [-dm {Pearson_correlation,Spearman_correlation,Euclidean}]
                  [-nosc NUMBER_OF_SELECTED_CELLS]
                  [-noss NUMBER_OF_SELECTED_SPOTS] [-nop NUMBER_OF_PROCESSORS]
                  [-sc] [-p] [-nr NUM_ROW] [-nc NUM_COLUMN] [-r] [-nv]
@@ -403,7 +403,7 @@ optional arguments:
                         transcriptomics data, set to 20
   -se SEED, --seed SEED
                         Set seed for random generators, default 1
-  -dm {Pearson_correlation,Spearman_correlation,Cosine,Euclidean}, --distance-metric {Pearson_correlation,Spearman_correlation,Cosine,Euclidean}
+  -dm {Pearson_correlation,Spearman_correlation,Euclidean}, --distance-metric {Pearson_correlation,Spearman_correlation,Euclidean}
                         Which distance metric to use for the cost matrix,
                         default 'Pearson_correlation'
   -nosc NUMBER_OF_SELECTED_CELLS, --number-of-selected-cells NUMBER_OF_SELECTED_CELLS
