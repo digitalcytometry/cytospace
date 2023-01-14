@@ -73,6 +73,8 @@ def argument_parser():
     parser.add_argument("-nop", "--number-of-processors", type=int, default=4,
                         help="Number of processors used for the analysis")
     parser.add_argument("-sc", "--single-cell", help="Use single-cell spatial approach or not", action="store_true")
+    parser.add_argument("-nosss", "--number-of-selected-sub-spots", help="Number of selected subspots from ST data to limit the number of mapped cells", type=int,
+                        default=10000)
 
     # Plotting
     parser.add_argument("-p", "--plot-off", help="Turn create plots on/off", action="store_true")
