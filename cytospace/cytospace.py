@@ -149,7 +149,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv", sampling_method="duplicates",
                    distance_metric="Pearson_correlation", number_of_selected_cells=10000, number_of_selected_spots=10000,
-                   number_of_processors=4, single_cell=False):
+                   number_of_processors=4, single_cell=False, number_of_selected_sub_spots=10000):
     # For timing execution
     start_time = time.perf_counter()
 
@@ -185,6 +185,8 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         f.write("sampling_method: "+str(sampling_method)+"\n")
         f.write("distance_metric: "+str(distance_metric)+"\n")
         f.write("single_cell: "+str(single_cell)+"\n\n")
+        f.write("number_of_selected_sub_spots: "+str(number_of_selected_sub_spots)+"\n\n")
+
             
     if solver_method == "lapjv" or solver_method == "lapjv_compat":
         solver = import_solver(solver_method)
@@ -297,6 +299,24 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         else:
             cell_number_to_node_assignment = n_cells_per_spot_data.values[:, 0].astype(int)
 
+
+        if  number_of_selected_sub_spots is not None:
+            if number_of_selected_sub_spots > np.sum(cell_number_to_node_assignment):
+                number_of_selected_sub_spots = np.sum(cell_number_to_node_assignment)
+                
+            cell_number_to_node_assignment_aggregate = np.zeros((np.sum(cell_number_to_node_assignment),1))
+            counter = 0
+            for i in range(len(cell_number_to_node_assignment)):
+                cell_number_to_node_assignment_aggregate[counter:counter + cell_number_to_node_assignment[i]] = i
+                counter = counter + cell_number_to_node_assignment[i]
+    
+            index_sub_spot = np.random.choice(range(np.sum(cell_number_to_node_assignment)), number_of_selected_sub_spots).tolist()    
+            cell_number_to_node_assignment_aggregate_selected = cell_number_to_node_assignment_aggregate[index_sub_spot]
+            for i in range(len(cell_number_to_node_assignment)):
+                cell_number_to_node_assignment_aggregate_selected_bool = cell_number_to_node_assignment_aggregate_selected == i
+                cell_number_to_node_assignment[i] = sum(bool(x) for x in cell_number_to_node_assignment_aggregate_selected_bool)
+            
+        
         print('Get cell type fractions ...')
         number_of_cells = np.sum(cell_number_to_node_assignment)
         cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
