@@ -149,7 +149,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                    mean_cell_numbers=5, num_row=4, num_column=4, rotation_degrees=270,
                    output_prefix="", seed=1, delimiter=",", solver_method="lapjv", sampling_method="duplicates",
                    distance_metric="Pearson_correlation", number_of_selected_cells=10000, number_of_selected_spots=10000,
-                   number_of_processors=4, single_cell=False, number_of_selected_sub_spots=10000):
+                   number_of_processors=4, single_cell=False, sampling_sub_spots=False, number_of_selected_sub_spots=10000):
     # For timing execution
     start_time = time.perf_counter()
 
@@ -185,6 +185,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
         f.write("sampling_method: "+str(sampling_method)+"\n")
         f.write("distance_metric: "+str(distance_metric)+"\n")
         f.write("single_cell: "+str(single_cell)+"\n\n")
+        f.write("sampling_sub_spots: "+str(sampling_sub_spots)+"\n\n")
         f.write("number_of_selected_sub_spots: "+str(number_of_selected_sub_spots)+"\n\n")
 
             
@@ -300,7 +301,7 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
             cell_number_to_node_assignment = n_cells_per_spot_data.values[:, 0].astype(int)
 
 
-        if  number_of_selected_sub_spots is not None:
+        if  sampling_sub_spots:
             if number_of_selected_sub_spots > np.sum(cell_number_to_node_assignment):
                 number_of_selected_sub_spots = np.sum(cell_number_to_node_assignment)
                 
