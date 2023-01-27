@@ -301,32 +301,66 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
             cell_number_to_node_assignment = n_cells_per_spot_data.values[:, 0].astype(int)
 
 
-        if  sampling_sub_spots:
+        if sampling_sub_spots:
             if number_of_selected_sub_spots > np.sum(cell_number_to_node_assignment):
                 number_of_selected_sub_spots = np.sum(cell_number_to_node_assignment)
                 
             cell_number_to_node_assignment_aggregate = np.zeros((np.sum(cell_number_to_node_assignment),1))
-            counter = 0
-            for i in range(len(cell_number_to_node_assignment)):
-                cell_number_to_node_assignment_aggregate[counter:counter + cell_number_to_node_assignment[i]] = i
-                counter = counter + cell_number_to_node_assignment[i]
-    
-            index_sub_spot = np.random.choice(range(np.sum(cell_number_to_node_assignment)), number_of_selected_sub_spots).tolist()    
-            cell_number_to_node_assignment_aggregate_selected = cell_number_to_node_assignment_aggregate[index_sub_spot]
-            for i in range(len(cell_number_to_node_assignment)):
-                cell_number_to_node_assignment_aggregate_selected_bool = cell_number_to_node_assignment_aggregate_selected == i
-                cell_number_to_node_assignment[i] = sum(bool(x) for x in cell_number_to_node_assignment_aggregate_selected_bool)
             
+            all_cells_save = pd.DataFrame()
+            cell_ids_selected = pd.DataFrame()
+            assigned_locations = pd.DataFrame()
+            index = []
+            iterations = int(np.sum(cell_number_to_node_assignment)/(number_of_selected_sub_spots + 1)) + 1
+            
+            for no_iter in range(iterations):
+                print(len(cell_number_to_node_assignment_aggregate))
+                print(number_of_selected_sub_spots)
+                print(np.sum(cell_number_to_node_assignment))
+                counter = 0
+                for i in range(len(cell_number_to_node_assignment)):
+                    cell_number_to_node_assignment_aggregate[counter:counter + cell_number_to_node_assignment[i]] = i
+                    counter = counter + cell_number_to_node_assignment[i]
         
-        print('Get cell type fractions ...')
-        number_of_cells = np.sum(cell_number_to_node_assignment)
-        cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
+                index_sub_spot = np.random.choice(range(len(cell_number_to_node_assignment_aggregate)), number_of_selected_sub_spots, replace = False).tolist()    
+                cell_number_to_node_assignment_aggregate_selected = cell_number_to_node_assignment_aggregate[index_sub_spot]
+                for i in range(len(cell_number_to_node_assignment)):
+                    cell_number_to_node_assignment_aggregate_selected_bool = cell_number_to_node_assignment_aggregate_selected == i
+                    cell_number_to_node_assignment[i] = sum(bool(x) for x in cell_number_to_node_assignment_aggregate_selected_bool)
+                        
+                print('Get cell type fractions ...')
+                number_of_cells = np.sum(cell_number_to_node_assignment)
+                cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
     
-        assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save =\
-            solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
-                                            cell_type_numbers_int, coordinates_data,
-                                            cell_number_to_node_assignment, solver_method, sampling_method, solver, seed, distance_metric)
+                assigned_locations_new, cell_ids_selected_new, new_cell_index, index_new, assigned_nodes, cell_ids_new, all_cells_save_new =\
+                    solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
+                                                    cell_type_numbers_int, coordinates_data,
+                                                    cell_number_to_node_assignment, solver_method, sampling_method, solver, seed, distance_metric)
+        
+                all_cells_save = pd.concat([all_cells_save, all_cells_save_new], axis=1)
+                cell_ids_selected = pd.concat([cell_ids_selected, pd.DataFrame(cell_ids_selected_new)])
+                assigned_locations = pd.concat([assigned_locations, assigned_locations_new])
+                index = index + index_new
+                
+                cell_number_to_node_assignment_aggregate = np.delete(cell_number_to_node_assignment_aggregate, index_sub_spot)
+                number_of_selected_sub_spots = min(number_of_selected_sub_spots, len(cell_number_to_node_assignment_aggregate))
+                no_iter = no_iter + 1
+                
+            cell_ids_new = all_cells_save.columns
+            cell_ids_selected = cell_ids_selected.values.tolist()
+            cell_ids_selected = flatten(cell_ids_selected)
             
+        else:
+
+            print('Get cell type fractions ...')
+            number_of_cells = np.sum(cell_number_to_node_assignment)
+            cell_type_numbers_int = get_cell_type_fraction(number_of_cells, cell_type_factions_data)
+        
+            assigned_locations, cell_ids_selected, new_cell_index, index, assigned_nodes, cell_ids_new, all_cells_save =\
+                solve_linear_assignment_problem(scRNA_data, st_data, cell_type_data,
+                                                cell_type_numbers_int, coordinates_data,
+                                                cell_number_to_node_assignment, solver_method, sampling_method, solver, seed, distance_metric)
+
             
     print(f"Total time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds")
     with open(fout_log,"a") as f:
