@@ -314,9 +314,6 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
             iterations = int(np.sum(cell_number_to_node_assignment)/(number_of_selected_sub_spots + 1)) + 1
             
             for no_iter in range(iterations):
-                print(len(cell_number_to_node_assignment_aggregate))
-                print(number_of_selected_sub_spots)
-                print(np.sum(cell_number_to_node_assignment))
                 counter = 0
                 for i in range(len(cell_number_to_node_assignment)):
                     cell_number_to_node_assignment_aggregate[counter:counter + cell_number_to_node_assignment[i]] = i
