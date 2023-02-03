@@ -35,6 +35,7 @@ def plot_results(assigned_locations_path, coordinates_path, output_filename, num
     coordinates = read_file(coordinates_path)
     coordinates_id = coordinates.index.values
     assigned_locations = read_file(assigned_locations_path)
+    assigned_locations = assigned_locations.sort_values(by='CellType')
     assigned_nodes = assigned_locations.loc[:,'SpotID']
 
     number_of_cells_per_page = num_row * num_column
