@@ -306,7 +306,11 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
                 number_of_selected_sub_spots = np.sum(cell_number_to_node_assignment)
                 
             cell_number_to_node_assignment_aggregate = np.zeros((np.sum(cell_number_to_node_assignment),1))
-            
+            counter = 0
+            for i in range(len(cell_number_to_node_assignment)):
+                cell_number_to_node_assignment_aggregate[counter:counter + cell_number_to_node_assignment[i]] = i
+                counter = counter + cell_number_to_node_assignment[i]
+                
             all_cells_save = pd.DataFrame()
             cell_ids_selected = pd.DataFrame()
             assigned_locations = pd.DataFrame()
@@ -314,10 +318,6 @@ def main_cytospace(scRNA_path, cell_type_path, st_path, coordinates_path,
             iterations = int(np.sum(cell_number_to_node_assignment)/(number_of_selected_sub_spots + 1)) + 1
             
             for no_iter in range(iterations):
-                counter = 0
-                for i in range(len(cell_number_to_node_assignment)):
-                    cell_number_to_node_assignment_aggregate[counter:counter + cell_number_to_node_assignment[i]] = i
-                    counter = counter + cell_number_to_node_assignment[i]
         
                 index_sub_spot = np.random.choice(range(len(cell_number_to_node_assignment_aggregate)), number_of_selected_sub_spots, replace = False).tolist()    
                 cell_number_to_node_assignment_aggregate_selected = cell_number_to_node_assignment_aggregate[index_sub_spot]
