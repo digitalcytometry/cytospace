@@ -4,6 +4,9 @@ from pathlib import Path
 import warnings
 import datatable as dt
 from numpy.linalg import norm
+import tarfile
+import os
+import scanpy as sc
 
 def read_file(file_path):
     # Read file
@@ -25,13 +28,51 @@ def read_file(file_path):
     return file_data
 
 
-def normalize_data(data):
-    data = np.nan_to_num(data)
-    data = 10**6 * (data / np.sum(data, axis=0, dtype=float))
-    data_log2 = np.log2(data + 1)
-    data_log2 = np.nan_to_num(data_log2)
+def read_visium(file_name,output_folder):
+    out_dir = str(output_folder)
+    sr_dir = out_dir+'/SpaceRanger'
+    
+    print(out_dir)
+    print(sr_dir)
+    print(file_name)
 
-    return data_log2
+    file = tarfile.open(file_name,'r')
+    file.extractall(sr_dir)
+    file.close()
+
+    count_dir = os.listdir(sr_dir)
+    count_dir = [d for d in count_dir if os.path.isdir(os.path.join(sr_dir, d))][0]
+    count_dir = sr_dir+'/'+count_dir
+
+    fin_count = os.listdir(count_dir)
+    fin_count = [fin for fin in fin_count if fin.endswith('.h5')]
+    fin_count = [fin for fin in fin_count if not fin.startswith('.')][0]
+
+    visium_adata = sc.read_visium(count_dir,count_file=fin_count)
+
+    genes = visium_adata.var_names
+    spots = visium_adata.obs_names
+    df_expression = pd.DataFrame.sparse.from_spmatrix(visium_adata.X,index=spots,columns=genes).transpose()
+
+    df_expression = df_expression.loc[(df_expression!=0).any(1), (df_expression!=0).any(0)]
+
+    df_coords = pd.DataFrame(visium_adata.obsm['spatial'],index=spots,columns=['X','Y'])
+    df_coords = df_coords.loc[df_expression.columns,:]
+
+    return df_expression, df_coords
+
+def estimate_cell_type_fractions(scRNA_path, cell_type_path, st_path, output_folder):
+    run_str = "Rscript get_cellfracs_seuratv3.R --scrna-path "+scRNA_path+" --ct-path "+cell_type_path+" --st-path "+st_path+" --outdir "+output_folder
+    out = os.system(run_str)
+    frac_file = output_folder+'/Seurat_weights.txt'
+    return out, frac_file
+
+def normalize_data(data):
+    data = np.nan_to_num(data).astype(float)
+    data *= 10**6 / np.sum(data, axis=0, dtype=float)
+    np.log2(data + 1, out=data)
+    np.nan_to_num(data, copy=False)
+    return data
 
 
 def check_paths(output_folder, output_prefix):
@@ -50,7 +91,7 @@ def check_paths(output_folder, output_prefix):
 
 def matrix_correlation_pearson(v1, v2):
     if v1.shape[0] != v2.shape[0]:
-        raise ValueError("The two ,atrixes v1 and v2 have to have equal dimensions")
+        raise ValueError("The two matrices v1 and v2 must have equal dimensions; ST and scRNA data must have the same genes")
 
     n = v1.shape[0]
     sums = np.multiply.outer(v2.sum(0), v1.sum(0))
@@ -63,7 +104,7 @@ def matrix_correlation_pearson(v1, v2):
 def matrix_correlation_spearman(v1, v2):
     
     if v1.shape[0] != v2.shape[0]:
-        raise ValueError("The two ,atrixes v1 and v2 have to have equal dimensions")
+        raise ValueError("The two matrices v1 and v2 must have equal dimensions; ST and scRNA data must have the same genes")
         
     v1 = pd.DataFrame(v1).rank().values
     v2 = pd.DataFrame(v2).rank().values
@@ -74,18 +115,3 @@ def matrix_correlation_spearman(v1, v2):
     correlation = (v2.T.dot(v1) - sums / n) / stds / n
     
     return correlation
-
-
-def matrix_cosine(v1, v2):
-    
-    if v1.shape[0] != v2.shape[0]:
-        raise ValueError("The two ,atrixes v1 and v2 have to have equal dimensions")
-        
-    v1 = np.transpose(v1)
-    v2 = np.transpose(v2)
-       
-    dot_product = np.dot(v2,np.transpose(v1)) 
-    norm_product = np.outer(norm(v2, axis=1),norm(v1, axis=1))
-    cosine = dot_product/norm_product
-    
-    return cosine
