@@ -513,7 +513,6 @@ def main_cytospace(scRNA_path, cell_type_path,
         f.write("distance_metric: "+str(distance_metric)+"\n")
         f.write("single_cell: "+str(single_cell)+"\n\n")
         f.write("sampling_sub_spots: "+str(sampling_sub_spots)+"\n\n")
-        f.write("save_sc_expression: "+str(save_sc_expression)+"\n\n")
 
             
     if solver_method == "lapjv" or solver_method == "lapjv_compat":
