@@ -146,7 +146,7 @@ within your R script. The first argument (required) designates your input Seurat
 <br>
 
 ## Running CytoSPACE
-After activating the `cytospace` conda environment via `conda activate cytospace`, CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
+After activating the `cytospace` conda environment via `conda activate cytospace`, CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below. __Please run CytoSPACE directly inside the installed CytoSPACE directory. Currently, this ensures that CytoSPACE can locate the required scripts.__
 
 A typical CytoSPACE run with default settings would look like this: 
  ```bash
