@@ -19,25 +19,10 @@ The key innovations of our method are:
 - Unlike other methods which generally operate on pre-selected marker genes or on a shared embedding space (the latter of which can erase true biological variation), CytoSPACE uses the full transcriptome without the need for batch correction, helping it retain sensitivity to subtle cell states.
 - CytoSPACE is quick and simple to execute. It runs in minutes even with a single CPU on a personal laptop and requires no hyperparameter tuning or gene/feature selection.
 
-Overview of README:
--   [**Installation instructions**](#installation-instructions-5-10-minutes)
--   [**File formatting**](#file-formatting)
--   [**Running CytoSPACE**](#running-cytospace)
--   [**CytoSPACE outputs**](#cytospace-outputs)
--   [**Example datasets for running CytoSPACE**](#example-datasets-for-running-cytospace)
--   [**Running CytoSPACE on legacy ST data**](#running-cytospace-on-legacy-st-data)
--   [**Running CytoSPACE on single-cell ST data**](#running-cytospace-on-single-cell-st-data)
--   [**Advanced options**](#advanced-options)
--   [**Extended usage details**](#extended-usage-details)
--   [**CytoSPACE solver options**](#cytospace-solver-options)
--   [**Updating local installations**](#updating-local-installations)
--   [**Authors**](#authors)
--   [**Contact**](#contact)
--   [**License**](#license)
--   [**Citation**](#citation)
-
+CytoSPACE is available through a web interface at <a href="https://cytospace.stanford.edu/">cytospace.stanford.edu</a>, which enables users to run CytoSPACE with default settings without downloading the source code.
 
 ## Installation instructions (5-10 minutes)
+<details><summary>Expand section</summary>
 1. Install <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html" target="_blank">Miniconda</a> if not already available.
 
 2. Clone this repository:
@@ -72,8 +57,10 @@ We highly recommend you install this package, which provides a fast implementati
    pip3 install git+https://github.com/src-d/lapjv
 ```
 For more information, see the <a href="https://pypi.org/project/lapjv/" target="_blank">lapjv documentation page</a>. 
+</details><br>
 
-## File formatting
+## Input Files
+<details><summary>Expand section</summary>
 CytoSPACE requires 4 files as input. All files should be provided in tab-delimited tabular input format (saved as .txt) with no double quotations. Further formatting details for each input file are specified below. We also provide instructions on using scripts to generate input files from Seurat objects at the end of this section.
 
 1. __A scRNA-seq gene expression file:__
@@ -143,10 +130,15 @@ For producing CytoSPACE inputs from ST Seurat objects, we provide the function `
 ```
 within your R script. The first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `ST_data.txt` and `Coordinates.txt`, and `slice` (optional, default is `slice1`) provides the name of your slice as stored in your Seurat object.
 </details>
+</details>
 <br>
 
 ## Running CytoSPACE
-After activating the `cytospace` conda environment via `conda activate cytospace`, CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below. __Please run CytoSPACE directly inside the installed CytoSPACE directory. Currently, this ensures that CytoSPACE can locate the required scripts.__
+
+Please note that currently, CytoSPACE must be run from directly inside the cytospace installation directory: the working directory should be `/path/to/cytospace` when making the `cytospace [input files]` call.
+
+<details><summary>Expand section</summary>
+After activating the `cytospace` conda environment via `conda activate cytospace`, CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
 
 A typical CytoSPACE run with default settings would look like this: 
  ```bash
@@ -194,18 +186,28 @@ CytoSPACE provides three solver options. In short, we recommend using the defaul
       cytospace.main_cytospace(..., mean_cell_numbers=mean_cell_numbers)
 ```
 </details>
+</details>
 <br>
 
 ## CytoSPACE outputs
+<details><summary>Expand section</summary>
 CytoSPACE will produce six output files by default.
-1. ```cell_type_assignments_by_spot.pdf``` Heatmaps of cell type assignments within the ST sample. Along with a plot showing the total number of cells mapped to each spot, these show the spatial distribution of cell type assignments. Color bars indicate the number of cells of the respective cell type inferred per spot.
-2. ```cell_type_assignments_by_spot_jitter.pdf``` A single scatterplot showing all assigned cells by their spot location. Each cell is colored based on its cell type.
-3. ```assigned_locations.csv``` This file will provide the assigned locations of each single cell mapped to ST spots. As some cells may be mapped to multiple locations depending on the size of the input scRNA-seq set, new cell IDs (`UniqueCID`) are assigned to each cell and given in the first column. The second column includes original cell IDs (`OriginalCID`); the third column includes corresponding cell types (`CellType`); the fourth column includes assigned spot IDs (`SpotID`); and the fifth and sixth columns respectively include  `row` and `column` indices, or xy-coordinates such as `X` and `Y` if provided in the initial coordinates file, of the corresponding spots.
-4. ```cell_type_assignments_by_spot.csv``` This file gives the raw number of cells of each cell type per spot by `SpotID` as well as the total number of cells assigned to that spot.
-5. ```fractional_abundances_by_spot.csv``` This file gives the fractional abundance of cell types assigned to each spot by `SpotID`.
-6. ```log.txt``` This file contains a log of CytoSPACE run parameters and running time.
+1. ```cell_type_assignments_by_spot.pdf```<br>
+Heatmaps of cell type assignments within the ST sample. Along with a plot showing the total number of cells mapped to each spot, these show the spatial distribution of cell type assignments. Color bars indicate the number of cells of the respective cell type inferred per spot.
+2. ```cell_type_assignments_by_spot_jitter.pdf```<br>
+A single scatterplot showing all assigned cells by their spot location. Each cell is colored based on its cell type.
+3. ```assigned_locations.csv```<br>
+This file will provide the assigned locations of each single cell mapped to ST spots. As some cells may be mapped to multiple locations depending on the size of the input scRNA-seq set, new cell IDs (`UniqueCID`) are assigned to each cell and given in the first column. The second column includes original cell IDs (`OriginalCID`); the third column includes corresponding cell types (`CellType`); the fourth column includes assigned spot IDs (`SpotID`); and the fifth and sixth columns respectively include  `row` and `column` indices, or xy-coordinates such as `X` and `Y` if provided in the initial coordinates file, of the corresponding spots.
+4. ```cell_type_assignments_by_spot.csv```<br>
+This file gives the raw number of cells of each cell type per spot by `SpotID` as well as the total number of cells assigned to that spot.
+5. ```fractional_abundances_by_spot.csv```<br>
+This file gives the fractional abundance of cell types assigned to each spot by `SpotID`.
+6. ```log.txt```<br>
+This file contains a log of CytoSPACE run parameters and running time.
+</details><br>
 
 ## Example datasets for running CytoSPACE
+<details><summary>Expand section</summary>
 For users to test CytoSPACE, we have included files for an example run:
 - A HER2+ breast cancer scRNA-seq atlas by Wu et al. (<a href="https://www.nature.com/articles/s41588-021-00911-1" target="_blank">Nature Genetics, 2021</a>) and a HER2+ breast cancer FFPE specimen profiled by the Visium platform (<a href="https://www.10xgenomics.com/resources/datasets/human-breast-cancer-ductal-carcinoma-in-situ-invasive-carcinoma-ffpe-1-standard-1-3-0" target="_blank">10x Genomics</a>). Default parameters were selected with Visium samples in mind and are appropriate here.
 
@@ -274,8 +276,11 @@ A zip file of the expected CytoSPACE outputs (with `lap_CSPR` solver) are availa
    gdown --fuzzy https://drive.google.com/file/d/1X4jMwctRNmqCRIJcop2hL3jRdlhxnnlc/view?usp=sharing
    unzip CytoSPACE_example_melanoma_results.zip
    ``` -->
+</details>
+<br>
 
-## Running CytoSPACE on legacy ST Data
+## Running CytoSPACE on legacy ST data
+<details><summary>Expand section</summary>
 By default, the CytoSPACE parameters have been optimized for standard 10x Visium spatial slides. Datasets generated by the legacy ST platform can be run with similar commands, but we recommend that the following parameters be adjusted:
 1. `--mean_cell_numbers`, or `-mcn`, should be set to `20`. The legacy ST platform has larger spot sizes, so we recommend mapping an average of 20 cells per spot.
 2. `--geometry`, or `-g` should be set to `square`. This will allow the plot function to shape each spot as a square rather than a hexagon.
@@ -289,8 +294,10 @@ Running CytoSPACE with the command below generates the results shown <a href="ht
 ```bash
   cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -o cytospace_results_melanoma -mcn 20 -g square -sm lap_CSPR
 ```
+</details><br>
 
 ## Running CytoSPACE on single-cell ST data
+<details><summary>Expand section</summary>
 While designed for Visium-type data in which most spots contain RNA from multiple cells, CytoSPACE can also be used with single-cell resolution spatial data such as <a href="https://vizgen.com/resources/meet-the-merscope-platform/" target="_blank">Vizgen's MERSCOPE platform</a>. We expect this extension to be useful for reducing noise and expanding transcriptome coverage of each cell in the ST data. For this single-cell resolution mode, CytoSPACE partitions the ST data into smaller chunks and utilizes multiple CPU cores to assign down-sampled versions of the reference scRNA-seq data to these regions.
 
 We highly recommend that an `--st-cell-type-path` (or `-stctp`) be provided when running CytoSPACE in `--single-cell` mode. This file will list the cell type labels for each spot, in the same format as the scRNA-seq cell type labels specified under `--cell-type-path`. All of the cell types present in `--st-cell-type-path` must also be present in `--cell-type-path`.
@@ -343,6 +350,7 @@ To run CytoSPACE with this example dataset, run the following command from the l
 ```
 
 Running CytoSPACE in the `--single-cell` mode will output the assignments `assigned_locations.csv`, the plot `cell_type_assignments_by_spot_single_cell.pdf`, and the log file `log.txt`. The full results for the example dataset using the above command is available for download <a href="https://drive.google.com/file/d/1LTTDVGAuQ4QYkyCX6WtyBNXcnZe9fxKG/view?usp=share_link" target="_blank">here</a>.
+</details><br>
 
 ## Advanced options
 While default options are recommended for most use cases, we do provide additional advanced options.
@@ -413,9 +421,12 @@ While CytoSPACE's formulation as a linear assignment problem guarantees an optim
 For interpreting confidence scores, we recommend a cutoff of 0.1, with higher scores indicating increased confidence that a spot contains at least one cell of the same cell type.
 
 Please note that `uncertainty_quantification.R` requires separate dependencies from those included in the provided `environment.yml` file for the `cytospace` conda environment. This script should be run in a separate environment with the following R packages installed: `Seurat` (must be v4; tested with v4.0.1), `data.table` (tested with v1.14.0), and `e1071` (tested with v1.7.8).
-</details>
+</details><br>
 
 ## Extended usage details
+
+<details><summary>Expand section</summary>
+
 ```
 usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH [-stp ST_PATH] [-cp COORDINATES_PATH] [-srp SPACERANGER_PATH]
                  [-stctp ST_CELL_TYPE_PATH] [-ctfep CELL_TYPE_FRACTION_ESTIMATION_PATH] [-ncpsp N_CELLS_PER_SPOT_PATH]
@@ -485,12 +496,22 @@ Required arguments:
 You can see this list of variables and default values for running CytoSPACE from the commmand line as well at any time by calling `cytospace` along with the `-h` or 
 `--help` flag, i.e., `cytospace -h`.
 
+</details><br>
+
 ## CytoSPACE Solver options
+
+<details><summary>Expand section</summary>
+
 1. `lapjv` __(Recommended for most systems)__    By default, CytoSPACE calls the `lapjv` solver from package `lapjv`. This solver is a fast implementation of the Jonker-Volgenant shortest augmenting path assignment algorithm and returns a globally optimal solution given the objective function as defined in our paper [cite]. As noted above, however, this package is not supported on all systems as it achieves its speedup through use of AVX2 instructions. This solver will be selected by default and can be specified explicitly by passing arguments `--solver-method lapjv` or `-sm lapjv` to `cytospace`.
 2. `lap_CSPR` __(Recommended for systems not supporting `lapjv`)__    A second solver option is the `linear_assignment` method from the `ortools` package. This solver uses a different method than the first and third options, an assignment algorithm called the cost scaling push relabel method. This algorithm approximates assignment costs to integer values and loses some numerical precision in doing so. Therefore, while it returns a globally optimal solution __after approximation__ given the objective function defined in the paper, it will return similar but generally not identical results to the first two methods. This solver has a similar running time to the first option and is a good option for systems not supporting the `lapjv` package. This solver can be selected by passing arguments `--solver-method lap_CSPR` or `-sm lap_CSPR` to `cytospace`.
 3. `lapjv_compat`   A third solver option implements the `lapjv` solver from package `lap`. Like the first option `lapjv`, this solver also implements the Jonker-Volgenant shortest augmenting path assignment algorithm to return the same globally optimal solution given the objective function defined in the paper. Furthermore, it is broadly supported and should work on all standard operating systems. However, it takes 3-4 times as long to run as the first solver option, the `lapjv` solver from the `lapjv` package, so we only recommend it for systems that do not support the first option. This solver can be selected by passing arguments `--solver-method lapjv_compat` or `-sm lapjv_compat` to `cytospace`.
 
+</details><br>
+
 ## Updating local installations
+
+<details><summary>Expand section</summary>
+
 To update your local installation of CytoSPACE following updates of this GitHub repository, navigate to your `cytospace` directory and execute the following commands:
 ```bash
   git pull
@@ -503,6 +524,8 @@ If you have made local updates to your version of the CytoSPACE source code, you
   pip install .
 ``` 
 before running. 
+
+</details><br>
 
 ## Authors
 CytoSPACE was developed in the <a href="https://anlab.stanford.edu/" target="_blank">Newman Lab</a> by
