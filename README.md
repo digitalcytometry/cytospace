@@ -138,7 +138,7 @@ within your R script. The first argument (required) designates your input Seurat
 
 ## Running CytoSPACE
 
-Please note that currently, CytoSPACE must be run from directly inside the cytospace installation directory: the working directory should be `/path/to/cytospace` when making the `cytospace [input files]` call.
+Please note that currently, CytoSPACE must be run from directly inside the cloned CytoSPACE directory: the working directory should be `/path/to/cloned/cytospace` when making the `cytospace [input files]` call.
 
 <details><summary>Expand section</summary>
 
