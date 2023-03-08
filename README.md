@@ -236,9 +236,15 @@ To download from the command line using `gdown`:
    ``` -->
    
 ### Command for running example analysis:
-Once the example files are downloaded and unzipped, the commands below can be run from the folders where the example dataset is located:
+Once the example files are downloaded and unzipped, the commands below can be run from inside the cloned CytoSPACE directory:
 ```bash
-  cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_GEP.txt -cp brca_STdata_coordinates.txt -o cytospace_results_brca -sm lap_CSPR
+  cytospace
+    -sp /path/to/brca_scRNA_GEP.txt
+    -ctp /path/to/brca_scRNA_celllabels.txt
+    -stp /path/to/brca_STdata_GEP.txt
+    -cp /path/to/brca_STdata_coordinates.txt
+    -o /path/to/cytospace_results_brca
+    -sm lap_CSPR
 ```
 Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead. __The CytoSPACE run should take around 5 minutes.__
 
@@ -299,9 +305,16 @@ Similar to the example breast cancer dataset above, we provide an example datase
 
 The zip file containing the dataset can be downloaded <a href="https://drive.google.com/file/d/1hwK_sh355chdmW50yrPJq7_W8j6HuRHh/view?usp=share_link" target="_blank">here</a>.
 
-Running CytoSPACE with the command below generates the results shown <a href="https://drive.google.com/file/d/1bX4SqrYzIXov_A5ivlJ8U0qD8_lXmmBf/view?usp=share_link" target="_blank">here</a> . The format of the output will be the same as the breast cancer dataset above. Please note that here we specify the `-ctfep` parameter (see [__Advanced options__](#advanced-options) - __User-provided fractional composition of each cell type__), as CytoSPACE's internal computation of cell type fractional composition does not take non-integer scRNA-seq expression matrices.
+Running CytoSPACE with the command below, in the CytoSPACE directory, generates the results shown <a href="https://drive.google.com/file/d/1bX4SqrYzIXov_A5ivlJ8U0qD8_lXmmBf/view?usp=share_link" target="_blank">here</a> . The format of the output will be the same as the breast cancer dataset above. Please note that here we specify the `-ctfep` parameter (see [__Advanced options__](#advanced-options) - __User-provided fractional composition of each cell type__).
 ```bash
-  cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -o cytospace_results_melanoma -mcn 20 -g square -sm lap_CSPR
+  cytospace
+    -sp /path/to/melanoma_scRNA_GEP.txt
+    -ctp /path/to/melanoma_scRNA_celllabels.txt
+    -stp /path/to/melanoma_STdata_slide1_GEP.txt
+    -cp /path/to/melanoma_STdata_slide1_coordinates.txt
+    -ctfep /path/to/melanoma_cell_fraction_estimates.txt
+    -o /path/to/cytospace_results_melanoma
+    -mcn 20 -g square -sm lap_CSPR
 ```
 </details>
 
@@ -350,12 +363,12 @@ A zip file of example single cell inputs is available to download from Google Dr
 To run CytoSPACE with this example dataset, run the following command from the location of the unzipped inputs and with your CytoSPACE conda environment active:
  ```bash
  cytospace
-    -sp HumanColonCancerPatient2_scRNA_expressions_cytospace.tsv
-    -ctp HumanColonCancerPatient2_scRNA_annotations_cytospace.tsv
-    -stp HumanColonCancerPatient2_ST_expressions_cytospace.tsv
-    -cp HumanColonCancerPatient2_ST_coordinates_cytospace.tsv
-    -stctp HumanColonCancerPatient2_ST_celltypes_cytospace.tsv
-    -o cytospace_results_crc
+    -sp /path/to/HumanColonCancerPatient2_scRNA_expressions_cytospace.tsv
+    -ctp /path/to/HumanColonCancerPatient2_scRNA_annotations_cytospace.tsv
+    -stp /path/to/HumanColonCancerPatient2_ST_expressions_cytospace.tsv
+    -cp /path/to/HumanColonCancerPatient2_ST_coordinates_cytospace.tsv
+    -stctp /path/to/HumanColonCancerPatient2_ST_celltypes_cytospace.tsv
+    -o /path/to/cytospace_results_crc
     -sm lap_CSPR
     -sc -noss 10000 -nop 2
 ```
@@ -398,11 +411,11 @@ The users can use this option by specifying the `--sampling-sub-spots` (`-sss`) 
 For example, the following command will run CytoSPACE on the example breast cancer dataset, assigning scRNA-seq data to 5000 cells at a time using 2 cores:
 ```bash
   cytospace
-    -sp brca_scRNA_GEP.txt
-    -ctp brca_scRNA_celllabels.txt
-    -stp brca_STdata_GEP.txt
-    -cp brca_STdata_coordinates.txt
-    -o cytospace_results_brca
+    -sp /path/to/brca_scRNA_GEP.txt
+    -ctp /path/to/brca_scRNA_celllabels.txt
+    -stp /path/to/brca_STdata_GEP.txt
+    -cp /path/to/brca_STdata_coordinates.txt
+    -o /path/to/cytospace_results_brca
     -sm lap_CSPR
     -sss -nosss 5000 -nop 2
 ```
