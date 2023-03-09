@@ -36,10 +36,12 @@ CytoSPACE is available through a web interface at <a href="https://cytospace.sta
 ```bash
   cd cytospace
 ```
+
 4. (5-10 minutes) Create a conda environment with the required dependencies:
 ```bash
   conda env create -f environment.yml
 ```
+
 5. Activate the `cytospace` environment you just created:
 ```bash
   conda activate cytospace
@@ -65,7 +67,7 @@ For more information, see the <a href="https://pypi.org/project/lapjv/" target="
 
 <details><summary>Expand section</summary>
 
-CytoSPACE requires 4 files as input. All files should be provided in tab-delimited tabular input format (saved as .txt) with no double quotations. Further formatting details for each input file are specified below. We also provide instructions on using scripts to generate input files from Seurat objects at the end of this section.
+CytoSPACE requires 4 files as input by default. All files should be provided in tab-delimited tabular input format (saved as .txt) with no double quotations. Further formatting details for each input file are specified below. We also provide instructions on using scripts to generate input files from Seurat objects at the end of this section.
 
 1. __A scRNA-seq gene expression file:__
 - The matrix must be genes (rows) by cells (columns).
@@ -104,12 +106,10 @@ CytoSPACE requires 4 files as input. All files should be provided in tab-delimit
 ### From Space Ranger outputs
 If the users are starting from Space Ranger outputs, they can provide the ST input files as a single tar.gz, __in place of__ both (3) gene expression and (4) coordinates. If a Space Ranger output is specified, CytoSPACE will automatically attempt to unzip the provided tarball and load the correponding ST expression and coordinates data.
 
-The tarball should include an H5 file of the ST gene expression along with the image data in a separate subdirectory. An example file tree for an unzipped tarball is shown below on the left; if downloading from the public 10X Visium data, users can download the files shown below on the right.
+The tarball should only include a single H5 file (extension .h5) and one subdirectory, where the H5 file contains the ST gene expression and the subdirectory contains the image data. An example file tree for an unzipped tarball is shown below on the left; if downloading from the public 10X Visium data, users can download the files shown below on the right.
 <p align="center">
   <img src="images/VisiumTar.png" width="300"> <img src="images/Visium.png" width="300">
 </p>
-
-Users can also use provided scripts to generate CytoSPACE input files from Seurat objects. Please see below for more information.
 
 <details><summary><b>Preparing input files from Seurat objects</b></summary>
 
@@ -138,36 +138,37 @@ within your R script. The first argument (required) designates your input Seurat
 
 ## Running CytoSPACE
 
-Please note that currently, CytoSPACE must be run from directly inside the cloned CytoSPACE directory: the working directory should be `/path/to/cytospace` when making the `cytospace [input files]` call.
-
 <details><summary>Expand section</summary>
 
 After activating the `cytospace` conda environment via `conda activate cytospace`, CytoSPACE can be called from the command line from any folder using `cytospace`. Examples on how to run CytoSPACE are provided in the section "Example datasets for running CytoSPACE" below.
 
 A typical CytoSPACE run with default settings would look like this: 
  ```bash
- cytospace --scRNA-path /path/to/scRNA_geneexpression
-    --cell-type-path /path/to/scRNA_celllabels
-    --st-path /path/to/ST_geneexpression
+ cytospace \
+    --scRNA-path /path/to/scRNA_geneexpression \
+    --cell-type-path /path/to/scRNA_celllabels \
+    --st-path /path/to/ST_geneexpression \
     --coordinates-path /path/to/ST_coordinates
 ```
 Or with more condensed parameter names: 
  ```bash
- cytospace -sp /path/to/scRNA_geneexpression
-    -ctp /path/to/scRNA_celllabels
-    -stp /path/to/ST_geneexpression
+ cytospace \
+    -sp /path/to/scRNA_geneexpression \
+    -ctp /path/to/scRNA_celllabels \
+    -stp /path/to/ST_geneexpression \
     -cp /path/to/ST_coordinates
 ```
 
 Alternatively, if starting from a Space Ranger output, the command may look like this:
 ```bash
- cytospace --scRNA-path /path/to/scRNA_geneexpression
-    --cell-type-path /path/to/scRNA_celllabels
+ cytospace \
+    --scRNA-path /path/to/scRNA_geneexpression \
+    --cell-type-path /path/to/scRNA_celllabels \
     --spaceranger-path /path/to/spaceranger_output.tar.gz
 ```
 ```bash
- cytospace -sp /path/to/scRNA_geneexpression
-    -ctp /path/to/scRNA_celllabels
+ cytospace -sp /path/to/scRNA_geneexpression \
+    -ctp /path/to/scRNA_celllabels \
     -srp /path/to/spaceranger_output.tar.gz
 ```
 
@@ -211,7 +212,7 @@ This file gives the fractional abundance of cell types assigned to each spot by 
 This file contains a log of CytoSPACE run parameters and running time.
 </details>
 
-## Example datasets for running CytoSPACE
+## Example dataset for running CytoSPACE
 
 <details><summary>Expand section</summary>
 
@@ -236,15 +237,9 @@ To download from the command line using `gdown`:
    ``` -->
    
 ### Command for running example analysis:
-Once the example files are downloaded and unzipped, the commands below can be run from inside the cloned CytoSPACE directory:
+Once the example files are downloaded and unzipped, the commands below can be run from inside the unzipped directory:
 ```bash
-  cytospace
-    -sp /path/to/brca_scRNA_GEP.txt
-    -ctp /path/to/brca_scRNA_celllabels.txt
-    -stp /path/to/brca_STdata_GEP.txt
-    -cp /path/to/brca_STdata_coordinates.txt
-    -o /path/to/cytospace_results_brca
-    -sm lap_CSPR
+  cytospace -sp brca_scRNA_GEP.txt -ctp brca_scRNA_celllabels.txt -stp brca_STdata_GEP.txt -cp brca_STdata_coordinates.txt -o cytospace_results_brca -sm lap_CSPR
 ```
 Please note that here we use the `lap_CSPR` solver for compatibility. If your system supports AVX2 intrinsics, you can run the same commands without the final argument to use the `lapjv` solver instead. __The CytoSPACE run should take around 5 minutes.__
 
@@ -305,16 +300,9 @@ Similar to the example breast cancer dataset above, we provide an example datase
 
 The zip file containing the dataset can be downloaded <a href="https://drive.google.com/file/d/1hwK_sh355chdmW50yrPJq7_W8j6HuRHh/view?usp=share_link" target="_blank">here</a>.
 
-Running CytoSPACE with the command below, in the CytoSPACE directory, generates the results shown <a href="https://drive.google.com/file/d/1bX4SqrYzIXov_A5ivlJ8U0qD8_lXmmBf/view?usp=share_link" target="_blank">here</a> . The format of the output will be the same as the breast cancer dataset above. Please note that here we specify the `-ctfep` parameter (see [__Advanced options__](#advanced-options) - __User-provided fractional composition of each cell type__).
+Running CytoSPACE with the command below generates the results shown <a href="https://drive.google.com/file/d/1bX4SqrYzIXov_A5ivlJ8U0qD8_lXmmBf/view?usp=share_link" target="_blank">here</a> . The format of the output will be the same as the breast cancer dataset above. Please note that here we specify the `-ctfep` parameter (see [__Advanced options__](#advanced-options) - __User-provided fractional composition of each cell type__).
 ```bash
-  cytospace
-    -sp /path/to/melanoma_scRNA_GEP.txt
-    -ctp /path/to/melanoma_scRNA_celllabels.txt
-    -stp /path/to/melanoma_STdata_slide1_GEP.txt
-    -cp /path/to/melanoma_STdata_slide1_coordinates.txt
-    -ctfep /path/to/melanoma_cell_fraction_estimates.txt
-    -o /path/to/cytospace_results_melanoma
-    -mcn 20 -g square -sm lap_CSPR
+  cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -o cytospace_results_melanoma -mcn 20 -g square -sm lap_CSPR
 ```
 </details>
 
@@ -330,24 +318,24 @@ However, if the user does not have access to the cell types for each individual 
 
 To run CytoSPACE with single-cell resolution spatial data:
  ```bash
- cytospace --single-cell 
-    --scRNA-path /path/to/scRNA_geneexpression
-    --cell-type-path /path/to/scRNA_celllabels
-    --st-path /path/to/ST_geneexpression
-    --coordinates-path /path/to/ST_coordinates
-    --st-cell-type-path /path/to/ST_celllabels
-    --number-of-processors NUMBER_OF_PROCESSORS
+ cytospace --single-cell \
+    --scRNA-path /path/to/scRNA_geneexpression \
+    --cell-type-path /path/to/scRNA_celllabels \
+    --st-path /path/to/ST_geneexpression \
+    --coordinates-path /path/to/ST_coordinates \
+    --st-cell-type-path /path/to/ST_celllabels \
+    --number-of-processors NUMBER_OF_PROCESSORS \
     --number-of-selected-spots NUMBER_OF_SELECTED_SPOTS
 ```
 Or with more condensed parameter names: 
  ```bash
- cytospace -sc
-    -sp /path/to/scRNA_geneexpression
-    -ctp /path/to/scRNA_celllabels
-    -stp /path/to/ST_geneexpression
-    -cp /path/to/ST_coordinates
-    -stctp /path/to/ST_celllabels
-    -nop NUMBER_OF_PROCESSORS
+ cytospace -sc \
+    -sp /path/to/scRNA_geneexpression \
+    -ctp /path/to/scRNA_celllabels \
+    -stp /path/to/ST_geneexpression \
+    -cp /path/to/ST_coordinates \
+    -stctp /path/to/ST_celllabels \
+    -nop NUMBER_OF_PROCESSORS \
     -noss NUMBER_OF_SELECTED_SPOTS
 ```
 where `NUMBER_OF_PROCESSORS` denotes the number of cores to use, and `NUMBER_OF_SELECTED_SPOTS` denotes the number of ST spots in each partition. We generally recommend `-noss 10000`.
@@ -362,18 +350,23 @@ A zip file of example single cell inputs is available to download from Google Dr
 
 To run CytoSPACE with this example dataset, run the following command from the location of the unzipped inputs and with your CytoSPACE conda environment active:
  ```bash
- cytospace
-    -sp /path/to/HumanColonCancerPatient2_scRNA_expressions_cytospace.tsv
-    -ctp /path/to/HumanColonCancerPatient2_scRNA_annotations_cytospace.tsv
-    -stp /path/to/HumanColonCancerPatient2_ST_expressions_cytospace.tsv
-    -cp /path/to/HumanColonCancerPatient2_ST_coordinates_cytospace.tsv
-    -stctp /path/to/HumanColonCancerPatient2_ST_celltypes_cytospace.tsv
-    -o /path/to/cytospace_results_crc
-    -sm lap_CSPR
+ cytospace \
+    -sp HumanColonCancerPatient2_scRNA_expressions_cytospace.tsv \
+    -ctp HumanColonCancerPatient2_scRNA_annotations_cytospace.tsv \
+    -stp HumanColonCancerPatient2_ST_expressions_cytospace.tsv \
+    -cp HumanColonCancerPatient2_ST_coordinates_cytospace.tsv \
+    -stctp HumanColonCancerPatient2_ST_celltypes_cytospace.tsv \
+    -o cytospace_results_crc \
+    -sm lap_CSPR \
     -sc -noss 10000 -nop 2
 ```
 
-Running CytoSPACE in the `--single-cell` mode will output the assignments `assigned_locations.csv`, the plot `cell_type_assignments_by_spot_single_cell.pdf`, and the log file `log.txt`. The full results for the example dataset using the above command is available for download <a href="https://drive.google.com/file/d/1LTTDVGAuQ4QYkyCX6WtyBNXcnZe9fxKG/view?usp=share_link" target="_blank">here</a>.
+Running CytoSPACE in the `--single-cell` mode will output the assignments `assigned_locations.csv`, the plot `cell_type_assignments_by_spot_single_cell.pdf`, and the log file `log.txt`. The plot generated will be a scatterplot of the cells colored by cell type, as shown below for the example dataset. The full results for the example dataset using the above command is available for download <a href="https://drive.google.com/file/d/1LTTDVGAuQ4QYkyCX6WtyBNXcnZe9fxKG/view?usp=share_link" target="_blank">here</a>.
+
+<p align="center">
+  <img width="600" src="images/CRC_cell_type_assignments_by_spot_single_cell.png">
+</p>
+
 </details>
 
 ## Advanced options
@@ -410,13 +403,13 @@ The users can use this option by specifying the `--sampling-sub-spots` (`-sss`) 
 
 For example, the following command will run CytoSPACE on the example breast cancer dataset, assigning scRNA-seq data to 5000 cells at a time using 2 cores:
 ```bash
-  cytospace
-    -sp /path/to/brca_scRNA_GEP.txt
-    -ctp /path/to/brca_scRNA_celllabels.txt
-    -stp /path/to/brca_STdata_GEP.txt
-    -cp /path/to/brca_STdata_coordinates.txt
-    -o /path/to/cytospace_results_brca
-    -sm lap_CSPR
+  cytospace \
+    -sp brca_scRNA_GEP.txt \
+    -ctp brca_scRNA_celllabels.txt \
+    -stp brca_STdata_GEP.txt \
+    -cp brca_STdata_coordinates.txt \
+    -o cytospace_results_brca \
+    -sm lap_CSPR \
     -sss -nosss 5000 -nop 2
 ```
 </details>

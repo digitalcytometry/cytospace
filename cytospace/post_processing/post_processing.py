@@ -1,17 +1,14 @@
-import math
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import csv
-from scipy.spatial.transform import Rotation
-from cytospace.common import read_file
+
+import math
+import os
 
 def save_results(output_path, output_prefix, cell_ids_selected, all_cells_save, assigned_locations,
-                 cell_type_data, assigned_locations_path, sampling_method, single_cell):
+                 cell_type_data, sampling_method, single_cell):
     """
     Parameters :
         output_path, output_prefix  (str) : /path/to/output/dir and outprefix_ parts, respectively.
-        assigned_locations_path     (str) : /path/to/save/assigned_locations.csv
 
         cell_ids_selected  (1D np.array[str], List[str], or other list-like type) 
         assigned_locations (pd.DataFrame) :
@@ -68,10 +65,12 @@ def save_results(output_path, output_prefix, cell_ids_selected, all_cells_save, 
                                     'SpotID': assigned_node_names,
                                     assigned_locations.columns.values[0]: list(assigned_locations.iloc[:, 0]),
                                     assigned_locations.columns.values[1]: list(assigned_locations.iloc[:, 1])})
-    
+
+    assigned_locations_path = os.path.join(output_path, f"{output_prefix}assigned_locations.csv")
     df_locations.to_csv(assigned_locations_path, index=False)
+
     if sampling_method == "place_holders":
-        fout_scrna = output_path / f'{output_prefix}new_scRNA.csv'
+        fout_scrna = os.path.join(output_path, f'{output_prefix}new_scRNA.csv')
         all_cells_save = all_cells_save.loc[:, ~all_cells_save.columns.isin(cell_type_data.index)]
         all_cells_save.index   = [gene_id[5:] for gene_id in all_cells_save.index.astype(str)]   # remove 'GENE_'
         all_cells_save.columns = [cell_id[5:] for cell_id in all_cells_save.columns.astype(str)] # remove 'CELL_'
@@ -84,11 +83,11 @@ def save_results(output_path, output_prefix, cell_ids_selected, all_cells_save, 
         df['Total cells'] = df.sum(axis=1)
         df = df.astype(int)
         df.index.name='SpotID'
-        fout = output_path / f'{output_prefix}cell_type_assignments_by_spot.csv'
+        fout = os.path.join(output_path, f'{output_prefix}cell_type_assignments_by_spot.csv')
         df.to_csv(fout)
 
         total_cells = np.array(df['Total cells'],dtype=float)
         df = df.iloc[:, :-1]
         df_fracs = df.div(total_cells,axis=0)
-        fout = output_path / f'{output_prefix}fractional_abundances_by_spot.csv'
+        fout = os.path.join(output_path, f'{output_prefix}fractional_abundances_by_spot.csv')
         df_fracs.to_csv(fout)

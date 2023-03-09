@@ -4,16 +4,14 @@ suppressPackageStartupMessages(library("Seurat"))
 suppressPackageStartupMessages(library("dplyr"))
 
 
-#' @param fin_scrna Path to scRNA counts file (standard CytoSPACE input file format)
-#' @param fin_labels Path to cell type labels file (standard CytoSPACE input file format)
-#' @param fin_st Path to ST data (standard CytoSPACE input file format)
+#' @param sc_path Path to scRNA counts file (standard CytoSPACE input file format)
+#' @param ct_path Path to cell type labels file (standard CytoSPACE input file format)
+#' @param st_path Path to ST data (standard CytoSPACE input file format)
 #' @param outdir Path to output directory
 #' @param prefix Prefix of output file
-#' @param st.norm.methods normalization methods for SRT data. CPM/SCT/log
-#' @param sc.norm.methods normalization methods for scRNA-seq data. CPM/SCT/downsample/log
-#' @param sc.max.umi Maximum number of UMIs, only used when performing downsampling normalization.
+#' @param disable_downsampling If TRUE, disables downsampling of scRNA-seq dataset for SCTransform() regardless of dataset size
 #' @import data.table dplyr Seurat
-get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir){
+get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir, prefix, disable_downsampling=FALSE){
     message(Sys.time(), " Load ST data")
     if(endsWith(st_path,'.csv')){
         st_delim <- ','
@@ -24,7 +22,6 @@ get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir){
     rownames(st) = st[,1]; st = st[,-1]
     st[is.na(st)] <- 0
     st <- as.matrix(st)
-    #st <- CreateSeuratObject(st) %>% NormalizeData() %>% FindVariableFeatures(selection.method = "vst") %>% ScaleData() %>% RunPCA(verbose = FALSE)
     st <- CreateSeuratObject(st) %>% SCTransform(verbose = FALSE, ncells = NULL) %>% RunPCA()
     message(Sys.time(), " Load scRNA data")
     if(endsWith(sc_path,'.csv')){
@@ -55,16 +52,18 @@ get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir){
     num_cell_types <- length(cell_types)
     names(cell_types) <- make.names(cell_types)
     Idents(scrna) <- make.names(Idents(scrna))
-    if(num_cells > 1000){
-        scrna <- subset(scrna, downsample = 50)
+    if((num_cells > 10000) && (!disable_downsampling)) {
+        warning("Downsampling to 10000 cells with equal number of cells for each cell type, for the purposes of cell type fraction estimation only. ",
+                "This will not affect the dataset in the main CytoSPACE run. ",
+                "To disable downsampling, please run get_cellfracs_seuratv3.R separately with the --disable-fraction-downsampling flag specified. ",
+                "The output file [prefix]Seurat_weights.txt can then be passed to CytoSPACE with the -ctfep flag.")
+        scrna <- subset(scrna, downsample = round(10000/num_cell_types))
     }
-    #scrna <- NormalizeData(scrna) %>% FindVariableFeatures(selection.method = "vst") %>% ScaleData() %>% RunPCA(verbose = FALSE)
+    if((dim(scrna)[2] < 300)) {
+        warning("Please note that there may be an error in SCTransform() if there are too few cells available in the scRNA-seq dataset.")
+    }
     scrna <- SCTransform(scrna, verbose = FALSE, ncells = NULL) %>% RunPCA()
-
-
-
     
-    #print(unique(scrna$CellType))
     cell_index_vec <- Idents(scrna)
     message(Sys.time(), " Integration ")
     anchors <- FindTransferAnchors(reference = scrna, query = st, normalization.method = "SCT")
@@ -76,8 +75,8 @@ get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir){
     cellfrac <- data.frame(Index = names(cellfrac), Fraction = cellfrac)
     cellfrac$Index <- cell_types[cellfrac$Index]
 
-    write.table(predictions.assay, paste0(outdir, "/Seurat_cellfracs.txt"), quote = FALSE, sep = "\t")
-    write.table(t(cellfrac), paste0(outdir, "/Seurat_weights.txt"), quote = FALSE, sep = "\t", col.names = FALSE)
+    write.table(predictions.assay, file.path(outdir, paste0(prefix, "Seurat_cellfracs.txt")), quote = FALSE, sep = "\t")
+    write.table(t(cellfrac), file.path(outdir, paste0(prefix, "Seurat_weights.txt")), quote = FALSE, sep = "\t", col.names = FALSE)
 } 
 
 
@@ -91,10 +90,11 @@ parser$add_argument("--st-path", type="character", default="",
                     help="Path to Spatially-Resolved Transcriptomics (SRT) data, with rows as genes and columns as spots")
 parser$add_argument("--outdir", type="character", default="./", help="Output directory")
 parser$add_argument("--prefix", type="character", default="CytoSPACE_input.", help="Prefix for output files")
+parser$add_argument("--disable-fraction-downsampling", action="store_true", help="Does not downsample scRNA-seq dataset if specified")
 
 
 # get command line options, if help option encountered print help and exit,
 # otherwise if options not found on command line then set defaults, 
 args <- parser$parse_args()
-get_cellfracs_seuratv3(sc_path = args$scrna_path, ct_path = args$ct_path, 
-                       st_path = args$st_path, outdir = args$outdir)
+get_cellfracs_seuratv3(sc_path = args$scrna_path, ct_path = args$ct_path, st_path = args$st_path,
+                        outdir = args$outdir, prefix = args$prefix, disable_downsampling=args$disable_fraction_downsampling)

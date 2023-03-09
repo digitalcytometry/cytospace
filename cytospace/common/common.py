@@ -1,12 +1,16 @@
 import numpy as np
 import pandas as pd
-from pathlib import Path
-import warnings
-import datatable as dt
-from numpy.linalg import norm
-import tarfile
-import os
 import scanpy as sc
+
+import datatable as dt
+import tarfile
+
+import os
+import subprocess
+from pathlib import Path
+
+import warnings
+import pkg_resources
 
 def read_file(file_path):
     # Read file
@@ -28,13 +32,8 @@ def read_file(file_path):
     return file_data
 
 
-def read_visium(file_name,output_folder):
-    out_dir = str(output_folder)
-    sr_dir = out_dir+'/SpaceRanger'
-    
-    print(out_dir)
-    print(sr_dir)
-    print(file_name)
+def read_visium(file_name,out_dir):
+    sr_dir = os.path.join(out_dir, 'SpaceRanger')
 
     file = tarfile.open(file_name,'r')
     file.extractall(sr_dir)
@@ -42,7 +41,7 @@ def read_visium(file_name,output_folder):
 
     count_dir = os.listdir(sr_dir)
     count_dir = [d for d in count_dir if os.path.isdir(os.path.join(sr_dir, d))][0]
-    count_dir = sr_dir+'/'+count_dir
+    count_dir = os.path.join(sr_dir, count_dir)
 
     fin_count = os.listdir(count_dir)
     fin_count = [fin for fin in fin_count if fin.endswith('.h5')]
@@ -55,17 +54,32 @@ def read_visium(file_name,output_folder):
     df_expression = pd.DataFrame.sparse.from_spmatrix(visium_adata.X,index=spots,columns=genes).transpose()
 
     df_expression = df_expression.loc[(df_expression!=0).any(1), (df_expression!=0).any(0)]
+    df_expression.index.name = 'GENES'
 
     df_coords = pd.DataFrame(visium_adata.obsm['spatial'],index=spots,columns=['X','Y'])
     df_coords = df_coords.loc[df_expression.columns,:]
+    df_coords.index.name = 'SpotID'
 
     return df_expression, df_coords
 
-def estimate_cell_type_fractions(scRNA_path, cell_type_path, st_path, output_folder):
-    run_str = "Rscript get_cellfracs_seuratv3.R --scrna-path "+scRNA_path+" --ct-path "+cell_type_path+" --st-path "+st_path+" --outdir "+output_folder
-    out = os.system(run_str)
-    frac_file = output_folder+'/Seurat_weights.txt'
-    return out, frac_file
+def estimate_cell_type_fractions(scRNA_path, cell_type_path, st_path, output_folder, output_prefix):
+    # Get path to R script
+    run_script = pkg_resources.resource_filename("cytospace", "get_cellfracs_seuratv3.R")
+
+    # Windows paths
+    scRNA_path = scRNA_path.replace("\\", "\\\\")
+    cell_type_path = cell_type_path.replace("\\", "\\\\")
+    st_path = st_path.replace("\\", "\\\\")
+    output_folder = output_folder.replace("\\", "\\\\")
+
+    # Run command
+    run_args = ["Rscript", run_script,
+                "--scrna-path", scRNA_path, "--ct-path", cell_type_path, "--st-path", st_path,
+                "--outdir", output_folder, "--prefix", output_prefix]
+    out = subprocess.run(run_args, check=True)
+
+    frac_file = os.path.join(output_folder, ''.join([output_prefix, 'Seurat_weights.txt']))
+    return frac_file
 
 def normalize_data(data):
     data = np.nan_to_num(data).astype(float)
@@ -77,12 +91,12 @@ def normalize_data(data):
 
 def check_paths(output_folder, output_prefix):
     # Create relative path
-    output_path = Path().cwd() / output_folder
+    output_path = os.path.join(os.getcwd(), output_folder)
 
     # Make sure that the folder exists
-    output_path.mkdir(parents=True, exist_ok=True)
+    Path(output_path).mkdir(parents=True, exist_ok=True)
 
-    if Path(output_path / f"{output_prefix}assigned_locations.csv").exists():
+    if os.path.exists(os.path.join(output_path, f"{output_prefix}assigned_locations.csv")):
         print("\033[91mWARNING\033[0m: Running this will overwrite previous results, choose a new"
               " 'output_folder' or 'output_prefix'")
 

@@ -1,9 +1,12 @@
-import random
-import time
 import pandas as pd
 import numpy as np
-import concurrent.futures
 from pandas.core.common import flatten
+
+import random
+import time
+
+import concurrent.futures
+import os
 
 from cytospace.common import read_file, read_visium, normalize_data, check_paths, argument_parser, estimate_cell_type_fractions
 from cytospace.post_processing import save_results, plot_results
@@ -11,10 +14,10 @@ from cytospace.linear_assignment_solvers import (calculate_cost, match_solution,
                                                  call_solver)
 
 def read_data(scRNA_path, cell_type_path, cell_type_fraction_estimation_path, n_cells_per_spot_path, 
-                     st_cell_type_path, delimiter, output_path, spaceranger_path=None, st_path=None, coordinates_path=None):
-    if spaceranger_path != None:
+                     st_cell_type_path, delimiter, output_path, output_prefix, spaceranger_path=None, st_path=None, coordinates_path=None):
+    if spaceranger_path is not None:
         st_data, coordinates_data = read_visium(spaceranger_path,output_path)
-    elif st_path == None and coordinates_path == None:
+    elif (st_path is None) and (coordinates_path is None):
         raise ValueError("For ST data, you must provide either a tar.gz file or paths for expression and coordinates.")
     else:
         # Read data
@@ -24,17 +27,12 @@ def read_data(scRNA_path, cell_type_path, cell_type_fraction_estimation_path, n_
     st_data = st_data[~st_data.index.duplicated(keep=False)]
     if (st_cell_type_path is None) and (cell_type_fraction_estimation_path is None):
         print('Estimating cell type fractions')
-        if spaceranger_path != None:
-            st_data_out = st_data.copy()
-            st_data_out.index.name = 'GENE'
-            st_data_out.to_csv(str(output_path)+'/ST_expression.txt',sep='\t')
-            del st_data_out
-            out, cell_type_fraction_estimation_path = estimate_cell_type_fractions(str(scRNA_path), str(cell_type_path), str(output_path)+'/ST_expression.txt', str(output_path))
+        if spaceranger_path is not None:
+            st_data_outpath = os.path.join(output_path, f"{output_prefix}ST_expression.txt")
+            st_data.to_csv(st_data_outpath, sep='\t')
+            cell_type_fraction_estimation_path = estimate_cell_type_fractions(scRNA_path, cell_type_path, st_data_outpath, output_path, output_prefix)
         else:
-            out, cell_type_fraction_estimation_path = estimate_cell_type_fractions(str(scRNA_path), str(cell_type_path), str(st_path), str(output_path))
-        if out != 0:
-            print('Error estimating cell type fractions')
-            exit(1)
+            cell_type_fraction_estimation_path = estimate_cell_type_fractions(scRNA_path, cell_type_path, st_path, output_path, output_prefix)
 
     st_data.columns = ['SPOT_'+str(col) for col in st_data.columns]
     st_data.index = ['GENE_'+str(idx) for idx in st_data.index]
@@ -260,11 +258,6 @@ def sample_single_cells(scRNA_data, cell_type_data, cell_type_numbers_int, sampl
                 # for gene_idx in range(num_genes):
                 #     rand_idxs = np.random.randint(0, cell_type_count_available, size=num_placeholder_cells)
                 #     scRNA_placeholder_np[gene_idx, :] = scRNA_original_np[gene_idx, rand_idxs.tolist()]
-
-                # # alternate implementation 2 (vectorization on both axes): TODO: requires testing
-                # # sample indices all at once, and then reshape indices to a 2D matrix of the correct shape
-                # rand_idxs = np.random.randint(0, cell_type_count_available, size=num_genes*num_placeholder_cells).reshape(num_genes, -1)
-                # scRNA_placeholder_np = scRNA_original_np[np.arange(num_genes)[:, None], rand_idxs]
                 
                 cell_names_list.append(np.array(scRNA_data.columns.values[cell_type_index]))
                 cell_names_list.append(np.array([cell_type.replace('TYPE_', 'CELL_') + '_new_' + str(i+1) for i in range(num_placeholder_cells)]))
@@ -485,10 +478,9 @@ def main_cytospace(scRNA_path, cell_type_path,
 
     # Check paths
     output_path = check_paths(output_folder, output_prefix)
-    assigned_locations_path = str(output_path / f'{output_prefix}assigned_locations.csv')
 
     # Record log
-    fout_log = output_path / f"{output_prefix}log.txt"
+    fout_log = os.path.join(output_path, f"{output_prefix}log.txt")
     with open(fout_log, "w") as f:
         f.write("CytoSPACE log file \n\nStart time: "+str(time.asctime( time.localtime(time.time()) ))+"\n")
         f.write("\nINPUT ARGUMENTS\n")
@@ -527,7 +519,7 @@ def main_cytospace(scRNA_path, cell_type_path,
     scRNA_data, cell_type_data, st_data, coordinates_data, cell_type_fractions_data, n_cells_per_spot_data, st_cell_type_data =\
         read_data(scRNA_path, cell_type_path, 
                   cell_type_fraction_estimation_path, n_cells_per_spot_path, st_cell_type_path, delimiter,
-                  output_path, spaceranger_path, st_path, coordinates_path)
+                  output_path, output_prefix, spaceranger_path, st_path, coordinates_path)
 
     print(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds")
     with open(fout_log,"a") as f:
@@ -674,14 +666,14 @@ def main_cytospace(scRNA_path, cell_type_path,
     ### Save results
     print('Saving results ...')
     save_results(output_path, output_prefix, cell_ids_selected, scRNA_data_sampled, assigned_locations,
-                 cell_type_data, assigned_locations_path, sampling_method, single_cell)
+                 cell_type_data, sampling_method, single_cell)
 
     if not plot_off:
         if single_cell:
-            plot_results(output_path, assigned_locations_path, max_num_cells=max_num_cells_plot, single_cell_ST_mode=True)
+            plot_results(output_path, output_prefix, max_num_cells=max_num_cells_plot, single_cell_ST_mode=True)
         else:
-            metadata_path = str(output_path)+'/cell_type_assignments_by_spot.csv'
-            plot_results(output_path, assigned_locations_path, metadata_path=metadata_path, coordinates_data=coordinates_data, geometry=geometry,max_num_cells=max_num_cells_plot)
+            plot_results(output_path, output_prefix, coordinates_data=coordinates_data, geometry=geometry, max_num_cells=max_num_cells_plot)
+
     print(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds")

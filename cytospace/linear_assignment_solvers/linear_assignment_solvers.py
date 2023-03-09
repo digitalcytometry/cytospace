@@ -24,7 +24,7 @@ def import_solver(solver_method):
                                   f"you have chosen {solver_method} was not found. If you "
                                   "selected 'lapjv_compat' solver, install package 'lap'"
                                   "by running 'pip install lap==0.4.0'. If you selected 'lapjv'"
-                                  "solver, install package 'lapjv' by running `pip intall lapjv==1.3.14'"
+                                  "solver, install package 'lapjv' by running `pip install lapjv==1.3.14'"
                                   "or check the package home page for further instructions.")
 
     return solver

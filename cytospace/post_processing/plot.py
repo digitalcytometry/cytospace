@@ -1,4 +1,3 @@
-
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch, RegularPolygon
 from matplotlib import cm, colors
@@ -7,44 +6,9 @@ import matplotlib
 import numpy as np
 import pandas as pd
 
-import argparse
-from pathlib import Path
-from cytospace.common import read_file, add_plotting_arguments
+import os
 
-
-#def argument_parser():
- #   parser = argparse.ArgumentParser(description='Plot CytoSPACE results')#
-
-    # Required arguments
-#    required = parser.add_argument_group('Required arguments')
-#    required.add_argument("-alp", "--assigned-locations-path", type=str, required=True,
- #                         help="Path to the assigned locations by CytoSPACE", default=None)
-#    required.add_argument("-cp", "--coordinates-path", type=str, required=True,
-#                         help="Path to transcriptomics data coordinates", default=None)
-#    required.add_argument("-mp", "--metadata-path", type=str, required=True,
-#                         help="Path to metadata (cell_type_assignments_by_spot file)", default=None)
-#    required.add_argument("-o", "--output-directory", type=str, required=True,
-#                        help="Output directory, i.e. '/path/to/cytospace_results'",  default=None)
-#    required.add_argument("-g", "--geometry", type=str, required=True,
-#                        help="Geometry, either 'hexagonal' (use for 10x Visium) or 'square'",  default='hexagonal')    
-#    required.add_argument("-s", "--scale", type=str, required=True,
- #                       help="Boolean flag to rescale plot for 10x Visium row/col coordinates",  default='False')    
-#     required.add_argument("-dr", "--do-not-rotate", type=bool, required=True,
-#                        help="Boolean flag to turn off rotation that otherwise sets plot origin to top left, standard for 10x Visium",  default='False')      
-#     required.add_argument("-cols", "--number-of-columns", type=int, required=True,
-#                        help="Number of columns to use for plotting assignments by cell type",  default=3)     
- #    required.add_argument("-scst", "--single-cell-ST-mode", type=bool, required=True,
-#                        help="Boolean flag to enable plotting for single cell ST mode",  default=False)    
-#     required.add_argument("-mc", "--max-cells", type=int, required=True,
-#                        help="Maximum number of cells to use for single-cell plots",  default=50000)     
-
-    # Plotting
-#    add_plotting_arguments(parser)
-
-#    arguments = parser.parse_args()
-
-#    return arguments.__dict__
-
+from cytospace.common import read_file
 
 
 
@@ -80,11 +44,11 @@ def format_label(label,max_length=14,max_lines=3):
 def rand_jitter(arr,interval):
     return arr + np.random.uniform(-interval/2,interval/2,len(arr))
 
-def plot_results_bulk_ST_by_spot(coordinates, metadata, dir_out, geometry='honeycomb', num_cols=3):
+def plot_results_bulk_ST_by_spot(coordinates, metadata, dir_out, output_prefix, geometry='honeycomb', num_cols=3):
  
     # Define output files
-    fout_png_all = str(dir_out)+'/cell_type_assignments_by_spot.png'
-    fout_pdf_all = str(dir_out)+'/cell_type_assignments_by_spot.pdf'
+    fout_png_all = os.path.join(dir_out, f"{output_prefix}cell_type_assignments_by_spot.png")
+    fout_pdf_all = os.path.join(dir_out, f"{output_prefix}cell_type_assignments_by_spot.pdf")
     
     coordinates = coordinates.loc[metadata.index,:]
     cell_types = list(metadata.columns)[:-1]
@@ -206,11 +170,11 @@ def plot_results_bulk_ST_by_spot(coordinates, metadata, dir_out, geometry='honey
     fig.savefig(fout_pdf_all, facecolor="w", bbox_inches='tight')
 
 
-def plot_results_bulk_ST_jitter(assigned_locations, dir_out, geometry="honeycomb",max_num_cells=50000):
+def plot_results_bulk_ST_jitter(assigned_locations, dir_out, output_prefix, geometry="honeycomb",max_num_cells=50000):
     
     # Define output files
-    fout_png_jitter = dir_out+'/cell_type_assignments_by_spot_jitter.png'
-    fout_pdf_jitter = dir_out+'/cell_type_assignments_by_spot_jitter.pdf'
+    fout_png_jitter = os.path.join(dir_out, f"{output_prefix}cell_type_assignments_by_spot_jitter.png")
+    fout_pdf_jitter = os.path.join(dir_out, f"{output_prefix}cell_type_assignments_by_spot_jitter.pdf")
 
     if assigned_locations.shape[0] > max_num_cells:
         assigned_locations = assigned_locations.sample(max_num_cells)
@@ -297,11 +261,11 @@ def plot_results_bulk_ST_jitter(assigned_locations, dir_out, geometry="honeycomb
     fig.savefig(fout_pdf_jitter, facecolor="w", bbox_inches='tight')
 
 
-def plot_results_single_cell_ST(assigned_locations, dir_out, max_num_cells=50000):
+def plot_results_single_cell_ST(assigned_locations, dir_out, output_prefix, max_num_cells=50000):
     
     # Define output files
-    fout_png = dir_out+'/cell_type_assignments_by_spot_single_cell.png'
-    fout_pdf = dir_out+'/cell_type_assignments_by_spot_single_cell.pdf'
+    fout_png = os.path.join(dir_out, f"{output_prefix}cell_type_assignments_by_spot_single_cell.png")
+    fout_pdf = os.path.join(dir_out, f"{output_prefix}cell_type_assignments_by_spot_single_cell.pdf")
 
     if assigned_locations.shape[0] > max_num_cells:
         assigned_locations = assigned_locations.sample(max_num_cells)
@@ -347,25 +311,31 @@ def plot_results_single_cell_ST(assigned_locations, dir_out, max_num_cells=50000
     fig.savefig(fout_png, facecolor="w", bbox_inches='tight')
     fig.savefig(fout_pdf, facecolor="w", bbox_inches='tight')
 
-def plot_results(output_directory, assigned_locations_path, metadata_path=None, coordinates_data=None, 
+def plot_results(output_directory, output_prefix, assigned_locations_path=None, metadata_path=None, coordinates_data=None, 
                         geometry='honeycomb',num_cols=3, single_cell_ST_mode=False,max_num_cells=50000):
-    assigned_locations = read_file(assigned_locations_path)
-    if single_cell_ST_mode:
-        if assigned_locations_path == None:
-              print('Argument assigned_locations_path is required for single_cell_ST_mode')
-              exit()
-        output_directory = str(output_directory)
-        plot_results_single_cell_ST(assigned_locations, output_directory, max_num_cells=max_num_cells)
-    else:
-        if metadata_path == None:
-              print('Arguments metadata_path and coordinates_data are required unless in single_cell_ST_mode')
-              exit()
+    # check input files
+    if assigned_locations_path is None:
+        assigned_locations_path = os.path.join(output_directory, f"{output_prefix}assigned_locations.csv")
+        if not os.path.exists(assigned_locations_path):
+            raise ValueError("Cannot locate assigned_locations.csv file required for plotting")
+    
+    if (not single_cell_ST_mode) and (metadata_path is None):
+        metadata_path = os.path.join(output_directory, f"{output_prefix}cell_type_assignments_by_spot.csv")
+        if not os.path.exists(metadata_path):
+            raise ValueError("Cannot locate metadata_path required for plotting bulk ST data")
+    
+    if (not single_cell_ST_mode) and (coordinates_data is None):
+        raise ValueError("coordinates_data is required unless in single_cell_ST_mode")
 
+    assigned_locations = read_file(assigned_locations_path)
+
+    if single_cell_ST_mode:
+        plot_results_single_cell_ST(assigned_locations, output_directory, output_prefix, max_num_cells=max_num_cells)
+    else:
         metadata = read_file(metadata_path)
         metadata.index = ['SPOT_'+idx for idx in metadata.index]
-        output_directory = str(output_directory)
-        plot_results_bulk_ST_by_spot(coordinates_data, metadata, output_directory, geometry=geometry, num_cols=num_cols)
-        plot_results_bulk_ST_jitter(assigned_locations, output_directory,geometry=geometry,max_num_cells=max_num_cells)
+        plot_results_bulk_ST_by_spot(coordinates_data, metadata, output_directory, output_prefix, geometry=geometry, num_cols=num_cols)
+        plot_results_bulk_ST_jitter(assigned_locations, output_directory, output_prefix, geometry=geometry, max_num_cells=max_num_cells)
 
 
 

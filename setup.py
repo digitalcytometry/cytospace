@@ -4,14 +4,15 @@ from setuptools import setup
 
 setup(
     name='cytospace',
-    version='1.0.0',
+    version='1.0.1',
     packages=['cytospace',
               'cytospace.common',
               'cytospace.linear_assignment_solvers',
               'cytospace.post_processing'],
     package_dir={'cytospace': 'cytospace'},
+    package_data={'cytospace': ['get_cellfracs_seuratv3.R']},
     entry_points={'console_scripts':
-                      ['cytospace=cytospace.cytospace:run_cytospace']#,
-                       #'cytospace-plot=cytospace.post_processing.plot:run_cytospace_plot']
-                  }
+                      ['cytospace=cytospace.cytospace:run_cytospace']
+                  },
+    include_package_data=True
 )
