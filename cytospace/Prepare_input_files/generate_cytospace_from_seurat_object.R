@@ -15,8 +15,8 @@ library(Seurat)
 ##########################################################
 
 generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
-                                                        dir_out='',fout_prefix=''){
-  scrna_count <- as.data.frame(as.matrix(GetAssayData(object = scrna_seurat, slot = "counts")))
+                                                        dir_out='',fout_prefix='', rna_assay='RNA'){
+  scrna_count <- as.data.frame(as.matrix(GetAssayData(object = scrna_seurat, slot = "counts", assay = rna_assay)))
   cell_names <- colnames(scrna_count)
   scrna_count <- cbind(rownames(scrna_count), scrna_count)
   colnames(scrna_count)[1] <- 'GENES'
