@@ -74,6 +74,7 @@ CytoSPACE requires 4 files as input by default. All files should be provided in 
 - The first row must contain the single cell IDs and the first column must contain the gene names.
 - The first column (gene names) must have a header.
 - The gene expression data should be represented as non-normalized counts. 
+- All instances of duplicate gene names will be dropped at runtime.
 <p align="center">
   <img src="images/scRNAfile.png" width="800"> 
 </p>
@@ -92,6 +93,7 @@ CytoSPACE requires 4 files as input by default. All files should be provided in 
 - The first row must contain the ST spot IDs and the first column must contain the gene names.
 - The first column (gene names) must have a header.
 - The gene expression data should be represented as non-normalized counts. 
+- All instances of duplicate gene names will be dropped at runtime.
 <p align="center">
   <img src="images/STdatafile.png" width="800"> 
 </p>
@@ -106,7 +108,20 @@ CytoSPACE requires 4 files as input by default. All files should be provided in 
 ### From Space Ranger outputs
 If the users are starting from Space Ranger outputs, they can provide the ST input files as a single tar.gz, __in place of__ both (3) gene expression and (4) coordinates. If a Space Ranger output is specified, CytoSPACE will automatically attempt to unzip the provided tarball and load the correponding ST expression and coordinates data.
 
-The tarball should only include a single H5 file (extension .h5) and one subdirectory, where the H5 file contains the ST gene expression and the subdirectory contains the image data. An example file tree for an unzipped tarball is shown below on the left; if downloading from the public 10X Visium data, users can download the files shown below on the right.
+The tarball should only include the following:
+- A single H5 file (extension .h5) containing the ST gene expression
+- A single subdirectory containing the image data
+
+With the above items inside a directory named `spaceranger_input`, a tarball can be generated using the following command:
+```bash
+  tar -cvzf sr_input.tar.gz spaceranger_input
+```
+Or more generally:
+```bash
+  tar -cvzf [name_of_tarball] [name_of_directory]
+```
+
+An example file tree for an unzipped tarball is shown below on the left. If downloading from the public 10X Visium data, users can download the files shown below on the right.
 <p align="center">
   <img src="images/VisiumTar.png" width="300"> <img src="images/Visium.png" width="300">
 </p>
@@ -178,11 +193,8 @@ For full usage details with additional options, see the [__Extended usage detail
 CytoSPACE provides three solver options. In short, we recommend using the default option `lapjv` if your system supports AVX2 (i.e., if you were able to successfully install it with `pip install lapjv==1.3.14`) and `lap_CSPR` otherwise. No options are required to use the default solver `lapjv`. To use `lap_CSPR` instead, pass the argument `-sm lap_CSPR` to your `cytospace` call. For full solver details, see the [__Solver options__](#cytospace-solver-options) section below.
 
 <details><summary><b>Other ways CytoSPACE can be run</b></summary>
-
-1. You can call the `cytospace.py` script directly with python:
- `python cytospace/cytospace.py`
  
-2. You can import methods or functions from `CytoSPACE` in python and modify/create your own 
+- You can import methods or functions from `CytoSPACE` in python and modify/create your own 
     pipeline. For example:
 ```python
   from cytospace import cytospace
@@ -300,7 +312,7 @@ Similar to the example breast cancer dataset above, we provide an example datase
 
 The zip file containing the dataset can be downloaded <a href="https://drive.google.com/file/d/1hwK_sh355chdmW50yrPJq7_W8j6HuRHh/view?usp=share_link" target="_blank">here</a>.
 
-Running CytoSPACE with the command below generates the results shown <a href="https://drive.google.com/file/d/1bX4SqrYzIXov_A5ivlJ8U0qD8_lXmmBf/view?usp=share_link" target="_blank">here</a> . The format of the output will be the same as the breast cancer dataset above. Please note that here we specify the `-ctfep` parameter (see [__Advanced options__](#advanced-options) - __User-provided fractional composition of each cell type__).
+Running CytoSPACE with the command below generates the results shown <a href="https://drive.google.com/file/d/1bX4SqrYzIXov_A5ivlJ8U0qD8_lXmmBf/view?usp=share_link" target="_blank">here</a> . The format of the output will be the same as the breast cancer dataset above. Please note that here we specify the `-ctfep` parameter instead of using CytoSPACE's internal algorithm for estimating cell fractions (see [__Advanced options__](#advanced-options) - __User-provided fractional composition of each cell type__) as the scRNA-seq atlas used as reference was generated using Smart-seq2.
 ```bash
   cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -o cytospace_results_melanoma -mcn 20 -g square -sm lap_CSPR
 ```
@@ -310,7 +322,7 @@ Running CytoSPACE with the command below generates the results shown <a href="ht
 
 <details><summary>Expand section</summary>
 
-While designed for Visium-type data in which most spots contain RNA from multiple cells, CytoSPACE can also be used with single-cell resolution spatial data such as <a href="https://vizgen.com/resources/meet-the-merscope-platform/" target="_blank">Vizgen's MERSCOPE platform</a>. We expect this extension to be useful for reducing noise and expanding transcriptome coverage of each cell in the ST data. For this single-cell resolution mode, CytoSPACE partitions the ST data into smaller chunks and utilizes multiple CPU cores to assign down-sampled versions of the reference scRNA-seq data to these regions.
+While designed for Visium-type data in which most spots contain RNA from multiple cells, CytoSPACE can also be used with single-cell resolution spatial data such as <a href="https://vizgen.com/resources/meet-the-merscope-platform/" target="_blank">Vizgen's MERSCOPE platform</a>. We expect this extension to be useful for reducing noise and expanding transcriptome coverage of each cell in the ST data, which in turn could allow for identifying spatially-dependent changes across genes more diverse than what a typical single-cell resolution ST platform alone can provide. For the single-cell resolution mode, CytoSPACE partitions the ST data into smaller chunks and utilizes multiple CPU cores to assign down-sampled versions of the reference scRNA-seq data to these regions.
 
 We highly recommend that an `--st-cell-type-path` (or `-stctp`) be provided when running CytoSPACE in `--single-cell` mode. This file will list the cell type labels for each spot, in the same format as the scRNA-seq cell type labels specified under `--cell-type-path`. All of the cell types present in `--st-cell-type-path` must also be present in `--cell-type-path`.
 
@@ -378,7 +390,9 @@ To account for the disparity between scRNA-seq and ST data in the number of cell
 
 While our provided script uses <a href="https://satijalab.org/seurat/articles/spatial_vignette.html" target="_blank">Spatial Seurat</a>, there is a diverse set of approaches available such as <a href="https://www.sanger.ac.uk/tool/cell2location/" target="_blank">cell2location</a>, <a href="https://github.com/MarcElosua/SPOTlight" target="_blank">SPOTlight</a>, or <a href="https://cibersortx.stanford.edu/" target="_blank">CIBERSORTx</a>.
 
-Users can choose to provide their own file for estimated cell type composition, specified with the `--cell-type-fraction-estimation-path` (`-ctfep`) flag. In this case, the provided file must be a table consisting of 2 rows with row names, where the first row contains the cell type labels, and the second row contains the cell fractions of each cell type represented as proportions between 0 and 1. __Please make sure that the cell type labels in the first row match the labels present in the cell type label file, and that the cell type fractions sum to one.__
+Users can choose to provide their own file for estimated cell type composition, specified with the `--cell-type-fraction-estimation-path` (`-ctfep`) flag. In particular, we recommend that a separate `-ctfep` file be provided if the reference scRNA-seq dataset comes from technologies that are not based on UMI counts, such as Smart-seq.
+
+The provided file must be a table consisting of 2 rows with row names, where the first row contains the cell type labels, and the second row contains the cell fractions of each cell type represented as proportions between 0 and 1. __Please make sure that the cell type labels in the first row match the labels present in the cell type label file, and that the cell type fractions sum to one. Row names must be present for both rows.__
 <p align="center">
   <img src="images/cell_type_fractions_file.png">
 </p>
@@ -560,6 +574,6 @@ Please see the <a href="LICENSE" target="_blank">LICENSE</a> file.
 ## Citation
 If you use CytoSPACE, please cite:  
 
-*High-resolution alignment of single-cell and spatial transcriptomes with CytoSPACE* (Nature Biotechnology 2022)  
+*High-resolution alignment of single-cell and spatial transcriptomes with CytoSPACE* (Nature Biotechnology 2023)  
 Milad R. Vahid*, Erin L. Brown*, Chloé B. Steen*, Wubing Zhang, Hyun Soo Jeon, Minji Kang, Andrew J. Gentles, Aaron M. Newman.  
 https://www.nature.com/articles/s41587-023-01697-9
