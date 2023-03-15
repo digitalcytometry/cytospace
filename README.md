@@ -297,6 +297,15 @@ A zip file of the expected CytoSPACE outputs (with `lap_CSPR` solver) are availa
    unzip CytoSPACE_example_melanoma_results.zip
    ``` -->
 
+<details><summary><b>Simulated datasets</b></summary>
+
+In addition to the example dataset above, the simulated datasets that we have generated for evaluating robustness of CytoSPACE across different conditions are available for download below.
+They were generated using annotated Slide-seq datasets of mouse cerebellum and hippocampus sections from Rodriques et al. (<a href="https://www.science.org/doi/10.1126/science.aaw1219" target="_blank">Science, 2019</a>). Each simulated dataset contains subdirectories for data generated using different spot resolutions (5, 15, and 30 cells per spot), as well as an `scRNA` subdirectory containing reference single-cell datasets with perturbations in a defined percentage of genes. For more information, please see the Methods section of the paper.
+1. <a href="https://drive.google.com/file/d/1qfz2T8u3HRG4qdZc9qafcO4aCvjA91Rb/view?usp=share_link" target="_blank">Cerebellum</a>
+2. <a href="https://drive.google.com/file/d/1Jyd14n-ISc5lF65pnJWLhCCgSkpjtbsr/view?usp=share_link" target="_blank">Hippocampus</a>
+
+</details>
+
 </details>
 
 ## Running CytoSPACE on legacy ST data

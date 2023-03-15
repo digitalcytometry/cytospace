@@ -568,8 +568,8 @@ def main_cytospace(scRNA_path, cell_type_path,
 
     with open(fout_log, "a") as f:
         f.write("Number of genes used for mapping: "+str(len(intersect_genes))+"\n")
-        f.write("Number of spots satisfying input for mapping: "+str(st_data.shape[0])+"\n")
-        f.write("Number of cells satisfying input for mapping: "+str(scRNA_data.shape[0])+"\n")
+        f.write("Number of spots satisfying input for mapping: "+str(st_data.shape[1])+"\n")
+        f.write("Number of cells satisfying input for mapping: "+str(scRNA_data.shape[1])+"\n")
 
     # sample scRNA_data based on cell type composition
     # cell count in scRNA_data_sampled will be equal to cell count (not spot count) in ST data

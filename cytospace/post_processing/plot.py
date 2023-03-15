@@ -333,7 +333,7 @@ def plot_results(output_directory, output_prefix, assigned_locations_path=None, 
         plot_results_single_cell_ST(assigned_locations, output_directory, output_prefix, max_num_cells=max_num_cells)
     else:
         metadata = read_file(metadata_path)
-        metadata.index = ['SPOT_'+idx for idx in metadata.index]
+        metadata.index = ['SPOT_'+str(idx) for idx in metadata.index]
         plot_results_bulk_ST_by_spot(coordinates_data, metadata, output_directory, output_prefix, geometry=geometry, num_cols=num_cols)
         plot_results_bulk_ST_jitter(assigned_locations, output_directory, output_prefix, geometry=geometry, max_num_cells=max_num_cells)
 
