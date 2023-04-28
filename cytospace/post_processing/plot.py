@@ -58,12 +58,16 @@ def plot_results_bulk_ST_by_spot(coordinates, metadata, dir_out, output_prefix, 
     X = coordinates.iloc[:,0]
     Y = coordinates.iloc[:,1]
     
-    y_int = np.median(np.unique(np.diff(np.sort(np.unique(Y)))))
-    x_int = np.median(np.unique(np.diff(np.sort(np.unique(X)))))
+    # distinguish between row/col indices and coordinates
+    # based on range (500) and type (int vs. float) of values
+    scale = Y.max() < 500 and ((Y - Y.round()).abs() < 1e-5).all()
+
+    # define representative interval between each adjacent spot/point
+    y_int = 1 if scale else np.median(np.unique(np.diff(np.sort(np.unique(Y)))))
+    x_int = 1 if scale else np.median(np.unique(np.diff(np.sort(np.unique(X)))))
     
-    if geometry == 'honeycomb' and x_int == 1:
+    if geometry == 'honeycomb' and scale:
         print('Detecting row and column indexing of Visium data; rescaling for coordinates')
-        scale = True
         
         # Rotate
         X_prev = X
@@ -74,9 +78,8 @@ def plot_results_bulk_ST_by_spot(coordinates, metadata, dir_out, output_prefix, 
         # Rescale
         Y = 1.75*Y
 
-    elif geometry == 'square' and x_int == 1:
+    elif geometry == 'square' and scale:
         print('Detecting row and column indexing of legacy ST data; rotating for coordinates')
-        scale = True
         
         # Rotate
         X_prev = X
@@ -84,9 +87,7 @@ def plot_results_bulk_ST_by_spot(coordinates, metadata, dir_out, output_prefix, 
         X = Y_prev
         Y = 1-X_prev
 
-    else:
-        scale = False
-        
+    else:        
         # Rotate 
         Y = 1-Y
         
@@ -179,17 +180,21 @@ def plot_results_bulk_ST_jitter(assigned_locations, dir_out, output_prefix, geom
     if assigned_locations.shape[0] > max_num_cells:
         assigned_locations = assigned_locations.sample(max_num_cells)
 
-    X = assigned_locations.iloc[:,-2].values
-    Y = assigned_locations.iloc[:,-1].values
+    X = assigned_locations.iloc[:,-2]
+    Y = assigned_locations.iloc[:,-1]
     cell_types = assigned_locations['CellType'].values
 
-    y_int = np.median(np.unique(np.diff(np.sort(np.unique(Y)))))
-    x_int = np.median(np.unique(np.diff(np.sort(np.unique(X)))))
+    # distinguish between row/col indices and coordinates
+    # based on range (500) and type (int vs. float) of values
+    scale = Y.max() < 500 and ((Y - Y.round()).abs() < 1e-5).all()
+
+    # define representative interval between each adjacent spot/point
+    y_int = 1 if scale else np.median(np.unique(np.diff(np.sort(np.unique(Y)))))
+    x_int = 1 if scale else np.median(np.unique(np.diff(np.sort(np.unique(X)))))
 
 
-    if geometry == 'honeycomb' and x_int == 1:
+    if geometry == 'honeycomb' and scale:
         print('Detecting row and column indexing of Visium data; rescaling for coordinates')
-        scale = True
         
         # Rotate
         X_prev = X
@@ -202,9 +207,8 @@ def plot_results_bulk_ST_jitter(assigned_locations, dir_out, output_prefix, geom
         y_interval = 1.75*x_int
         x_interval = y_int
 
-    elif geometry == 'square' and x_int == 1:
+    elif geometry == 'square' and scale:
         print('Detecting row and column indexing of legacy ST data; rotating for coordinates')
-        scale = True
         
         # Rotate
         X_prev = X
@@ -215,16 +219,14 @@ def plot_results_bulk_ST_jitter(assigned_locations, dir_out, output_prefix, geom
         x_interval = y_int
 
     else:
-        scale = False
-        
         # Rotate 
         Y = 1-Y
         y_interval = y_int
         x_interval = x_int
 
         
-    X = rand_jitter(X,x_interval)
-    Y = rand_jitter(Y,y_interval)
+    X = rand_jitter(X.values,x_interval)
+    Y = rand_jitter(Y.values,y_interval)
 
 
     plt.rc('font', **{'family': 'sans-serif', 'sans-serif': ['Arial'], 'size':'12'})
