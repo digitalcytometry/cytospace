@@ -69,7 +69,7 @@ get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir, prefix, di
     anchors <- FindTransferAnchors(reference = scrna, query = st, normalization.method = "SCT")
     predictions.assay <- TransferData(anchorset = anchors, refdata = cell_index_vec)
     colnames(predictions.assay) <- gsub('prediction.score.', '', colnames(predictions.assay))
-    predictions.assay <- predictions.assay[, 2:(ncol(predictions.assay)-1)]
+    predictions.assay <- predictions.assay[, 2:(ncol(predictions.assay)-1), drop=FALSE]
     col_sums <- colSums(predictions.assay)
     cellfrac <- col_sums / sum(col_sums)
     cellfrac <- data.frame(Index = names(cellfrac), Fraction = cellfrac)
