@@ -205,7 +205,7 @@ def plot_results_bulk_ST_jitter(assigned_locations, dir_out, output_prefix, geom
         # Rescale
         Y = 1.75*Y
         y_interval = 1.75*x_int
-        x_interval = y_int
+        x_interval = 1.75*y_int
 
     elif geometry == 'square' and scale:
         print('Detecting row and column indexing of legacy ST data; rotating for coordinates')
@@ -224,7 +224,6 @@ def plot_results_bulk_ST_jitter(assigned_locations, dir_out, output_prefix, geom
         y_interval = y_int
         x_interval = x_int
 
-        
     X = rand_jitter(X.values,x_interval)
     Y = rand_jitter(Y.values,y_interval)
 
