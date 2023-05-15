@@ -238,7 +238,7 @@ Please refer to further instructions in the corresponding sections below: [__Run
 2. My scRNA-seq dataset comes in a format other than a UMI count matrix.<br>
 You may want to make the following two changes to the default CytoSPACE workflow.<br>
 (1) CytoSPACE's internal algorithm for estimating cell type fractions was generally written with a UMI count matrix in mind. As an alternative to using the internal algorithm, you may provide a `--cell-type-fraction-estimation-path` file instead. Please see [__Advanced Options__](#advanced-options) - __User-provided fractional composition of each cell type__ for more information.<br>
-(2) CytoSPACE downsamples scRNA-seq datasets to a certain number of transcripts per cell (1500 by default) prior to assignment so that the assignment is not dependent on the total transcript count. You can turn this feature off by appending a `--downsample-off` flag to the CytoSPACE call, and may instead choose to provide previously downsampled scRNA-seq data as input.
+(2) CytoSPACE (v1.0.4+) downsamples scRNA-seq datasets to a certain number of transcripts per cell (1500 by default) prior to assignment so that the assignment is not dependent on the total transcript count. You can turn this feature off by appending a `--downsample-off` flag to the CytoSPACE call, and may instead choose to provide previously downsampled scRNA-seq data as input.
 
 3. During runtime, I get a `Killed` / `Terminated` / `Segmentation fault` / `concurrent.futures.process.BrokenProcessPool` error.<br>
 While these errors could arise from a variety of reasons, it is likely that the CytoSPACE run needs more memory than what is available.<br>
@@ -323,7 +323,7 @@ Similar to the example breast cancer dataset above, we provide an example datase
 
 The zip file containing the dataset can be downloaded <a href="https://drive.google.com/file/d/1hwK_sh355chdmW50yrPJq7_W8j6HuRHh/view?usp=share_link" target="_blank">here</a>.
 
-Running CytoSPACE with the command below generates the results shown <a href="https://drive.google.com/file/d/1bX4SqrYzIXov_A5ivlJ8U0qD8_lXmmBf/view?usp=share_link" target="_blank">here</a> . The format of the output will be the same as the breast cancer dataset above. Please note that here we specify the `-ctfep` parameter instead of using CytoSPACE's internal algorithm for estimating cell fractions (see [__Advanced options__](#advanced-options) - __User-provided fractional composition of each cell type__) as the scRNA-seq atlas used as reference was generated using Smart-seq2.
+Running CytoSPACE with the command below generates the results shown <a href="https://drive.google.com/file/d/1bX4SqrYzIXov_A5ivlJ8U0qD8_lXmmBf/view?usp=share_link" target="_blank">here</a> . The format of the output will be the same as the breast cancer dataset above. Please note that here we specify the `-ctfep` parameter instead of using CytoSPACE's internal algorithm for estimating cell fractions (see [__Advanced options__](#advanced-options) - __User-provided fractional composition of each cell type__) as the scRNA-seq atlas used as reference was generated using Smart-seq2. If using CytoSPACE v1.0.4+, the `--downsample-off` flag should additionally be specified.
 ```bash
   cytospace -sp melanoma_scRNA_GEP.txt -ctp melanoma_scRNA_celllabels.txt -stp melanoma_STdata_slide1_GEP.txt -cp melanoma_STdata_slide1_coordinates.txt -ctfep melanoma_cell_fraction_estimates.txt -o cytospace_results_melanoma -mcn 20 -g square -sm lap_CSPR
 ```
@@ -473,9 +473,9 @@ Please note that `uncertainty_quantification.R` requires separate dependencies f
 ```
 usage: cytospace [-h] -sp SCRNA_PATH -ctp CELL_TYPE_PATH [-stp ST_PATH] [-cp COORDINATES_PATH] [-srp SPACERANGER_PATH]
                  [-stctp ST_CELL_TYPE_PATH] [-ctfep CELL_TYPE_FRACTION_ESTIMATION_PATH] [-ncpsp N_CELLS_PER_SPOT_PATH]
-                 [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-mcn MEAN_CELL_NUMBERS] [-sc]
-                 [-noss NUMBER_OF_SELECTED_SPOTS] [-sss] [-nosss NUMBER_OF_SELECTED_SUB_SPOTS]
-                 [-nop NUMBER_OF_PROCESSORS] [-sm {lapjv,lapjv_compat,lap_CSPR}]
+                 [-o OUTPUT_FOLDER] [-op OUTPUT_PREFIX] [-mcn MEAN_CELL_NUMBERS] [--downsample-off]
+                 [-smtpc SCRNA_MAX_TRANSCRIPTS_PER_CELL] [-sc] [-noss NUMBER_OF_SELECTED_SPOTS] [-sss]
+                 [-nosss NUMBER_OF_SELECTED_SUB_SPOTS] [-nop NUMBER_OF_PROCESSORS] [-sm {lapjv,lapjv_compat,lap_CSPR}]
                  [-dm {Pearson_correlation,Spearman_correlation,Euclidean}] [-sam {duplicates,place_holders}]
                  [-se SEED] [-p] [-g GEOMETRY] [-nc NUM_COLUMN] [-mp MAX_NUM_CELLS_PLOT]
 
@@ -504,9 +504,13 @@ optional arguments:
   -mcn MEAN_CELL_NUMBERS, --mean-cell-numbers MEAN_CELL_NUMBERS
                         Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial
                         transcriptomics data, set to 20
+  --downsample-off      Turn off downsampling for scRNA-seq data
+  -smtpc SCRNA_MAX_TRANSCRIPTS_PER_CELL, --scRNA_max_transcripts_per_cell SCRNA_MAX_TRANSCRIPTS_PER_CELL
+                        Number of transcripts per cell to downsample scRNA-seq dataset to. This allows for assignments
+                        that are not dependent on the overall expression level
   -sc, --single-cell    Use single-cell spatial approach if specified
   -noss NUMBER_OF_SELECTED_SPOTS, --number-of-selected-spots NUMBER_OF_SELECTED_SPOTS
-                        Number of selected spots from ST data used in eahc iteration
+                        Number of selected spots from ST data used in each iteration
   -sss, --sampling-sub-spots
                         Sample subspots to limit the number of mapped cells if specified
   -nosss NUMBER_OF_SELECTED_SUB_SPOTS, --number-of-selected-sub-spots NUMBER_OF_SELECTED_SUB_SPOTS
