@@ -89,6 +89,32 @@ def normalize_data(data):
     np.nan_to_num(data, copy=False)
     return data
 
+def downsample(data_df, target_count):
+    """
+    Downsamples dataset to target_count transcripts per cell.
+
+    Parameters :
+        data_df (pd.DataFrame) :
+            data to downsample, with rows as genes and columns as cells.
+
+    Returns :
+        downsampled_df (pd.DataFrame) :
+            downsampled data, where the sum of each column is target_count
+            (or lower, for columns whose sum was originally lower than target_count).
+    """
+    def downsample_cell(sr, target_tr_count):
+        if sr.sum() <= target_tr_count:
+            return sr
+
+        genes, counts = np.unique(np.random.choice(np.repeat(sr.index, sr.to_numpy()), target_tr_count), return_counts=True)
+        downsampled = pd.Series(counts, index=genes).reindex(sr.index, fill_value=0)
+
+        return downsampled
+    
+    downsampled_df = data_df.apply(lambda k: downsample_cell(k, target_count), axis=0)
+
+    return downsampled_df
+
 
 def check_paths(output_folder, output_prefix):
     # Create relative path

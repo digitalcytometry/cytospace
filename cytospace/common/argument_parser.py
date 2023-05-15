@@ -54,8 +54,11 @@ def argument_parser():
     # Solver / method options
     parser.add_argument("-mcn", "--mean-cell-numbers", type=int, default=5,
                         help="Mean number of cells per spot, default 5 (appropriate for Visium). If analyzing legacy spatial transcriptomics data, set to 20")
+    parser.add_argument("--downsample-off", help="Turn off downsampling for scRNA-seq data", action="store_true")
+    parser.add_argument("-smtpc", "--scRNA_max_transcripts_per_cell", type=int, default=1500,
+                        help="Number of transcripts per cell to downsample scRNA-seq dataset to. This allows for assignments that are not dependent on the overall expression level")
     parser.add_argument("-sc", "--single-cell", help="Use single-cell spatial approach if specified", action="store_true")
-    parser.add_argument("-noss", "--number-of-selected-spots", help="Number of selected spots from ST data used in eahc iteration", type=int,
+    parser.add_argument("-noss", "--number-of-selected-spots", help="Number of selected spots from ST data used in each iteration", type=int,
                         default=10000)    
     parser.add_argument("-sss", "--sampling-sub-spots", help="Sample subspots to limit the number of mapped cells if specified", action="store_true")
     parser.add_argument("-nosss", "--number-of-selected-sub-spots", help="Number of selected subspots from ST data to limit the number of mapped cells", type=int,

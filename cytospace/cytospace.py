@@ -8,13 +8,13 @@ import time
 import concurrent.futures
 import os
 
-from cytospace.common import read_file, read_visium, normalize_data, check_paths, argument_parser, estimate_cell_type_fractions
+from cytospace.common import read_file, read_visium, normalize_data, downsample, check_paths, argument_parser, estimate_cell_type_fractions
 from cytospace.post_processing import save_results, plot_results
 from cytospace.linear_assignment_solvers import (calculate_cost, match_solution, import_solver,
                                                  call_solver)
 
 def read_data(scRNA_path, cell_type_path, cell_type_fraction_estimation_path, n_cells_per_spot_path, 
-                     st_cell_type_path, delimiter, output_path, output_prefix, spaceranger_path=None, st_path=None, coordinates_path=None):
+                st_cell_type_path, output_path, output_prefix, spaceranger_path=None, st_path=None, coordinates_path=None):
     if spaceranger_path is not None:
         st_data, coordinates_data = read_visium(spaceranger_path,output_path)
     elif (st_path is None) and (coordinates_path is None):
@@ -467,12 +467,14 @@ def apply_linear_assignment(scRNA_data, st_data, coordinates_data, cell_number_t
 
 def main_cytospace(scRNA_path, cell_type_path,
                    n_cells_per_spot_path, st_cell_type_path, cell_type_fraction_estimation_path=None,
-                   spaceranger_path=None,  st_path=None, coordinates_path=None,
-                   output_folder="cytospace_results", plot_off=False, 
-                   mean_cell_numbers=5, geometry="honeycomb", num_column=3, 
-                   max_num_cells_plot=50000, output_prefix="", seed=1, delimiter=",", solver_method="lapjv", sampling_method="duplicates",
-                   distance_metric="Pearson_correlation", number_of_selected_spots=10000,
-                   number_of_processors=1, single_cell=False, sampling_sub_spots=False, number_of_selected_sub_spots=10000):
+                   spaceranger_path=None, st_path=None, coordinates_path=None,
+                   output_folder="cytospace_results", output_prefix="", 
+                   mean_cell_numbers=5, downsample_off=False, scRNA_max_transcripts_per_cell=1500,
+                   solver_method="lapjv", distance_metric="Pearson_correlation", sampling_method="duplicates",
+                   single_cell=False, number_of_selected_spots=10000,
+                   sampling_sub_spots=False, number_of_selected_sub_spots=10000,
+                   number_of_processors=1, seed=1,
+                   plot_off=False, geometry="honeycomb", max_num_cells_plot=50000, num_column=3):
     # For timing execution
     start_time = time.perf_counter()
 
@@ -490,16 +492,16 @@ def main_cytospace(scRNA_path, cell_type_path,
         f.write("coordinates_path: "+str(coordinates_path)+"\n")
         f.write("n_cells_per_spot_path: "+str(n_cells_per_spot_path)+"\n")
         f.write("cell_type_fraction_estimation_path: "+str(cell_type_fraction_estimation_path)+"\n")
-        f.write("st_cell_type_path"+str(st_cell_type_path)+"\n")
+        f.write("st_cell_type_path: "+str(st_cell_type_path)+"\n")
         f.write("output_folder: "+str(output_folder)+"\n")
 
-        f.write("plot_off: "+str(plot_off)+"\n")
         f.write("mean_cell_numbers: "+str(mean_cell_numbers)+"\n")
+        f.write("downsample_off: "+str(downsample_off)+"\n")
+        f.write("scRNA_max_transcripts_per_cell: "+str(scRNA_max_transcripts_per_cell)+"\n")
+        f.write("plot_off: "+str(plot_off)+"\n")
         f.write("geometry: "+str(geometry)+"\n")
-        f.write("num_column: "+str(num_column)+"\n")
         f.write("output_prefix: "+str(output_prefix)+"\n")
         f.write("seed: "+str(seed)+"\n")
-        f.write("delimiter: "+str(delimiter)+"\n")
         f.write("solver_method: "+str(solver_method)+"\n")
         f.write("sampling_method: "+str(sampling_method)+"\n")
         f.write("distance_metric: "+str(distance_metric)+"\n")
@@ -518,7 +520,7 @@ def main_cytospace(scRNA_path, cell_type_path,
     t0 = time.perf_counter()
     scRNA_data, cell_type_data, st_data, coordinates_data, cell_type_fractions_data, n_cells_per_spot_data, st_cell_type_data =\
         read_data(scRNA_path, cell_type_path, 
-                  cell_type_fraction_estimation_path, n_cells_per_spot_path, st_cell_type_path, delimiter,
+                  cell_type_fraction_estimation_path, n_cells_per_spot_path, st_cell_type_path,
                   output_path, output_prefix, spaceranger_path, st_path, coordinates_path)
 
     print(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds")
@@ -565,6 +567,11 @@ def main_cytospace(scRNA_path, cell_type_path,
     intersect_genes = st_data.index.intersection(scRNA_data.index)
     scRNA_data = scRNA_data.loc[intersect_genes, :]
     st_data = st_data.loc[intersect_genes, :]
+
+    # downsample scRNA_data to equal transcript counts per cell
+    # so that the assignment is not dependent on expression level
+    if not downsample_off:
+        scRNA_data = downsample(scRNA_data, scRNA_max_transcripts_per_cell)
 
     with open(fout_log, "a") as f:
         f.write("Number of genes used for mapping: "+str(len(intersect_genes))+"\n")
@@ -672,7 +679,7 @@ def main_cytospace(scRNA_path, cell_type_path,
         if single_cell:
             plot_results(output_path, output_prefix, max_num_cells=max_num_cells_plot, single_cell_ST_mode=True)
         else:
-            plot_results(output_path, output_prefix, coordinates_data=coordinates_data, geometry=geometry, max_num_cells=max_num_cells_plot)
+            plot_results(output_path, output_prefix, coordinates_data=coordinates_data, geometry=geometry, num_cols=num_column, max_num_cells=max_num_cells_plot)
 
     print(f"Total execution time: {round(time.perf_counter() - start_time, 2)} seconds")
     with open(fout_log,"a") as f:
