@@ -228,24 +228,28 @@ This file gives the fractional abundance of cell types assigned to each spot by 
 This file contains a log of CytoSPACE run parameters and running time.
 </details>
 
-## Frequently asked questions
+## Frequently asked questions (FAQ)
 
 <details><summary>Expand section</summary>
 
 1. My ST dataset comes from a platform other than 10x Visium. Which additional parameters should I specify?<br>
-Please refer to further instructions in the corresponding sections below: [__Running CytoSPACE on legacy ST data__](#running-cytospace-on-legacy-st-data) and [__Running CytoSPACE on single-cell ST data__](#running-cytospace-on-single-cell-st-data).
+Please refer to further instructions in the corresponding sections below:<br>
+[__Running CytoSPACE on legacy ST data__](#running-cytospace-on-legacy-st-data) and [__Running CytoSPACE on single-cell ST data__](#running-cytospace-on-single-cell-st-data).
 
 2. My scRNA-seq dataset comes in a format other than a UMI count matrix.<br>
 You may want to make the following two changes to the default CytoSPACE workflow.<br>
 (1) CytoSPACE's internal algorithm for estimating cell type fractions was generally written with a UMI count matrix in mind. As an alternative to using the internal algorithm, you may provide a `--cell-type-fraction-estimation-path` file instead. Please see [__Advanced Options__](#advanced-options) - __User-provided fractional composition of each cell type__ for more information.<br>
-(2) CytoSPACE (v1.0.4+) downsamples scRNA-seq datasets to a certain number of transcripts per cell (1500 by default) prior to assignment so that the assignment is not dependent on the total transcript count. You can turn this feature off by appending a `--downsample-off` flag to the CytoSPACE call, and may instead choose to provide previously downsampled scRNA-seq data as input.
+(2) CytoSPACE (v1.0.4+) downsamples scRNA-seq datasets to a certain number of transcripts per cell (1500 by default) prior to assignment so that the assignment is not dependent on the total transcript count of each cell. You can turn this feature off by appending a `--downsample-off` flag to the CytoSPACE call, and may instead choose to provide previously downsampled scRNA-seq data as input.
 
 3. During runtime, I get a `Killed` / `Terminated` / `Segmentation fault` / `concurrent.futures.process.BrokenProcessPool` error.<br>
 While these errors could arise from a variety of reasons, it is likely that the CytoSPACE run needs more memory than what is available.<br>
 We provide a subsampling routine where the ST datasets are partitioned into smaller subsets and evaluated one subset at a time, which reduces memory requirements. Please see [__Advanced Options__](#advanced-options) - __Spot subsampling for parallelization__ for more information.<br>
 If you are experiencing this error with a single-cell ST dataset, it will be helpful to reduce the `-noss` parameter instead.
 
-4. Providing the output from Space Ranger (v2.0.0+) results in an error.<br>
+4. Is there a gene expression matrix for the results?<br>
+We currently do not provide the gene expression matrix as an output file, as it is often very large in size and takes a long time to write to disk. However, the `OriginalCID` column of the `assigned_locations.csv` file will consist of the single-cell IDs from the input scRNA-seq expression matrix, which can be used to recover the gene expressions for each cell assigned to each spot.
+
+5. Providing the output from Space Ranger (v2.0.0+) results in an error.<br>
 We were notified that the instructions for providing the Space Ranger outputs directly as a tarball resulted in errors for the newer versions of Space Ranger. It seems that this is occuring due to a recent format change in Space Ranger outputs, and we are currently working to fix this issue. In the meantime, please use the standard four-file input format, with the ST gene expression and coordinates provided as two separate .txt files. We appreciate the users letting us know of the issue!
 
 </details>
