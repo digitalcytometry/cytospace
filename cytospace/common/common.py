@@ -3,6 +3,7 @@ import pandas as pd
 import scanpy as sc
 
 import datatable as dt
+import scipy.io
 import tarfile
 
 import os
@@ -14,21 +15,55 @@ import pkg_resources
 
 def read_file(file_path):
     # Read file
-    try:
-        file_delim = "," if file_path.endswith(".csv") else "\t"
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=pd.errors.ParserWarning)
-            file_data = dt.fread(file_path, header=True)
-            colnames = pd.read_csv(file_path, sep=file_delim, nrows=1, index_col=0).columns
-            rownames = file_data[:, 0].to_pandas().values.flatten()
-            file_data = file_data[:, 1:].to_pandas()
-            file_data.index = rownames
-            file_data.columns = colnames
-   
-    except Exception as e:
-        raise IOError("Make sure you provided the correct path to input files. "
-                      "The following input file formats are supported: .csv with comma ',' as "
-                      "delimiter, .txt or .tsv with tab '\\t' as delimiter.")
+    is_sparse = file_path.endswith(".mtx")
+    if is_sparse:
+        try:
+            gene_file_path = file_path.replace(".mtx", "_genes.tsv")
+            cell_file_path = file_path.replace(".mtx", "_cells.tsv")
+
+            if not (os.path.isfile(gene_file_path) and os.path.isfile(cell_file_path)):
+                raise IOError("""
+                    If providing a sparse matrix as input, please make sure to have
+                    the corresponding gene and cell names in separate files: {}, {}.
+                """.format(gene_file_path, cell_file_path))
+
+            genes = pd.read_csv(gene_file_path, sep='\t', header=None).values.flatten()
+            cells = pd.read_csv(cell_file_path, sep='\t', header=None).values.flatten()
+            sparse_mtx = scipy.io.mmread(file_path)
+
+            if not ((sparse_mtx.shape[0] == len(genes)) and (sparse_mtx.shape[1] == len(cells))):
+                raise IOError("""
+                    The dimensions of the provided sparse matrix does not match the corresponding gene and cell lists.
+                    The files for gene and cell lists must have one entry on each line, without a header line.
+                    Please check the following files: {}, {}.
+                """.format(gene_file_path, cell_file_path))
+            
+            file_data = pd.DataFrame.sparse.from_spmatrix(sparse_mtx, index=genes, columns=cells).sparse.to_dense()
+
+        except Exception as e:
+            print("Error encountered while reading in sparse matrix as input: {}".format(file_path))
+            raise
+            
+    else:
+        try:
+            file_delim = "," if file_path.lower().endswith(".csv") else "\t"
+
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=pd.errors.ParserWarning)
+                file_data = dt.fread(file_path, header=True)
+                colnames = pd.read_csv(file_path, sep=file_delim, nrows=1, index_col=0).columns
+                rownames = file_data[:, 0].to_pandas().values.flatten()
+                file_data = file_data[:, 1:].to_pandas()
+                file_data.index = rownames
+                file_data.columns = colnames
+
+        except Exception as e:
+            print("Error encountered while reading input: {}".format(file_path))
+            print("Please make sure that you provided the correct path to the input files.",
+                  "The following input file formats are supported:",
+                  ".csv with comma ',' as delimiter,",
+                  "and .txt or .tsv with tab '\\t' as delimiter.")
+            raise
 
     return file_data
 
