@@ -110,7 +110,8 @@ By default, CytoSPACE requires 4 files as input. All files should be provided in
 </p>
 
 ### From Space Ranger outputs
-If the users are starting from Space Ranger outputs, they can provide the ST input files as a single tar.gz, __in place of__ both (3) gene expression and (4) coordinates. If a Space Ranger output is specified, CytoSPACE will automatically attempt to unzip the provided tarball and load the correponding ST expression and coordinates data.
+If the users are starting from Space Ranger outputs, they can provide the ST input files as a single tar.gz, __in place of__ both (3) gene expression and (4) coordinates. If a Space Ranger output is specified, CytoSPACE will automatically attempt to unzip the provided tarball and load the correponding ST expression and coordinates data.<br>
+If there are duplicate gene names in the gene expression file, they will be made unique as is done in Seurat.
 
 The tarball should only include the following:
 - A single H5 file (extension .h5) containing the ST gene expression
@@ -130,6 +131,15 @@ An example file tree for an unzipped tarball is shown below on the left. If down
   <img src="images/VisiumTar.png" width="300"> <img src="images/Visium.png" width="300">
 </p>
 
+### Using sparse matrices for gene expression
+Starting with CytoSPACE v1.0.5, users may also provide the scRNA or ST gene expression as sparse matrices instead of tab- or comma-delimited files.<br>
+This will require a very specific set of file names in hopes of avoiding issues with parsing, and we recommend that users use the R helper scripts under `Prepare_input_files` to generate these input.  Please see the subsections below for further information about these helper scripts.
+
+If providing input as sparse matrices, you will need three files under the same directory to represent one expression matrix: `[expression].mtx`, `[expression]_genes.tsv`, and `[expression]_cells.tsv`. The `.mtx` file will list the numeric values in sparse matrix format, while `_genes.tsv` and `_cells.tsv` will be the corresponding gene names and cell (or spot/barcode) names for the matrix, one entry on each line (no headers). Please note that while the filename inside the brackets (`expression`) may vary, the suffixes `.mtx`, `_genes.tsv`, and `_cells.tsv` must exactly match.
+
+The `[expression].mtx` file should be supplied as the argument to `--st-path` or `--scRNA-path`, in which case CytoSPACE will automatically try to locate the corresponding `[expression]_genes.tsv` and `[expression]_cells.tsv` files from the same directory.
+
+
 <details><summary><b>Preparing input files from Seurat objects</b></summary>
 
 If you have data in the form of Seurat objects, you can generate files formatted for CytoSPACE input via helper functions we have provided in the `R` script `generate_cytospace_from_seurat_object.R` in `cytospace/Prepare_input_files`. To use these helper functions, first import them from `generate_cytospace_from_seurat_object.R` by including 
@@ -141,17 +151,28 @@ in your R script.
 ### From scRNA-seq Seurat object
 For producing CytoSPACE inputs from scRNA Seurat objects, we provide the function `generate_cytospace_from_scRNA_seurat_object` which may be called as
 ```bash
-  generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object,dir_out='',fout_prefix='')
+  generate_cytospace_from_scRNA_seurat_object(scRNA_Seurat_Object, dir_out='.', fout_prefix='', write_sparse=FALSE, rna_assay='RNA')
 ```
-within your R script. The first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, and `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `scRNA_data.txt` and `cell_type_labels.txt`. Please note that `Idents(scRNA_Seurat_Object)` must be set to include cell types.
+within your R script.<br>
+`scRNA_Seurat_Object` (required) : input Seurat object<br>
+`dir_out` (optional, default is working directory) : the path to the output directory to store the results<br>
+`fout_prefix` (optional, default is none) : a prefix to add to output file names, which otherwise are generated as `scRNA_data.txt` and `cell_type_labels.txt`<br>
+`write_sparse` (optional, default is FALSE) : whether to save the expression data in sparse matrix format<br>
+`rna_assay` (optional, default is `RNA`) : which assay to take the count matrix from<br>
+Please note that `Idents(scRNA_Seurat_Object)` must be set to include cell types.
 
 
 ### From Spatial Seurat object
 For producing CytoSPACE inputs from ST Seurat objects, we provide the function `generate_cytospace_from_ST_seurat_object` which may be called as
 ```bash
-  generate_cytospace_from_ST_seurat_object(ST_Seurat_Object,dir_out='',fout_prefix='',slice='slice1')
+  generate_cytospace_from_ST_seurat_object(ST_Seurat_Object, dir_out='.', fout_prefix='', write_sparse=FALSE, slice='slice1')
 ```
-within your R script. The first argument (required) designates your input Seurat object, `dir_out` (optional, default is working directory) specifies the path to the output directory to store the results, `fout_prefix` (optional, default is none) specifies a prefix to add to output file names, which otherwise are generated as `ST_data.txt` and `Coordinates.txt`, and `slice` (optional, default is `slice1`) provides the name of your slice as stored in your Seurat object.
+within your R script.<br>
+`ST_Seurat_Object` (required) : input Seurat object<br>
+`dir_out` (optional, default is working directory) : the path to the output directory to store the results<br>
+`fout_prefix` (optional, default is none) : a prefix to add to output file names, which otherwise are generated as `ST_data.txt` and `Coordinates.txt`<br>
+`write_sparse` (optional, default is FALSE) : whether to save the expression data in sparse matrix format<br>
+`slice` (optional, default is `slice1`) provides the name of your slice as stored in your Seurat object.
 </details>
 </details>
 

@@ -18,6 +18,9 @@ def read_file(file_path):
     is_sparse = file_path.endswith(".mtx")
     if is_sparse:
         try:
+            if not os.path.isfile(file_path):
+                raise IOError("Cannot locate file: {}".format(file_path))
+
             gene_file_path = file_path.replace(".mtx", "_genes.tsv")
             cell_file_path = file_path.replace(".mtx", "_cells.tsv")
 
@@ -84,15 +87,16 @@ def read_visium(file_name,out_dir):
     fin_count = [fin for fin in fin_count if not fin.startswith('.')][0]
 
     visium_adata = sc.read_visium(count_dir,count_file=fin_count)
+    visium_adata.var_names_make_unique(join='.')
 
     genes = visium_adata.var_names
     spots = visium_adata.obs_names
-    df_expression = pd.DataFrame.sparse.from_spmatrix(visium_adata.X,index=spots,columns=genes).transpose()
+    df_expression = pd.DataFrame.sparse.from_spmatrix(visium_adata.X,index=spots,columns=genes).transpose().sparse.to_dense()
 
-    df_expression = df_expression.loc[(df_expression!=0).any(1), (df_expression!=0).any(0)]
     df_expression.index.name = 'GENES'
 
-    df_coords = pd.DataFrame(visium_adata.obsm['spatial'],index=spots,columns=['X','Y'])
+    df_coords = visium_adata.obs[['array_row', 'array_col']]
+    df_coords.columns = ['row','col']
     df_coords = df_coords.loc[df_expression.columns,:]
     df_coords.index.name = 'SpotID'
 

@@ -27,7 +27,7 @@ def read_data(scRNA_path, cell_type_path, cell_type_fraction_estimation_path, n_
     st_data = st_data[~st_data.index.duplicated(keep=False)]
     if (st_cell_type_path is None) and (cell_type_fraction_estimation_path is None):
         print('Estimating cell type fractions')
-        if spaceranger_path is not None:
+        if (spaceranger_path is not None) or (st_path.endswith('.mtx')):
             st_data_outpath = os.path.join(output_path, f"{output_prefix}ST_expression.txt")
             st_data.to_csv(st_data_outpath, sep='\t')
             cell_type_fraction_estimation_path = estimate_cell_type_fractions(scRNA_path, cell_type_path, st_data_outpath, output_path, output_prefix)

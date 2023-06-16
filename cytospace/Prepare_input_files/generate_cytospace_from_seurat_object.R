@@ -23,6 +23,10 @@ generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
   cell_names <- colnames(scrna_count)
   gene_names <- rownames(scrna_count)
 
+  if (dir_out == '') {
+    # compatibility with rhe previous version of this script
+    message('Note: the output directory will be set to the current working directory.')
+  }
   if (!dir.exists(dir_out)) {
     dir.create(dir_out, showWarnings = FALSE)
   }
@@ -81,6 +85,10 @@ generate_cytospace_from_ST_seurat_object <- function(st_seurat,
   spot_names <- colnames(ST_expressions)
   gene_names <- rownames(ST_expressions)
 
+  if (dir_out == '') {
+    # compatibility with the previous version of this script
+    message('Note: the output directory will be set to the current working directory.')
+  }
   if (!dir.exists(dir_out)) {
     dir.create(dir_out, showWarnings = FALSE)
   }
