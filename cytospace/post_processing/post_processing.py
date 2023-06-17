@@ -1,8 +1,11 @@
 import numpy as np
 import pandas as pd
+import scipy.sparse
+import scipy.io
 
 import math
 import os
+from pathlib import Path
 
 def save_results(output_path, output_prefix, cell_ids_selected, all_cells_save, assigned_locations,
                  cell_type_data, sampling_method, single_cell):
@@ -69,7 +72,27 @@ def save_results(output_path, output_prefix, cell_ids_selected, all_cells_save, 
     assigned_locations_path = os.path.join(output_path, f"{output_prefix}assigned_locations.csv")
     df_locations.to_csv(assigned_locations_path, index=False)
 
-    if sampling_method == "place_holders":
+    if sampling_method == "duplicates":
+        dir_assigned_expr = os.path.join(output_path, f'{output_prefix}assigned_expression')
+        if os.path.exists(dir_assigned_expr):
+            print("\033[91mWARNING\033[0m: {} exists and the expression matrix may be overwritten.".format(dir_assigned_expr))
+        Path(dir_assigned_expr).mkdir(parents=True, exist_ok=True)
+        
+        df_assigned_expr = all_cells_save.loc[:, ['CELL_{}'.format(x) for x in df_locations.OriginalCID]]
+        df_assigned_expr.index = [gid[5:] for gid in df_assigned_expr.index]
+        df_assigned_expr.columns = df_locations.UniqueCID
+        
+        genes = df_assigned_expr.index.to_frame()
+        genes.reset_index(inplace=True) # position the genes at the second column, for compatibility with default Read10X 
+        genes.to_csv(os.path.join(dir_assigned_expr, 'genes.tsv'), sep='\t', header=False, index=False)
+
+        cells = df_assigned_expr.columns.to_frame()
+        cells.to_csv(os.path.join(dir_assigned_expr, 'barcodes.tsv'), sep='\t', header=False, index=False)
+
+        df_assigned_expr = scipy.sparse.coo_matrix(df_assigned_expr)
+        scipy.io.mmwrite(os.path.join(dir_assigned_expr, 'matrix.mtx'), df_assigned_expr)
+
+    else: # if sampling_method == "place_holders":
         fout_scrna = os.path.join(output_path, f'{output_prefix}new_scRNA.csv')
         all_cells_save = all_cells_save.loc[:, ~all_cells_save.columns.isin(cell_type_data.index)]
         all_cells_save.index   = [gene_id[5:] for gene_id in all_cells_save.index.astype(str)]   # remove 'GENE_'

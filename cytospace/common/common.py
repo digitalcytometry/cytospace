@@ -30,8 +30,8 @@ def read_file(file_path):
                     the corresponding gene and cell names in separate files: {}, {}.
                 """.format(gene_file_path, cell_file_path))
 
-            genes = pd.read_csv(gene_file_path, sep='\t', header=None).values.flatten()
-            cells = pd.read_csv(cell_file_path, sep='\t', header=None).values.flatten()
+            genes = pd.read_csv(gene_file_path, sep='\t', header=None).iloc[:, 0].to_numpy()
+            cells = pd.read_csv(cell_file_path, sep='\t', header=None).iloc[:, 0].to_numpy()
             sparse_mtx = scipy.io.mmread(file_path)
 
             if not ((sparse_mtx.shape[0] == len(genes)) and (sparse_mtx.shape[1] == len(cells))):

@@ -135,7 +135,7 @@ An example file tree for an unzipped tarball is shown below on the left. If down
 Starting with CytoSPACE v1.0.5, users may also provide the scRNA or ST gene expression as sparse matrices instead of tab- or comma-delimited files.<br>
 This will require a very specific set of file names in hopes of avoiding issues with parsing, and we recommend that users use the R helper scripts under `Prepare_input_files` to generate these input.  Please see the subsections below for further information about these helper scripts.
 
-If providing input as sparse matrices, you will need three files under the same directory to represent one expression matrix: `[expression].mtx`, `[expression]_genes.tsv`, and `[expression]_cells.tsv`. The `.mtx` file will list the numeric values in sparse matrix format, while `_genes.tsv` and `_cells.tsv` will be the corresponding gene names and cell (or spot/barcode) names for the matrix, one entry on each line (no headers). Please note that while the filename inside the brackets (`expression`) may vary, the suffixes `.mtx`, `_genes.tsv`, and `_cells.tsv` must exactly match.
+If providing input as sparse matrices, you will need three files under the same directory to represent one expression matrix: `[expression].mtx`, `[expression]_genes.tsv`, and `[expression]_cells.tsv`. The `.mtx` file will list the numeric values in sparse matrix format, while `_genes.tsv` and `_cells.tsv` will be the corresponding gene names and cell (or spot/barcode) names for the matrix, one entry on each line (no headers). If there are multiple columns in `_genes.tsv` or `_cells.tsv`, CytoSPACE will take the first column as the gene/cell names. Please note that while the filename inside the brackets (`expression`) may vary, the suffixes `.mtx`, `_genes.tsv`, and `_cells.tsv` must exactly match.
 
 The `[expression].mtx` file should be supplied as the argument to `--st-path` or `--scRNA-path`, in which case CytoSPACE will automatically try to locate the corresponding `[expression]_genes.tsv` and `[expression]_cells.tsv` files from the same directory.
 
@@ -241,11 +241,14 @@ Heatmaps of cell type assignments within the ST sample. Along with a plot showin
 A single scatterplot showing all assigned cells by their spot location. Each cell is colored based on its cell type.
 3. ```assigned_locations.csv```<br>
 This file will provide the assigned locations of each single cell mapped to ST spots. As some cells may be mapped to multiple locations depending on the size of the input scRNA-seq set, new cell IDs (`UniqueCID`) are assigned to each cell and given in the first column. The second column includes original cell IDs (`OriginalCID`); the third column includes corresponding cell types (`CellType`); the fourth column includes assigned spot IDs (`SpotID`); and the fifth and sixth columns respectively include  `row` and `column` indices, or xy-coordinates such as `X` and `Y` if provided in the initial coordinates file, of the corresponding spots.
-4. ```cell_type_assignments_by_spot.csv```<br>
+4. ```assigned_expression```, a directory with `barcodes.tsv`, `genes.tsv`, and `matrix.mtx`<br>
+This represents the gene expression of the resulting assignments, with rows as genes and columns as cells (`UniqueCID` of `assigned_locations.csv`), as recovered from the original input scRNA matrix. The expression data can be read in for downstream analyses using functions such as Seurat `Read10X()` or SciPy `io.mmread()`. As with `assigned_locations.csv`, please note that there may be cells that are assigned to multiple locations and therefore appear multiple times in the expression matrix (under different `UniqueCID`s).<br>
+For compatibility with the default parameters of Seurat `Read10X()`, `genes.tsv` lists the gene names in its second column, with the first column filled with `NA`s.
+5. ```cell_type_assignments_by_spot.csv```<br>
 This file gives the raw number of cells of each cell type per spot by `SpotID` as well as the total number of cells assigned to that spot.
-5. ```fractional_abundances_by_spot.csv```<br>
+6. ```fractional_abundances_by_spot.csv```<br>
 This file gives the fractional abundance of cell types assigned to each spot by `SpotID`.
-6. ```log.txt```<br>
+7. ```log.txt```<br>
 This file contains a log of CytoSPACE run parameters and running time.
 </details>
 
@@ -267,8 +270,13 @@ While these errors could arise from a variety of reasons, it is likely that the 
 We provide a subsampling routine where the ST datasets are partitioned into smaller subsets and evaluated one subset at a time, which reduces memory requirements. Please see [__Advanced Options__](#advanced-options) - __Spot subsampling for parallelization__ for more information.<br>
 If you are experiencing this error with a single-cell ST dataset, it will be helpful to reduce the `-noss` parameter instead.
 
+4. My input data are very sparse. Is there a way to provide sparse matrices as input?<br>
+As of CytoSPACE v1.0.5, CytoSPACE supports sparse matrices as input. This requires a specific set of files to represent the sparse matrix, and we recommend that the R helper scripts under `Prepare_input_files` to be used for generating these input. Please refer to the [__Input Files__](#input-files) - __Using sparse matrices for gene expression__ section for details.
+
+<!--
 4. Is there a gene expression matrix for the results?<br>
 We currently do not provide the gene expression matrix as an output file, as it is often very large in size and takes a long time to write to disk. However, the `OriginalCID` column of the `assigned_locations.csv` file will consist of the single-cell IDs from the input scRNA-seq expression matrix, which can be used to recover the gene expressions for each cell assigned to each spot.
+-->
 
 5. Providing the output from Space Ranger (v2.0.0+) results in an error.<br>
 We were notified that the instructions for providing the Space Ranger outputs directly as a tarball resulted in errors for the newer versions of Space Ranger. It seems that this is occuring due to a recent format change in Space Ranger outputs, and we are currently working to fix this issue. In the meantime, please use the standard four-file input format, with the ST gene expression and coordinates provided as two separate .txt files. We appreciate the users letting us know of the issue!
@@ -477,7 +485,7 @@ While the CytoSPACE algorithm is mostly deterministic, the initial step of sampl
 
 <details><summary><b>Alternative handling of sampling (-sam)</b></summary>
 
-CytoSPACE starts by creating a pool of cells that matches what is expected within the ST data. By default, this is done by resampling single cells to achieve the overall cell type fractions and total cell numbers estimated in the tissue. We recommend that CytoSPACE be run with this default setting for all real data analyses. However, we provide an additional option to generate new "place-holder" cells by sampling from the distribution of gene counts within each cell type instead, and used this option for ensuring uniqueness of mapped cells for benchmarking on simulated data. To run CytoSPACE with this alternative mode, users can pass `-sam place_holders` with the function call. When running in place-holder mode, the gene expression of the newly generated cells will be saved as part of the output under `new_scRNA.csv`.
+CytoSPACE starts by creating a pool of cells that matches what is expected within the ST data. By default, this is done by resampling single cells to achieve the overall cell type fractions and total cell numbers estimated in the tissue. We recommend that CytoSPACE be run with this default setting for all real data analyses. However, we provide an additional option to generate new "place-holder" cells by sampling from the distribution of gene counts within each cell type instead, and used this option for ensuring uniqueness of mapped cells for benchmarking on simulated data. To run CytoSPACE with this alternative mode, users can pass `-sam place_holders` with the function call. When running in place-holder mode, the `assigned_expression` directory will not be generated; instead, the gene expression of the newly generated "place-holder" cells will be saved as part of the output under `new_scRNA.csv`.
 </details>
 
 <details><summary><b>Method extension: mapping quality</b></summary>

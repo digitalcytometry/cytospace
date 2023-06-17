@@ -565,24 +565,24 @@ def main_cytospace(scRNA_path, cell_type_path,
 
     # subset datasets to intersect_genes
     intersect_genes = st_data.index.intersection(scRNA_data.index)
-    scRNA_data = scRNA_data.loc[intersect_genes, :]
+    scRNA_data_sampled = scRNA_data.loc[intersect_genes, :]
     st_data = st_data.loc[intersect_genes, :]
 
-    # downsample scRNA_data to equal transcript counts per cell
+    # downsample scRNA_data_sampled to equal transcript counts per cell
     # so that the assignment is not dependent on expression level
     if not downsample_off:
-        scRNA_data = downsample(scRNA_data, scRNA_max_transcripts_per_cell)
+        scRNA_data_sampled = downsample(scRNA_data_sampled, scRNA_max_transcripts_per_cell)
 
     with open(fout_log, "a") as f:
         f.write("Number of genes used for mapping: "+str(len(intersect_genes))+"\n")
         f.write("Number of spots satisfying input for mapping: "+str(st_data.shape[1])+"\n")
-        f.write("Number of cells satisfying input for mapping: "+str(scRNA_data.shape[1])+"\n")
+        f.write("Number of cells satisfying input for mapping: "+str(scRNA_data_sampled.shape[1])+"\n")
 
     # sample scRNA_data based on cell type composition
     # cell count in scRNA_data_sampled will be equal to cell count (not spot count) in ST data
     # additionally, the cells in scRNA_data_sampled will be in the order of cell types in cell_type_numbers_int
     scRNA_data_sampled =\
-        sample_single_cells(scRNA_data, cell_type_data, cell_type_numbers_int, sampling_method, seed)
+        sample_single_cells(scRNA_data_sampled, cell_type_data, cell_type_numbers_int, sampling_method, seed)
 
     print(f"Time to down/up sample scRNA-seq data: {round(time.perf_counter() - t0, 2)} seconds")
 
@@ -672,8 +672,8 @@ def main_cytospace(scRNA_path, cell_type_path,
 
     ### Save results
     print('Saving results ...')
-    save_results(output_path, output_prefix, cell_ids_selected, scRNA_data_sampled, assigned_locations,
-                 cell_type_data, sampling_method, single_cell)
+    save_results(output_path, output_prefix, cell_ids_selected, scRNA_data_sampled if sampling_method == "place_holders" else scRNA_data,
+                 assigned_locations, cell_type_data, sampling_method, single_cell)
 
     if not plot_off:
         if single_cell:
