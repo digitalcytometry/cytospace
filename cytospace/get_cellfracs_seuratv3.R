@@ -1,8 +1,36 @@
 suppressPackageStartupMessages(library("argparse"))
+suppressPackageStartupMessages(library("Matrix"))
 suppressPackageStartupMessages(library("data.table"))
 suppressPackageStartupMessages(library("Seurat"))
 suppressPackageStartupMessages(library("dplyr"))
 
+read_expr <- function(expr_path, feature_suffix='_genes.tsv', cell_suffix='_cells.tsv') {
+    if (endsWith(expr_path, '.mtx')) {
+        # read in as sparse matrix
+        feature_name_path <- gsub('.mtx$', feature_suffix, expr_path)
+        features <- read.table(feature_name_path, sep='\t', header=FALSE)[, 1]
+        cell_name_path <- gsub('.mtx$', cell_suffix, expr_path)
+        cells <- read.table(cell_name_path, sep='\t', header=FALSE)[, 1]
+
+        expr <- Matrix::readMM(expr_path)
+        rownames(expr) <- features
+        colnames(expr) <- cells
+    } else {
+        # read in as CSV/TSV
+        if (endsWith(expr_path, '.csv')) {
+            file_delim <- ','
+        } else {
+            file_delim <- '\t'
+        }
+        expr <- data.table::fread(expr_path, sep=file_delim, header=TRUE, data.table=FALSE)
+        rownames(expr) = expr[, 1]; expr = expr[, -1]
+    }
+
+    expr[is.na(expr)] <- 0
+    expr <- as.matrix(expr)
+
+    expr
+}
 
 #' @param sc_path Path to scRNA counts file (standard CytoSPACE input file format)
 #' @param ct_path Path to cell type labels file (standard CytoSPACE input file format)
@@ -13,27 +41,12 @@ suppressPackageStartupMessages(library("dplyr"))
 #' @import data.table dplyr Seurat
 get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir, prefix, disable_downsampling=FALSE){
     message(Sys.time(), " Load ST data")
-    if(endsWith(st_path,'.csv')){
-        st_delim <- ','
-    } else{
-        st_delim <- '\t'
-    }
-    st <- fread(st_path, sep = st_delim, header = TRUE, data.table = FALSE)
-    rownames(st) = st[,1]; st = st[,-1]
-    st[is.na(st)] <- 0
-    st <- as.matrix(st)
+    st <- read_expr(st_path)
     st <- CreateSeuratObject(st) %>% SCTransform(verbose = FALSE, ncells = NULL) %>% RunPCA()
+
     message(Sys.time(), " Load scRNA data")
-    if(endsWith(sc_path,'.csv')){
-        sc_delim <- ','
-    } else{
-        sc_delim <- '\t'
-    }
-    scrna <- fread(sc_path, sep = sc_delim, header = TRUE, data.table = FALSE)
-    rownames(scrna) = scrna[,1]; scrna = scrna[,-1]
-    scrna[is.na(scrna)] <- 0
+    scrna <- read_expr(sc_path)
     num_cells <- dim(scrna)[2]
-    scrna <- as.matrix(scrna)
 
     if(endsWith(ct_path,'.csv')){
         ct_delim <- ','
