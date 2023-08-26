@@ -62,7 +62,7 @@ get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir, prefix, di
     if((dim(scrna)[2] < 300)) {
         warning("Please note that there may be an error in SCTransform() if there are too few cells available in the scRNA-seq dataset.")
     }
-    scrna <- SCTransform(scrna, verbose = FALSE, ncells = NULL) %>% RunPCA()
+    scrna <- SCTransform(scrna, verbose = FALSE, method = "glmGamPoi") %>% RunPCA()
     
     cell_index_vec <- Idents(scrna)
     message(Sys.time(), " Integration ")
