@@ -13,6 +13,7 @@ dependencies:
   - matplotlib=3.5.1
   - r-seurat=3.2.3
   - r-spatstat=1.64-1
+  - bioconductor-glmgampoi=1.2.0
   - gdown=4.4.0
   - r-argparse=2.1.6
   - pip:
