@@ -15,6 +15,7 @@ dependencies:
   - r-spatstat=1.64-1
   - gdown=4.4.0
   - r-argparse=2.1.6
+  - bioconductor-glmgampoi
   - pip:
     - ortools==9.2.9972
     - scanpy==1.9.3
