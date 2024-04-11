@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='cytospace',
-    version='1.0.6-alpha',
+    version='1.1.0',
     packages=['cytospace',
               'cytospace.common',
               'cytospace.linear_assignment_solvers',
