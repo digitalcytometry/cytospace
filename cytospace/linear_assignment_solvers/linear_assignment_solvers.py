@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import random
 import time
+import warnings
 from ortools.graph import pywrapgraph
 from cytospace.common import normalize_data, matrix_correlation_pearson, matrix_correlation_spearman
 from scipy.spatial import distance
@@ -91,5 +92,6 @@ def match_solution(cost):
         print('Some input costs are too large and may cause an integer overflow.')
     else:
         raise ValueError("The assignment failed")
-
+    
     return assignment_mat
+

@@ -38,8 +38,8 @@ if (!dir.exists(fn_out)) {
 
 if (write_sparse) {
   fout_st <- file.path(fn_out, 'ST_data.mtx')
-  fout_genes <- file.path(fn_out, 'ST_data_genes.tsv')
-  fout_spots <- file.path(fn_out, 'ST_data_cells.tsv')
+  fout_genes <- file.path(fn_out, 'genes.tsv')
+  fout_spots <- file.path(fn_out, 'cells.tsv')
 
   Matrix::writeMM(ST_expressions, fout_st)
   write.table(as.data.frame(gene_names), fout_genes, row.names = F, col.names = F, sep='\t', quote = F)

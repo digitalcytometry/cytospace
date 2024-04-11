@@ -4,9 +4,13 @@ from pandas.core.common import flatten
 
 import random
 import time
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 
 import concurrent.futures
 import os
+import math
 
 from cytospace.common import read_file, read_visium, normalize_data, downsample, check_paths, argument_parser, estimate_cell_type_fractions
 from cytospace.post_processing import save_results, plot_results
@@ -27,7 +31,7 @@ def read_data(scRNA_path, cell_type_path, cell_type_fraction_estimation_path, n_
     st_data = st_data[~st_data.index.duplicated(keep=False)]
     if (st_cell_type_path is None) and (cell_type_fraction_estimation_path is None):
         print('Estimating cell type fractions')
-        if (spaceranger_path is not None) or (st_path.endswith('.mtx')):
+        if (spaceranger_path is not None):
             st_data_outpath = os.path.join(output_path, f"{output_prefix}ST_expression.txt")
             st_data.to_csv(st_data_outpath, sep='\t')
             cell_type_fraction_estimation_path = estimate_cell_type_fractions(scRNA_path, cell_type_path, st_data_outpath, output_path, output_prefix)
@@ -522,7 +526,10 @@ def main_cytospace(scRNA_path, cell_type_path,
         read_data(scRNA_path, cell_type_path, 
                   cell_type_fraction_estimation_path, n_cells_per_spot_path, st_cell_type_path,
                   output_path, output_prefix, spaceranger_path, st_path, coordinates_path)
-
+    
+    # record all spot IDs
+    all_spot_ids = st_data.columns
+    
     print(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Time to read and validate data: {round(time.perf_counter() - t0, 2)} seconds\n")
@@ -567,6 +574,7 @@ def main_cytospace(scRNA_path, cell_type_path,
     intersect_genes = st_data.index.intersection(scRNA_data.index)
     scRNA_data_sampled = scRNA_data.loc[intersect_genes, :]
     st_data = st_data.loc[intersect_genes, :]
+    
 
     # downsample scRNA_data_sampled to equal transcript counts per cell
     # so that the assignment is not dependent on expression level
@@ -664,14 +672,29 @@ def main_cytospace(scRNA_path, cell_type_path,
                 apply_linear_assignment(scRNA_data_sampled, st_data, coordinates_data, cell_number_to_node_assignment,
                                         solver_method, solver, seed, distance_metric, number_of_processors,
                                         index_sc_list)
-
-            
+                
+    
+       
     print(f"Total time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds")
     with open(fout_log,"a") as f:
         f.write(f"Time to run CytoSPACE core algorithm: {round(time.perf_counter() - t0_core, 2)} seconds\n")
 
     ### Save results
     print('Saving results ...')
+    
+    # identify unmapped spots
+    mapped_spots = assigned_locations.index
+    unmapped_spots = np.setdiff1d(list(all_spot_ids), list(mapped_spots)).tolist()
+
+    if len(unmapped_spots) > 0:
+        unassigned_locations  = coordinates_data.loc[unmapped_spots]
+        unassigned_locations.index = unassigned_locations.index.str.replace("SPOT_", "")
+        unassigned_locations["Number of cells"] = 0
+        unassigned_locations.to_csv(f"{output_path}/{output_prefix}unassigned_locations.csv", index=True)
+        print(f"{len(unmapped_spots)} spots had no cells mapped to them. Saved unfiltered version of assigned locations to {output_path}/{output_prefix}unassigned_locations.csv")
+
+    
+    
     save_results(output_path, output_prefix, cell_ids_selected, scRNA_data_sampled if sampling_method == "place_holders" else scRNA_data,
                  assigned_locations, cell_type_data, sampling_method, single_cell)
 

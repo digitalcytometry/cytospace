@@ -55,8 +55,8 @@ def plot_results_bulk_ST_by_spot(coordinates, metadata, dir_out, output_prefix, 
     cell_types = list(np.sort(cell_types))
     cell_types.insert(0,'Total cells')
 
-    X = coordinates.iloc[:,0]
-    Y = coordinates.iloc[:,1]
+    X = coordinates.iloc[:,0].astype(float)
+    Y = coordinates.iloc[:,1].astype(float)
     
     # distinguish between row/col indices and coordinates
     # based on range (500) and type (int vs. float) of values
@@ -182,7 +182,7 @@ def plot_results_bulk_ST_jitter(assigned_locations, dir_out, output_prefix, geom
 
     X = assigned_locations.iloc[:,-2]
     Y = assigned_locations.iloc[:,-1]
-    cell_types = assigned_locations['CellType'].values
+    cell_types = assigned_locations['CellType'].values.astype(str)
 
     # distinguish between row/col indices and coordinates
     # based on range (500) and type (int vs. float) of values
@@ -273,7 +273,7 @@ def plot_results_single_cell_ST(assigned_locations, dir_out, output_prefix, max_
 
     X = assigned_locations.iloc[:,-2].values
     Y = assigned_locations.iloc[:,-1].values
-    cell_types = assigned_locations['CellType'].values
+    cell_types = assigned_locations['CellType'].values.astype(str)
 
     Y = 1-Y # Convert to top left origin - this is standard
 

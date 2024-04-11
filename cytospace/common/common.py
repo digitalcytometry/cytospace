@@ -15,23 +15,34 @@ import pkg_resources
 
 def read_file(file_path):
     # Read file
-    is_sparse = file_path.endswith(".mtx")
+    is_sparse = (file_path.endswith(".mtx") or file_path.endswith(".mtx.gz"))
     if is_sparse:
         try:
             if not os.path.isfile(file_path):
                 raise IOError("Cannot locate file: {}".format(file_path))
 
-            gene_file_path = file_path.replace(".mtx", "_genes.tsv")
-            cell_file_path = file_path.replace(".mtx", "_cells.tsv")
+            # Lists of possible names and extensions depending on CellRanger version
+            possible_gene_names = ["genes", "features"]
+            possible_cell_names = ["cells", "barcodes"]
+            
+            possible_extensions = [".tsv", ".csv", ".tsv.gz", ".csv.gz"]
 
-            if not (os.path.isfile(gene_file_path) and os.path.isfile(cell_file_path)):
-                raise IOError("""
-                    If providing a sparse matrix as input, please make sure to have
-                    the corresponding gene and cell names in separate files: {}, {}.
-                """.format(gene_file_path, cell_file_path))
+            # Function to find and read file based on possible names and extensions
+            def find_file(base_path, possible_names, possible_extensions):
+                for name in possible_names:
+                    for extension in possible_extensions:
+                        full_path = f"{base_path}{name}{extension}"
+                        if os.path.isfile(full_path):
+                            return full_path, extension
+                raise IOError(f"Required files not found for base path: {base_path}")
 
-            genes = pd.read_csv(gene_file_path, sep='\t', header=None).iloc[:, 0].to_numpy()
-            cells = pd.read_csv(cell_file_path, sep='\t', header=None).iloc[:, 0].to_numpy()
+            base_file_path = os.path.dirname(file_path) + os.path.sep
+
+            genes_path, genes_extension = find_file(base_file_path, possible_gene_names, possible_extensions)
+            cells_path, cells_extension = find_file(base_file_path, possible_cell_names, possible_extensions)
+            genes = pd.read_csv(genes_path, sep='\t' if '.tsv' in genes_extension else ',', header=None).iloc[:, 0].to_numpy()
+            cells = pd.read_csv(cells_path, sep='\t' if '.tsv' in cells_extension else ',', header=None).iloc[:, 0].to_numpy()
+
             sparse_mtx = scipy.io.mmread(file_path)
 
             if not ((sparse_mtx.shape[0] == len(genes)) and (sparse_mtx.shape[1] == len(cells))):
@@ -39,7 +50,7 @@ def read_file(file_path):
                     The dimensions of the provided sparse matrix does not match the corresponding gene and cell lists.
                     The files for gene and cell lists must have one entry on each line, without a header line.
                     Please check the following files: {}, {}.
-                """.format(gene_file_path, cell_file_path))
+                """.format(genes_path, cells_path))
             
             file_data = pd.DataFrame.sparse.from_spmatrix(sparse_mtx, index=genes, columns=cells).sparse.to_dense()
 
@@ -86,6 +97,13 @@ def read_visium(file_name,out_dir):
     fin_count = [fin for fin in fin_count if fin.endswith('.h5')]
     fin_count = [fin for fin in fin_count if not fin.startswith('.')][0]
 
+    # check for the presence of "tissue_positions_list.csv" file
+    # if not present, read "tissue_positions.csv" file and write as "tissue_positions_list.csv"
+    if 'tissue_positions_list.csv' not in os.listdir(count_dir+"/spatial"):
+        if 'tissue_positions.csv' in os.listdir(count_dir+"/spatial"):
+            df = pd.read_csv(count_dir+"/spatial/tissue_positions.csv")
+            df.to_csv(count_dir+"/spatial/tissue_positions_list.csv",index=False)
+    
     visium_adata = sc.read_visium(count_dir,count_file=fin_count)
     visium_adata.var_names_make_unique(join='.')
 

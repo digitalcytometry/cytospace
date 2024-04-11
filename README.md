@@ -131,14 +131,19 @@ An example file tree for an unzipped tarball is shown below on the left. If down
   <img src="images/VisiumTar.png" width="300"> <img src="images/Visium.png" width="300">
 </p>
 
+Starting with CytoSPACE v1.1.0, the tool supports Space Ranger v2.0.0+ outputs. This is done by detecting files that have updated naming conventions (namely, the `tissue_positions.csv` file), then saving a copy of those files to the same directory with a naming convention that is compatible with scipy's functionality to read Visium datasets.
+
 ### Using sparse matrices for gene expression
-Starting with CytoSPACE v1.0.5, users may also provide the scRNA or ST gene expression as sparse matrices instead of tab- or comma-delimited files.<br>
+Starting with CytoSPACE v1.0.5, users may also provide the scRNA or ST gene expression as sparse matrices instead of tab- or comma-delimited files.<br> 
 This will require a very specific set of file names in hopes of avoiding issues with parsing, and we recommend that users use the R helper scripts under `Prepare_input_files` to generate these input.  Please see the subsections below for further information about these helper scripts.
 
-If providing input as sparse matrices, you will need three files under the same directory to represent one expression matrix: `[expression].mtx`, `[expression]_genes.tsv`, and `[expression]_cells.tsv`. The `.mtx` file will list the numeric values in sparse matrix format, while `_genes.tsv` and `_cells.tsv` will be the corresponding gene names and cell (or spot/barcode) names for the matrix, one entry on each line (no headers). If there are multiple columns in `_genes.tsv` or `_cells.tsv`, CytoSPACE will take the first column as the gene/cell names. Please note that while the filename inside the brackets (`expression`) may vary, the suffixes `.mtx`, `_genes.tsv`, and `_cells.tsv` must exactly match.
+If providing input as sparse matrices, you will need three files under the same directory to represent one expression matrix: `[expression].mtx`, `genes.tsv`, and `cells.tsv`. The `.mtx` file will list the numeric values in sparse matrix format, and can also be in a compressed `[expression].mtx.gz` format. The filename inside the brackets (`expression`) may vary. The `genes.tsv` and `cells.tsv` will be the corresponding gene names and cell (or spot/barcode) names for the matrix, located in the same directory as the matrix file. 
 
-The `[expression].mtx` file should be supplied as the argument to `--st-path` or `--scRNA-path`, in which case CytoSPACE will automatically try to locate the corresponding `[expression]_genes.tsv` and `[expression]_cells.tsv` files from the same directory.
+Starting CytoSPACE v1.1.0, the tool also supports alternative naming conventions (`features.tsv` and `barcodes.tsv`), that are according to common Space Ranger and Cell Ranger sparse matrix outputs. These files support `.csv` extension, and compressed `.gz` formats as well. The files should have one entry on each line (no headers). If there are multiple columns in any of the files, CytoSPACE will take the first column as the gene/cell names. Please note that for common Cell Ranger and Space Ranger sparse matrix inputs, the first column of the gene file usually has the Ensembl IDs, while the gene symbols are in the second column, so you would need to change the order of the columns if your other input modality contains gene symbols for the gene names.
 
+The `[expression].mtx` file should be supplied as the argument to `--st-path` or `--scRNA-path`, in which case CytoSPACE will automatically try to locate the corresponding gene and cell files from the same directory.
+
+Please ensure the gene file includes gene names with the same naming convention (e.g., Ensembl gene ID, HGNC gene symbol, etc.) as those in the provided ST data.
 
 <details><summary><b>Preparing input files from Seurat objects</b></summary>
 
@@ -248,7 +253,9 @@ For compatibility with the default parameters of Seurat `Read10X()`, `genes.tsv`
 This file gives the raw number of cells of each cell type per spot by `SpotID` as well as the total number of cells assigned to that spot.
 6. ```fractional_abundances_by_spot.csv```<br>
 This file gives the fractional abundance of cell types assigned to each spot by `SpotID`.
-7. ```log.txt```<br>
+7. ```unassigned_locations.csv```<br>
+This file contains the list of spots (locations) where no cells have been assigned by the algorithm. The columns include the spot IDs (rownames), the row (`row`) and column (`col`) indices of the spots, and the total number of cells in each spot (`Number of cells`), which is 0 for all the spots in this file.
+8. ```log.txt```<br>
 This file contains a log of CytoSPACE run parameters and running time.
 </details>
 
@@ -271,7 +278,8 @@ We provide a subsampling routine where the ST datasets are partitioned into smal
 If you are experiencing this error with a single-cell ST dataset, it will be helpful to reduce the `-noss` parameter instead.
 
 4. My input data are very sparse. Is there a way to provide sparse matrices as input?<br>
-As of CytoSPACE v1.0.5, CytoSPACE supports sparse matrices as input. This requires a specific set of files to represent the sparse matrix, and we recommend that the R helper scripts under `Prepare_input_files` to be used for generating these input. Please refer to the [__Input Files__](#input-files) - __Using sparse matrices for gene expression__ section for details.
+As of CytoSPACE v1.1.0, CytoSPACE supports sparse matrices as input, for both single cell and spatial datasets. This applies both to the main cytospace function and to the get_cellfracs_seuratv3 R script for estimation of the fractional composition of each cell type. While the input still needs to follow a fixed logic of file naming, we broadened compatibility to include the most common naming conventions and extensions for different versions of Cell Ranger and Space Ranger sparse matrix outputs. Please refer to the [__Input Files__](#input-files) - __Using sparse matrices for gene expression__ section for details.
+<!-- As of CytoSPACE v1.0.5, CytoSPACE supports sparse matrices as input. This requires a specific set of files to represent the sparse matrix, and we recommend that the R helper scripts under `Prepare_input_files` to be used for generating these input. Please refer to the [__Input Files__](#input-files) - __Using sparse matrices for gene expression__ section for details. -->
 
 <!--
 4. Is there a gene expression matrix for the results?<br>
@@ -279,7 +287,9 @@ We currently do not provide the gene expression matrix as an output file, as it 
 -->
 
 5. Providing the output from Space Ranger (v2.0.0+) results in an error.<br>
-We were notified that the instructions for providing the Space Ranger outputs directly as a tarball resulted in errors for the newer versions of Space Ranger. It seems that this is occuring due to a recent format change in Space Ranger outputs, and we are currently working to fix this issue. In the meantime, please use the standard four-file input format, with the ST gene expression and coordinates provided as two separate .txt files. We appreciate the users letting us know of the issue!
+As of CytoSPACE v1.1.0, CytoSPACE supports the output from Space Ranger (v2.0.0+). Please refer to the [__Input Files__](#input-files) - __From Space Ranger outputs__ section for details.
+
+<!-- We were notified that the instructions for providing the Space Ranger outputs directly as a tarball resulted in errors for the newer versions of Space Ranger. It seems that this is occuring due to a recent format change in Space Ranger outputs, and we are currently working to fix this issue. In the meantime, please use the standard four-file input format, with the ST gene expression and coordinates provided as two separate .txt files. We appreciate the users letting us know of the issue! -->
 
 </details>
 

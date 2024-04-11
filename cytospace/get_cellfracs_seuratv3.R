@@ -2,7 +2,28 @@ suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("data.table"))
 suppressPackageStartupMessages(library("Seurat"))
 suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("Matrix"))
 
+# Helper function to dynamically identify and read gene/cell names
+
+#' @param base_path The base path of the folder containing the files.
+#' @param possible_names A vector of possible suffixes for gene or cell names files,
+#' including common conventions like "genes", "features", "cells", and "barcodes".
+#' @param extension A vector of possible file extensions, including both plain text 
+#' and gzipped formats (".tsv", ".csv", ".tsv.gz", ".csv.gz").
+find_path <- function(base_path, possible_names, extension){
+  for (name in possible_names) {
+    for (ext in extension) {
+      full_path <- paste0(base_path, "/", name, ext)
+      if (file.exists(full_path)) {
+        # Automatically detect delimiter based on file extension
+        delim <- ifelse(grepl(".csv", ext), ",", "\t")
+        return(list(full_path, delim))
+      }
+    }
+  }
+  stop("Required gene or cell names file not found in: ", base_path)
+}
 
 #' @param sc_path Path to scRNA counts file (standard CytoSPACE input file format)
 #' @param ct_path Path to cell type labels file (standard CytoSPACE input file format)
@@ -11,33 +32,107 @@ suppressPackageStartupMessages(library("dplyr"))
 #' @param prefix Prefix of output file
 #' @param disable_downsampling If TRUE, disables downsampling of scRNA-seq dataset for SCTransform() regardless of dataset size
 #' @import data.table dplyr Seurat
-get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir, prefix, disable_downsampling=FALSE){
+get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir, prefix, disable_downsampling = FALSE){
     message(Sys.time(), " Load ST data")
-    if(endsWith(st_path,'.csv')){
-        st_delim <- ','
-    } else{
-        st_delim <- '\t'
+    # Possible file names and extensions
+    possible_gene_names <- c("genes", "features")
+    possible_cell_names <- c("cells", "barcodes")
+    possible_extensions <- c(".tsv", ".csv", ".tsv.gz", ".csv.gz")
+    is_sparse_st <- endsWith(st_path, '.mtx') | endsWith(st_path, '.mtx.gz')
+    if (is_sparse_st) {
+
+        st <- Matrix::readMM(st_path)
+
+        # cell and gene names expected to be stored and read from separate files
+        base_dir <- dirname(st_path) 
+        genes_path <- find_path(base_dir, possible_gene_names, possible_extensions)[[1]]
+        cells_path <- find_path(base_dir, possible_cell_names, possible_extensions)[[1]]
+
+        genes_delim <- find_path(base_dir, possible_gene_names, possible_extensions)[[2]]
+        cells_delim <- find_path(base_dir, possible_cell_names, possible_extensions)[[2]]
+
+        if(!file.exists(cells_path) | !file.exists(genes_path)) {
+          stop("Please make sure to have the corresponding gene and cell names in separate files, 
+                    present in the same directory as the matrix file, 
+                    named as (genes/features)(.tsv/csv)(.gz) and (cells/barcodes)(.tsv/csv)(.gz)")
+        }     
+
+        cell_names <- read.csv(cells_path, sep = cells_delim, header = FALSE)
+        gene_names <- read.csv(genes_path, sep = genes_delim, header = FALSE)
+
+        if (!(dim(st)[1] == dim(gene_names)[1] & dim(st)[2] == dim(cell_names)[1])) {
+            stop("The dimensions of the matrix do not match the number of genes and/or cells in the corresponding files.
+                    The files for gene and cell lists must have one entry on each line, without a header line. Please check the files and try again.")
+                    }
+        
+        # setting cell names as colnames and gene names as rownames of the matrix
+        colnames(st) <- cell_names[[1]]
+        rownames(st) <- gene_names[[1]]
+        } else {
+            if(endsWith(st_path,'.csv')){
+                st_delim <- ','
+            } else {
+                st_delim <- '\t'
+            }
+            st <- fread(st_path, sep = st_delim, header = TRUE, data.table = FALSE)
+            rownames(st) = st[,1]; st = st[,-1]
+            st <- as.matrix(st)
     }
-    st <- fread(st_path, sep = st_delim, header = TRUE, data.table = FALSE)
-    rownames(st) = st[,1]; st = st[,-1]
+
+    
     st[is.na(st)] <- 0
-    st <- as.matrix(st)
-    st <- CreateSeuratObject(st) %>% SCTransform(verbose = FALSE, ncells = NULL) %>% RunPCA()
+    suppressMessages(st <- CreateSeuratObject(st) %>% SCTransform(verbose = FALSE, ncells = NULL) %>% RunPCA())
+    
     message(Sys.time(), " Load scRNA data")
-    if(endsWith(sc_path,'.csv')){
-        sc_delim <- ','
-    } else{
-        sc_delim <- '\t'
+    is_sparse_sc <- endsWith(sc_path, '.mtx') | endsWith(sc_path, '.mtx.gz')
+    if (is_sparse_sc) {
+
+        scrna <- Matrix::readMM(sc_path)
+
+        # cell and gene names expected to be stored and read from separate files
+        base_dir <- dirname(sc_path) 
+        genes_path <- find_path(base_dir, possible_gene_names, possible_extensions)[[1]]
+        cells_path <- find_path(base_dir, possible_cell_names, possible_extensions)[[1]]
+
+        genes_delim <- find_path(base_dir, possible_gene_names, possible_extensions)[[2]]
+        cells_delim <- find_path(base_dir, possible_cell_names, possible_extensions)[[2]]
+
+        if(!file.exists(cells_path) | !file.exists(genes_path)) {
+          stop("Please make sure to have the corresponding gene and cell names in separate files, 
+                    present in the same directory as the matrix file, 
+                    named as (genes/features)(.tsv/csv)(.gz) and (cells/barcodes)(.tsv/csv)(.gz)")
+        }     
+
+        cell_names <- read.csv(cells_path, sep = cells_delim, header = FALSE)
+        gene_names <- read.csv(genes_path, sep = genes_delim, header = FALSE)
+
+        if (!(dim(scrna)[1] == dim(gene_names)[1] & dim(scrna)[2] == dim(cell_names)[1])) {
+            stop("The dimensions of the matrix do not match the number of genes and/or cells in the corresponding files.
+                    The files for gene and cell lists must have one entry on each line, without a header line. Please check the files and try again.")
+                    }
+        
+        # setting cell names as colnames and gene names as rownames of the matrix
+        colnames(scrna) <- cell_names[[1]]
+        rownames(scrna) <- gene_names[[1]]
+    } else {
+        if(endsWith(sc_path,'.csv')){
+            sc_delim <- ','
+        } else {
+            sc_delim <- '\t'
+        }
+        scrna <- fread(sc_path, sep = sc_delim, header = TRUE, data.table = FALSE)
+        rownames(scrna) = scrna[,1]; scrna = scrna[,-1]
+        scrna <- as.matrix(scrna)
     }
-    scrna <- fread(sc_path, sep = sc_delim, header = TRUE, data.table = FALSE)
-    rownames(scrna) = scrna[,1]; scrna = scrna[,-1]
+    
     scrna[is.na(scrna)] <- 0
     num_cells <- dim(scrna)[2]
-    scrna <- as.matrix(scrna)
+    
 
     if(endsWith(ct_path,'.csv')){
         ct_delim <- ','
-    } else{
+    } 
+    else{
         ct_delim <- '\t'
     }
 
@@ -62,7 +157,7 @@ get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir, prefix, di
     if((dim(scrna)[2] < 300)) {
         warning("Please note that there may be an error in SCTransform() if there are too few cells available in the scRNA-seq dataset.")
     }
-    scrna <- SCTransform(scrna, verbose = FALSE, method = "glmGamPoi") %>% RunPCA()
+    suppressMessages(scrna <- SCTransform(scrna, verbose = FALSE, method = "glmGamPoi") %>% RunPCA())
     
     cell_index_vec <- Idents(scrna)
     message(Sys.time(), " Integration ")
@@ -78,6 +173,7 @@ get_cellfracs_seuratv3 <- function(sc_path, ct_path, st_path, outdir, prefix, di
     write.table(predictions.assay, file.path(outdir, paste0(prefix, "Seurat_cellfracs.txt")), quote = FALSE, sep = "\t")
     write.table(t(cellfrac), file.path(outdir, paste0(prefix, "Seurat_weights.txt")), quote = FALSE, sep = "\t", col.names = FALSE)
 } 
+
 
 
 parser <- ArgumentParser()

@@ -33,8 +33,8 @@ generate_cytospace_from_scRNA_seurat_object <- function(scrna_seurat,
 
   if (write_sparse) {
     fout_scrna <- file.path(dir_out, paste0(fout_prefix, 'scRNA_data.mtx'))
-    fout_genes <- file.path(dir_out, paste0(fout_prefix, 'scRNA_data_genes.tsv'))
-    fout_cells <- file.path(dir_out, paste0(fout_prefix, 'scRNA_data_cells.tsv'))
+    fout_genes <- file.path(dir_out, paste0(fout_prefix, 'genes.tsv'))
+    fout_cells <- file.path(dir_out, paste0(fout_prefix, 'cells.tsv'))
 
     Matrix::writeMM(scrna_count, fout_scrna)
     write.table(as.data.frame(gene_names), fout_genes, row.names = F, col.names = F, sep='\t', quote = F)
@@ -95,8 +95,8 @@ generate_cytospace_from_ST_seurat_object <- function(st_seurat,
 
   if (write_sparse) {
     fout_st <- file.path(dir_out, paste0(fout_prefix, 'ST_data.mtx'))
-    fout_genes <- file.path(dir_out, paste0(fout_prefix, 'ST_data_genes.tsv'))
-    fout_spots <- file.path(dir_out, paste0(fout_prefix, 'ST_data_cells.tsv'))
+    fout_genes <- file.path(dir_out, paste0(fout_prefix, 'genes.tsv'))
+    fout_spots <- file.path(dir_out, paste0(fout_prefix, 'cells.tsv'))
 
     Matrix::writeMM(ST_expressions, fout_st)
     write.table(as.data.frame(gene_names), fout_genes, row.names = F, col.names = F, sep='\t', quote = F)
