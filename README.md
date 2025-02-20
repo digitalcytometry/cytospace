@@ -48,6 +48,14 @@ CytoSPACE is available through a web interface at <a href="https://cytospace.sta
 ``` 
 `cytospace_v1.1.0` is the environment name in the latest version of the file. If you have a different version, which you can check on the first line of the `environment.yml` file, replace `cytospace_v1.1.0` with your version name in the `conda activate` command.
 
+NOTE: If you are running on a M1/M2 Mac, you may get an error solving the conda environment triggered by issues installing some of the dependencies from conda. To fix that, please try the following:
+```bash
+    conda create -n cytospace_v1.1.0
+    conda activate cytospace_v1.1.0
+    conda config --env --set subdir osx-64
+    conda env update --file environment.yml
+```
+
 6. (~30 seconds) Install CytoSPACE by executing:
 ```bash
   pip install .
